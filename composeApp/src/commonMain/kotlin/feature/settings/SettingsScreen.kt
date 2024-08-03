@@ -33,6 +33,7 @@ import moinobudget.composeapp.generated.resources.about_credits
 import moinobudget.composeapp.generated.resources.about_version
 import moinobudget.composeapp.generated.resources.back_home_description
 import moinobudget.composeapp.generated.resources.language
+import moinobudget.composeapp.generated.resources.section_interface
 import moinobudget.composeapp.generated.resources.settings
 import moinobudget.composeapp.generated.resources.theme
 import org.jetbrains.compose.resources.painterResource
@@ -54,6 +55,7 @@ fun SettingsScreen(
             text = stringResource(Res.string.settings))
     }
 
+    SectionTitle(stringResource(Res.string.section_interface))
     ListEntry(title = stringResource(Res.string.theme),
         currentKey = preferences.theme.key,
         currentText = stringResource(preferences.theme.title),
@@ -87,7 +89,6 @@ fun SettingsScreen(
         onChange = { onEvent(SettingsEvent.ChangeLanguage(it)) })
 
     SectionTitle(stringResource(Res.string.about))
-    InfoEntry(title = stringResource(Res.string.about_version), value = "v1.0.0")
+    InfoEntry(title = stringResource(Res.string.about_version), value = "v0.0.1")
     InfoEntry(title = stringResource(Res.string.about_credits), value = "MoineauFactory")
-
 }
