@@ -1,7 +1,8 @@
-package data.db
+package data
 
 import androidx.room.Room
 import androidx.sqlite.driver.bundled.BundledSQLiteDriver
+import data.db.ExpenseDatabase
 import platform.Foundation.NSHomeDirectory
 
 fun getExpenseDatabase(): ExpenseDatabase {

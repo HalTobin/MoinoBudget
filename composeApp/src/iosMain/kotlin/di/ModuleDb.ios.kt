@@ -1,7 +1,7 @@
 package di
 
 import data.db.ExpenseDatabase
-import data.db.getExpenseDatabase
+import data.getExpenseDatabase
 import org.koin.dsl.bind
 import org.koin.dsl.module
 

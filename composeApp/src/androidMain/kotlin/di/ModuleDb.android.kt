@@ -4,7 +4,7 @@ import data.db.ExpenseDatabase
 import org.koin.android.ext.koin.androidApplication
 import org.koin.dsl.bind
 import org.koin.dsl.module
-import org.moineaufactory.moinobudget.data.db.getExpenseDatabase
+import data.getExpenseDatabase
 
 actual object ModuleDb {
     actual val module = module {

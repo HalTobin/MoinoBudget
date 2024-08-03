@@ -1,4 +1,4 @@
-package org.moineaufactory.moinobudget.data.db
+package data
 
 import android.content.Context
 import androidx.room.Room
