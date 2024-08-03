@@ -1,4 +1,4 @@
-package org.moineaufactory.blockinvasion
+package org.moineaufactory.moinobudget
 
 import App
 import android.os.Bundle

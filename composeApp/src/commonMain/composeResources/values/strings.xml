@@ -1,0 +1,10 @@
+<resources>
+    <!-- Home Screen -->
+    <string name="app_name">MoinoBudget</string>
+
+    <!-- Expense Frequencies -->
+    <string name="annually">Annually</string>
+    <string name="biannually">Biannually</string>
+    <string name="quarterly">Quarterly</string>
+    <string name="monthly">Monthly</string>
+</resources>
