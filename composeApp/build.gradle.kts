@@ -24,8 +24,9 @@ kotlin {
         iosSimulatorArm64()
     ).forEach { iosTarget ->
         iosTarget.binaries.framework {
-            baseName = "ComposeApp"
+            baseName = "MoinoBudget"
             isStatic = true
+            linkerOpts.add("-lsqlite3")
         }
     }
 

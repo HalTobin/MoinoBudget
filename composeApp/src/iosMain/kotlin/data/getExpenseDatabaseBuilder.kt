@@ -1,16 +1,14 @@
 package data
 
 import androidx.room.Room
-import androidx.sqlite.driver.bundled.BundledSQLiteDriver
+import androidx.room.RoomDatabase
 import data.db.ExpenseDatabase
 import platform.Foundation.NSHomeDirectory
 
-fun getExpenseDatabase(): ExpenseDatabase {
+fun getExpenseDatabaseBuilder(): RoomDatabase.Builder<ExpenseDatabase> {
     val dbFile = NSHomeDirectory() + "/expenses.db"
     return Room.databaseBuilder<ExpenseDatabase>(
         name = dbFile,
         factory = { ExpenseDatabase::class.instantiateImpl() }
     )
-        .setDriver(BundledSQLiteDriver())
-        .build()
 }
