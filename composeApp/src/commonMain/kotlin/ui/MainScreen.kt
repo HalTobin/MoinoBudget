@@ -4,11 +4,15 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import data.repository.AppPreferences
+import feature.dashboard.presentation.DashboardScreen
+import feature.dashboard.presentation.DashboardViewModel
 import feature.settings.SettingsScreen
 import feature.settings.SettingsViewModel
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -29,15 +33,15 @@ fun MainScreen(
     ) {
         NavHost(
             navController = navController,
-            startDestination = Screen.Settings.route, // TODO - Make HomeScreen
+            startDestination = Screen.Settings.route,
         ) {
-            composable(Screen.Home.route) {
-                /*val viewModel = koinViewModel<HomeViewModel>()
+            composable(Screen.Dashboard.route) {
+                val viewModel = koinViewModel<DashboardViewModel>()
                 val state by viewModel.state.collectAsState()
-                HomeScreen(
+                DashboardScreen(
                     state = state,
                     onEvent = viewModel::onEvent,
-                    goTo = { navController.navigate(it.route) })*/
+                    goTo = { navController.navigate(it.route) })
             }
             composable(Screen.Settings.route) {
                 val viewModel = koinViewModel<SettingsViewModel>()

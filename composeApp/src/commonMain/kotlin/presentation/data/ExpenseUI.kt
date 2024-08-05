@@ -8,5 +8,6 @@ data class ExpenseUI(
     val icon: ExpenseIcon,
     val frequency: ExpenseFrequency,
     val payed: Boolean,
-    val nextPayment: LocalDate
+    val nextPayment: LocalDate,
+    val lastPayment: LocalDate
 )
