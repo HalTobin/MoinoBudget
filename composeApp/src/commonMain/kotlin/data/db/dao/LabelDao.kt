@@ -18,9 +18,9 @@ interface LabelDao {
     suspend fun delete(label: Label)
 
     @Query("SELECT * FROM labels WHERE id = :id")
-    suspend fun getById(id: Int): Expense
+    suspend fun getById(id: Int): Label
 
     @Query("SELECT * FROM labels")
-    fun getAll(): Flow<Expense>
+    fun getAll(): Flow<Label>
 
 }

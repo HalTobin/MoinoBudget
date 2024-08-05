@@ -11,6 +11,7 @@ plugins {
 }
 
 kotlin {
+
     androidTarget {
         @OptIn(ExperimentalKotlinGradlePluginApi::class)
         compilerOptions {
@@ -61,6 +62,10 @@ kotlin {
             implementation(libs.sqlite.bundled)
             implementation(libs.kotlinx.datetime)
         }
+
+        commonTest.dependencies {
+            implementation(libs.kotlin.test)
+        }
     }
 }
 
@@ -106,6 +111,7 @@ room {
 }
 
 dependencies {
+    implementation(libs.core.ktx)
     // Room
     add("kspCommonMainMetadata", libs.room.compiler)
 }

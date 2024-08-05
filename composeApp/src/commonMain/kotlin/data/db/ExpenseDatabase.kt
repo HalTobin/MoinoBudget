@@ -15,12 +15,20 @@ import kotlinx.coroutines.IO
     entities = [Expense::class, Label::class],
     version = 1
 )
-abstract class ExpenseDatabase: RoomDatabase() {
+abstract class ExpenseDatabase: RoomDatabase(), DB {
 
     abstract fun expenseDao(): ExpenseDao
     abstract fun labelDao(): LabelDao
     abstract fun expenseLabelDao(): ExpenseLabelDao
 
+    override fun clearAllTables() {
+        super.clearAllTables()
+    }
+
+}
+
+interface DB {
+    fun clearAllTables() {}
 }
 
 fun getExpenseDatabase(
