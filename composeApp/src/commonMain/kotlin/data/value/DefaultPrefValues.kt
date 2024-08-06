@@ -13,13 +13,15 @@ import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.StringResource
 
 object PrefKey {
-    // currency
-    // currency unit
+    const val CURRENCY = "currency"
+    const val DECIMAL_MODE = "decimal_mode"
     const val THEME = "theme"
     const val LANGUAGE = "language"
 }
 
 object PrefDefault {
+    const val CURRENCY = "€"
+
     // Values for themes
     const val THEME_DARK = "dark"
     const val THEME_DARK_OLED = "dark_oled"
@@ -50,5 +52,17 @@ enum class Language(val key: String, val title: String, val flag: DrawableResour
     Russian(key = PrefDefault.LANGUAGE_RU, title = "Русский", flag = Res.drawable.flag_ru);
     companion object {
         val list = listOf(English, French, Spanish, Russian)
+    }
+}
+
+enum class Currency(val key: String, val sign: String, val decimalMode: Boolean) {
+    Euro(key = "eur", sign = "€", decimalMode = true),
+    Dollar(key = "usd", sign = "$", decimalMode = true),
+    Ruble(key = "rub", sign = "₽", decimalMode = true),
+    YenYuan(key = "yen/yuan", sign = "¥", decimalMode = true),
+    Pound(key = "pound", sign = "£", decimalMode = true),
+    Lira(key = "pound", sign = "₺", decimalMode = true);
+    companion object {
+        val list = listOf(Euro, Dollar, Ruble, YenYuan, Pound, Lira)
     }
 }

@@ -6,6 +6,7 @@ import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
+import data.value.Currency
 import data.value.Language
 import data.value.PrefDefault
 import data.value.PrefKey
@@ -17,6 +18,12 @@ import kotlinx.coroutines.flow.map
 class PreferenceRepositoryImpl(
     private val prefs: DataStore<Preferences>
 ): PreferenceRepository {
+
+    override suspend fun setCurrency(value: String) =
+        updateStringPreference(PrefKey.CURRENCY, value)
+
+    /*override suspend fun setDecimalMode(value: Boolean) =
+        updateBooleanPreference(PrefKey.DECIMAL_MODE, value)*/
 
     override suspend fun setTheme(value: String) =
         updateStringPreference(PrefKey.THEME, value)
@@ -55,9 +62,21 @@ class PreferenceRepositoryImpl(
 
 val DataStore<Preferences>.appPreferences get() = this.data.map { dataStore ->
     AppPreferences(
+        currency = dataStore.getStringPreference(PrefKey.CURRENCY, PrefDefault.CURRENCY).toCurrency(),
+        decimalMode = dataStore.getBooleanPreference(PrefKey.DECIMAL_MODE, true),
         theme = dataStore.getStringPreference(PrefKey.THEME, PrefDefault.THEME).toTheme(),
         language = dataStore.getStringPreference(PrefKey.LANGUAGE, PrefDefault.LANGUAGE).toLanguage()
     )
+}
+
+fun String.toCurrency(): Currency = when (this) {
+    Currency.Euro.key -> Currency.Euro
+    Currency.Dollar.key -> Currency.Dollar
+    Currency.Ruble.key -> Currency.Ruble
+    Currency.YenYuan.key -> Currency.YenYuan
+    Currency.Pound.key -> Currency.Pound
+    Currency.Lira.key -> Currency.Lira
+    else -> Currency.Euro
 }
 
 fun String.toTheme(): Theme = when (this) {
@@ -91,6 +110,8 @@ fun Preferences.getStringPreference(key: String, default: String): String {
 }
 
 interface PreferenceRepository {
+    suspend fun setCurrency(value: String)
+    //suspend fun setDecimalMode(value: Boolean)
     suspend fun setTheme(value: String)
     suspend fun setLanguage(value: String)
 
@@ -99,7 +120,8 @@ interface PreferenceRepository {
 }
 
 data class AppPreferences(
-    val sound: Boolean = true,
+    val currency: Currency = Currency.Euro,
+    val decimalMode: Boolean = true,
     val theme: Theme = Theme.Dark,
     val language: Language = Language.English
 )

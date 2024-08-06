@@ -22,8 +22,10 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import data.repository.AppPreferences
+import data.value.Currency
 import data.value.Language
 import data.value.Theme
+import feature.settings.components.BooleanEntry
 import feature.settings.components.InfoEntry
 import feature.settings.components.ListEntry
 import feature.settings.components.SectionTitle
@@ -32,6 +34,8 @@ import moinobudget.composeapp.generated.resources.about
 import moinobudget.composeapp.generated.resources.about_credits
 import moinobudget.composeapp.generated.resources.about_version
 import moinobudget.composeapp.generated.resources.back_home_description
+import moinobudget.composeapp.generated.resources.currency
+import moinobudget.composeapp.generated.resources.decimal_mode
 import moinobudget.composeapp.generated.resources.language
 import moinobudget.composeapp.generated.resources.section_interface
 import moinobudget.composeapp.generated.resources.settings
@@ -56,6 +60,24 @@ fun SettingsScreen(
     }
 
     SectionTitle(stringResource(Res.string.section_interface))
+
+    ListEntry(title = stringResource(Res.string.currency),
+        currentKey = preferences.currency.key,
+        currentText = preferences.currency.sign,
+        items = Currency.list.map { Triple(
+            it.key,
+            it.sign
+        ) {
+            Text(text = it.sign)
+        } },
+        onChange = { onEvent(SettingsEvent.ChangeCurrency(it))} )
+
+    BooleanEntry(
+        title = stringResource(Res.string.decimal_mode),
+        value = preferences.decimalMode,
+        onChange = { onEvent(SettingsEvent.ChangeDecimalMode(it)) }
+    )
+
     ListEntry(title = stringResource(Res.string.theme),
         currentKey = preferences.theme.key,
         currentText = stringResource(preferences.theme.title),

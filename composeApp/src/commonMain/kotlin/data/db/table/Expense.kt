@@ -10,7 +10,7 @@ data class Expense(
     val amount: Float,
     val iconId: Int,
     val frequency: Int, // 0: Monthly, 1: Quarterly, 2: Biannually, 3: Annually
-    val monthOffset: Int?, // Only if annual
+    val monthOffset: Int?, // Only if not monthly
     val day: Int,
-    val payed: Boolean = false,
+    val lastPayment: Long
 )

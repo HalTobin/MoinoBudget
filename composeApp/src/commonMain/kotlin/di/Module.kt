@@ -1,5 +1,6 @@
 package di
 
+import feature.dashboard.presentation.DashboardViewModel
 import feature.settings.SettingsViewModel
 import org.koin.compose.viewmodel.dsl.viewModelOf
 import org.koin.core.module.Module
@@ -13,6 +14,7 @@ expect object Module {
 object ModuleVM {
     val viewModels = module {
         viewModelOf(::MainViewModel)
+        viewModelOf(::DashboardViewModel)
         viewModelOf(::SettingsViewModel)
     }
 }

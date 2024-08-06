@@ -33,7 +33,7 @@ fun MainScreen(
     ) {
         NavHost(
             navController = navController,
-            startDestination = Screen.Settings.route,
+            startDestination = Screen.Dashboard.route,
         ) {
             composable(Screen.Dashboard.route) {
                 val viewModel = koinViewModel<DashboardViewModel>()

@@ -13,6 +13,12 @@ class SettingsViewModel(
 
     fun onEvent(event: SettingsEvent) {
         when (event) {
+            is SettingsEvent.ChangeCurrency -> viewModelScope.launch(Dispatchers.IO) {
+                preferenceRepository.setCurrency(event.value)
+            }
+            is SettingsEvent.ChangeDecimalMode -> viewModelScope.launch(Dispatchers.IO) {
+
+            }
             is SettingsEvent.ChangeLanguage -> viewModelScope.launch(Dispatchers.IO) {
                 preferenceRepository.setLanguage(event.value)
             }

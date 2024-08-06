@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "0c35df9e29b66cced71743e57cc4e5c1",
+    "identityHash": "290215473f7fcc1d6a75b978d7ea56af",
     "entities": [
       {
-        "tableName": "transactions",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `title` TEXT NOT NULL, `iconId` INTEGER NOT NULL, `frequency` INTEGER NOT NULL, `monthOffset` INTEGER, `day` INTEGER NOT NULL, `payed` INTEGER NOT NULL)",
+        "tableName": "expenses",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `title` TEXT NOT NULL, `amount` REAL NOT NULL, `iconId` INTEGER NOT NULL, `frequency` INTEGER NOT NULL, `monthOffset` INTEGER, `day` INTEGER NOT NULL, `lastPayment` INTEGER NOT NULL)",
         "fields": [
           {
             "fieldPath": "id",
@@ -18,6 +18,12 @@
             "fieldPath": "title",
             "columnName": "title",
             "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "amount",
+            "columnName": "amount",
+            "affinity": "REAL",
             "notNull": true
           },
           {
@@ -44,8 +50,8 @@
             "notNull": true
           },
           {
-            "fieldPath": "payed",
-            "columnName": "payed",
+            "fieldPath": "lastPayment",
+            "columnName": "lastPayment",
             "affinity": "INTEGER",
             "notNull": true
           }
@@ -86,11 +92,60 @@
             "id"
           ]
         }
+      },
+      {
+        "tableName": "ExpenseLabelCrossRef",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`expenseId` INTEGER NOT NULL, `labelId` INTEGER NOT NULL, PRIMARY KEY(`expenseId`, `labelId`), FOREIGN KEY(`expenseId`) REFERENCES `expenses`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE , FOREIGN KEY(`labelId`) REFERENCES `labels`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "expenseId",
+            "columnName": "expenseId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "labelId",
+            "columnName": "labelId",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "expenseId",
+            "labelId"
+          ]
+        },
+        "foreignKeys": [
+          {
+            "table": "expenses",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "expenseId"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          },
+          {
+            "table": "labels",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "labelId"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
       }
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '0c35df9e29b66cced71743e57cc4e5c1')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '290215473f7fcc1d6a75b978d7ea56af')"
     ]
   }
 }
