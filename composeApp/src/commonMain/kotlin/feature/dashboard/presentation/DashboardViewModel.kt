@@ -26,8 +26,10 @@ class DashboardViewModel(): ViewModel() {
         // Load expenses and payments...
         val now = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date
         val dummyDashboard = DashboardState(
-            upcomingPayments = 1275.0f,
-            disposableIncomes = 500.0f,
+            disposableIncomesMonthly = 1275.0f,
+            disposableIncomesAnnual = 14250.0f,
+            upcomingPaymentsMonthly = 500.0f,
+            upcomingPaymentsAnnual = 6750.0f,
             expenses = listOf(
                 ExpenseUI(1, 15f, IncomeOrOutcome.Outcome,"Subscription A", ExpenseIcon.Transport, ExpenseFrequency.Monthly, false, 6, now, now.minusMonthsCompat(1), listOf(
                     Color.Red, Color.Green)),

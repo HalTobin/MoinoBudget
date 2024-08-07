@@ -11,10 +11,16 @@
     <!-- Navigation -->
     <string name="go_to_settings_help">Go to settings</string>
 
+    <!-- Days, Month, Year -->
+    <string name="year">Year</string>
+    <string name="month">Month</string>
+
     <!-- Dashboard -->
     <string name="add_operation">Register an operation</string>
     <string name="incomes">Incomes</string>
     <string name="outcomes">Outcomes</string>
+    <string name="payments">Payments</string>
+    <string name="earnings">Earnings</string>
     <string name="upcoming_payments">Upcoming Payments</string>
     <plurals name="due_in">
         <item quantity="one">Due in %1$d day</item>

@@ -1,15 +1,30 @@
 package feature.dashboard.presentation
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.Crossfade
+import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.core.animateIntOffsetAsState
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
+import androidx.compose.animation.togetherWith
+import androidx.compose.animation.with
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
@@ -22,32 +37,46 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Tab
+import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import feature.dashboard.data.MonthYearWithData
 import moinobudget.composeapp.generated.resources.Res
 import moinobudget.composeapp.generated.resources.add_operation
 import moinobudget.composeapp.generated.resources.app_name
 import moinobudget.composeapp.generated.resources.due_in
 import moinobudget.composeapp.generated.resources.go_to_settings_help
 import moinobudget.composeapp.generated.resources.incomes
+import moinobudget.composeapp.generated.resources.month
+import moinobudget.composeapp.generated.resources.monthly
 import moinobudget.composeapp.generated.resources.outcomes
 import moinobudget.composeapp.generated.resources.upcoming_payments
+import moinobudget.composeapp.generated.resources.year
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 import presentation.data.ExpenseUI
 import ui.Screen
 import ui.theme.Orange80
+import kotlin.math.roundToInt
 
 @Composable
 fun DashboardScreen(
@@ -67,12 +96,23 @@ fun DashboardScreen(
             style = MaterialTheme.typography.headlineLarge)
         Spacer(modifier = Modifier.height(16.dp))
         FinancialSummary(
-            totalExpenses = state.upcomingPayments,
-            disposableIncome = state.disposableIncomes
+            totalExpensesMonth = state.upcomingPaymentsMonthly,
+            disposableIncomeMonth = state.disposableIncomesMonthly,
+            totalExpensesYear = state.upcomingPaymentsAnnual,
+            disposableIncomeYear = state.disposableIncomesAnnual
         )
         Spacer(modifier = Modifier.height(16.dp))
-        RegisterOperation {  }
+        RegisterOperation(onClick = {})
         Spacer(modifier = Modifier.height(16.dp))
+        var tabIndex by remember { mutableStateOf(0) }
+        TabRow(modifier = Modifier.fillMaxWidth(),
+            selectedTabIndex = tabIndex,
+            //containerColor = MaterialTheme.colorScheme.background,
+            //contentColor = MaterialTheme.colorScheme.primary,
+            tabs = {
+                
+            }
+        )
         UpcomingPayments(state.expenses)
     }
 }
@@ -89,30 +129,97 @@ fun RegisterOperation(onClick: () -> Unit) = Button(onClick = onClick,
     Icon(imageVector = Icons.Default.Add, contentDescription = stringResource(Res.string.add_operation))
     Text(stringResource(Res.string.add_operation),
         modifier = Modifier.padding(horizontal = 8.dp),
-        fontWeight = FontWeight.SemiBold)
+        fontWeight = FontWeight.SemiBold
+    )
 }
 
 @Composable
-fun FinancialSummary(totalExpenses: Float, disposableIncome: Float) {
-    Row {
-        Column(modifier = Modifier.weight(1f),
-            horizontalAlignment = Alignment.CenterHorizontally) {
-            Text("$$totalExpenses",
-                color = Color.Green,
-                fontWeight = FontWeight.Bold,
-                style = MaterialTheme.typography.displaySmall)
-            Text(stringResource(Res.string.incomes).uppercase(), fontWeight = FontWeight.Bold, fontSize = 18.sp)
+fun FinancialSummary(
+    totalExpensesMonth: Float,
+    disposableIncomeMonth: Float,
+    totalExpensesYear: Float,
+    disposableIncomeYear: Float
+) {
+    var year by remember { mutableStateOf(false) }
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        BigValue(modifier = Modifier.weight(1f),
+            yearWithData = MonthYearWithData(
+                isYear = year,
+                yearAmount = disposableIncomeYear,
+                monthAmount = disposableIncomeMonth
+            ),
+            color = Color.Green,
+            title = stringResource(Res.string.incomes)
+        )
+        BigValue(modifier = Modifier.weight(1f),
+            yearWithData = MonthYearWithData(
+                isYear = year,
+                yearAmount = totalExpensesYear,
+                monthAmount = totalExpensesMonth
+            ),
+            color = Color.Red,
+            title = stringResource(Res.string.outcomes)
+        )
+        Box(Modifier
+            .padding(end = 8.dp)
+            .width(40.dp)
+            .height(80.dp)
+            .clip(RoundedCornerShape(16.dp))
+            .background(MaterialTheme.colorScheme.surface)
+            .clickable { year = !year },
+        ) {
+            val pxToMove = with(LocalDensity.current) { 41.dp.toPx().roundToInt() }
+            val offset by animateIntOffsetAsState(
+                targetValue = if (!year) {
+                    IntOffset(0, pxToMove)
+                } else {
+                    IntOffset.Zero
+                },
+                label = "offset"
+            )
+            Box(
+                modifier = Modifier
+                    .padding(top = 3.dp)
+                    .offset { offset }
+                    .size(32.dp)
+                    .align(Alignment.TopCenter)
+                    .clip(CircleShape)
+                    .background(MaterialTheme.colorScheme.primary)
+            )
+            Text(stringResource(Res.string.year).first().uppercase(),
+                modifier = Modifier.padding(8.dp).align(Alignment.TopCenter),
+                color = if (year) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onBackground,
+                fontWeight = FontWeight.SemiBold)
+            Text(stringResource(Res.string.month).first().uppercase(),
+                modifier = Modifier.padding(8.dp).align(Alignment.BottomCenter),
+                color = if (!year) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onBackground,
+                fontWeight = FontWeight.SemiBold)
         }
-        Column(modifier = Modifier.weight(1f),
-            horizontalAlignment = Alignment.CenterHorizontally) {
-            Text("$$disposableIncome",
-                color = Color.Red,
-                fontWeight = FontWeight.Bold,
-                style = MaterialTheme.typography.displaySmall)
-            Text(stringResource(Res.string.outcomes).uppercase(), fontWeight = FontWeight.Bold, fontSize = 18.sp)
-        }
-        // TODO - Year / Month modes
     }
+}
+
+@Composable
+fun BigValue(modifier: Modifier, yearWithData: MonthYearWithData, color: Color, title: String) =
+    Column(modifier = modifier,
+    horizontalAlignment = Alignment.CenterHorizontally) {
+        AnimatedContent(targetState = yearWithData,
+            transitionSpec = {
+                if (!targetState.isYear) {
+                    slideInVertically(initialOffsetY = { -it }, animationSpec = tween(300)) + fadeIn() togetherWith
+                            slideOutVertically(targetOffsetY = { it }, animationSpec = tween(300)) + fadeOut()
+                } else {
+                    slideInVertically(initialOffsetY = { it }, animationSpec = tween(300)) + fadeIn() togetherWith
+                            slideOutVertically(targetOffsetY = { -it }, animationSpec = tween(300)) + fadeOut()
+                }
+            }) { state ->
+            Text("${ if (!state.isYear) state.monthAmount else state.yearAmount}",
+                modifier = Modifier.fillMaxWidth(),
+                color = color,
+                textAlign = TextAlign.Center,
+                fontWeight = FontWeight.Bold,
+                style = MaterialTheme.typography.displaySmall)
+        }
+        Text(title.uppercase(), fontWeight = FontWeight.Bold, fontSize = 18.sp)
 }
 
 @Composable
