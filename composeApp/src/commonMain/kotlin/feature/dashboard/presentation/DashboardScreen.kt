@@ -27,24 +27,33 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.PagerState
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.CreditCard
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
+import androidx.compose.material3.TabRowDefaults
+import androidx.compose.material3.TabRowDefaults.SecondaryIndicator
+import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -60,6 +69,7 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import feature.dashboard.data.MonthYearWithData
+import kotlinx.coroutines.launch
 import moinobudget.composeapp.generated.resources.Res
 import moinobudget.composeapp.generated.resources.add_operation
 import moinobudget.composeapp.generated.resources.app_name
@@ -74,6 +84,7 @@ import moinobudget.composeapp.generated.resources.year
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 import presentation.data.ExpenseUI
+import presentation.data.IncomeOrOutcome
 import ui.Screen
 import ui.theme.Orange80
 import kotlin.math.roundToInt
@@ -84,37 +95,64 @@ fun DashboardScreen(
     onEvent: (DashboardEvent) -> Unit,
     goTo: (Screen) -> Unit
 ) = Box {
+    val scope = rememberCoroutineScope()
     IconButton(modifier = Modifier.align(Alignment.TopEnd).padding(8.dp),
         onClick = { goTo(Screen.Settings) }) {
         Icon(modifier = Modifier.size(32.dp),
             imageVector = Icons.Default.Settings, contentDescription = stringResource(Res.string.go_to_settings_help))
     }
-    Column(modifier = Modifier.padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally) {
-        Text(stringResource(Res.string.app_name).uppercase(),
-            fontWeight = FontWeight.SemiBold,
-            style = MaterialTheme.typography.headlineLarge)
-        Spacer(modifier = Modifier.height(16.dp))
-        FinancialSummary(
-            totalExpensesMonth = state.upcomingPaymentsMonthly,
-            disposableIncomeMonth = state.disposableIncomesMonthly,
-            totalExpensesYear = state.upcomingPaymentsAnnual,
-            disposableIncomeYear = state.disposableIncomesAnnual
-        )
-        Spacer(modifier = Modifier.height(16.dp))
-        RegisterOperation(onClick = {})
-        Spacer(modifier = Modifier.height(16.dp))
-        var tabIndex by remember { mutableStateOf(0) }
-        TabRow(modifier = Modifier.fillMaxWidth(),
-            selectedTabIndex = tabIndex,
-            //containerColor = MaterialTheme.colorScheme.background,
-            //contentColor = MaterialTheme.colorScheme.primary,
-            tabs = {
-                
+    Column {
+        Column(modifier = Modifier.padding(16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally) {
+            Text(stringResource(Res.string.app_name).uppercase(),
+                fontWeight = FontWeight.SemiBold,
+                style = MaterialTheme.typography.headlineLarge)
+            Spacer(modifier = Modifier.height(16.dp))
+            FinancialSummary(
+                totalExpensesMonth = state.upcomingPaymentsMonthly,
+                disposableIncomeMonth = state.disposableIncomesMonthly,
+                totalExpensesYear = state.upcomingPaymentsAnnual,
+                disposableIncomeYear = state.disposableIncomesAnnual
+            )
+            Spacer(modifier = Modifier.height(16.dp))
+            RegisterOperation(onClick = {})
+            Spacer(modifier = Modifier.height(16.dp))
+        }
+        Column {
+            val pagerState = rememberPagerState(pageCount = { 2 })
+            DashboardTab(pagerState, onSelect = { scope.launch {
+                pagerState.animateScrollToPage(it) }})
+            Spacer(Modifier.height(8.dp))
+            HorizontalPager(state = pagerState) { page ->
+                if (page == IncomeOrOutcome.Outcome.tabId) UpcomingPayments(state.expenses)
+                else UpcomingPayments(state.expenses)
             }
-        )
-        UpcomingPayments(state.expenses)
+        }
     }
+}
+
+@Composable
+fun DashboardTab(pagerState: PagerState,
+                 onSelect: (tabId: Int) -> Unit) {
+    TabRow(modifier = Modifier.fillMaxWidth(),
+        selectedTabIndex = pagerState.currentPage,
+        containerColor = MaterialTheme.colorScheme.background,
+        tabs = {
+            listOf(IncomeOrOutcome.Outcome, IncomeOrOutcome.Income).forEach { incomeOrOutcome ->
+                Tab(
+                    selected = (pagerState.currentPage == incomeOrOutcome.tabId),
+                    onClick = { onSelect(incomeOrOutcome.tabId) },
+                    text = { Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(imageVector = incomeOrOutcome.icon, contentDescription = null)
+                        Text(stringResource(incomeOrOutcome.text).uppercase(),
+                            modifier = Modifier.padding(start = 8.dp))
+                    } }
+                )
+            }
+        },
+        divider = { HorizontalDivider(thickness = 2.dp) }
+    )
+    Spacer(Modifier.height(8.dp))
 }
 
 @Composable
@@ -224,8 +262,11 @@ fun BigValue(modifier: Modifier, yearWithData: MonthYearWithData, color: Color, 
 
 @Composable
 fun UpcomingPayments(dueExpenses: List<ExpenseUI>) {
-    Column(modifier = Modifier.fillMaxWidth()) {
-        Text(stringResource(Res.string.upcoming_payments), fontSize = 20.sp, fontWeight = FontWeight.Bold)
+    Column(modifier = Modifier.fillMaxWidth(),
+        horizontalAlignment = Alignment.CenterHorizontally) {
+        Text(stringResource(Res.string.upcoming_payments),
+            modifier = Modifier.padding(top = 8.dp),
+            fontSize = 20.sp, fontWeight = FontWeight.Bold)
         Spacer(modifier = Modifier.height(8.dp))
         LazyColumn {
             items(dueExpenses.sortedBy { it.dueIn }) { dueExpense ->
