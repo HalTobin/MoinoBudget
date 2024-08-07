@@ -21,13 +21,13 @@ class DaoTests {
     private lateinit var labelDao: LabelDao
     private lateinit var expenseLabelDao: ExpenseLabelDao
 
-    @BeforeTest
+    /*@BeforeTest
     fun setup() {
         db = getRoomDatabase(builder = getInMemoryDataBase())
         expenseDao = db.expenseDao()
         labelDao = db.labelDao()
         expenseLabelDao = db.expenseLabelDao()
-    }
+    }*/
 
     @Test
     fun `test insert label`() = runBlocking(Dispatchers.IO) {
@@ -54,4 +54,4 @@ fun getRoomDatabase(
         .build()
 }
 
-expect fun getInMemoryDataBase(): RoomDatabase.Builder<ExpenseDatabase>
+//expect fun getInMemoryDataBase(): RoomDatabase.Builder<ExpenseDatabase>

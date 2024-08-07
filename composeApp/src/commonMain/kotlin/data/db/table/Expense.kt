@@ -9,6 +9,7 @@ data class Expense(
     val title: String,
     val amount: Float,
     val iconId: Int,
+    val isIncome: Boolean,
     val frequency: Int, // 0: Monthly, 1: Quarterly, 2: Biannually, 3: Annually
     val monthOffset: Int?, // Only if not monthly
     val day: Int,

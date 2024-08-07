@@ -8,6 +8,15 @@
     <string name="quarterly">Quarterly</string>
     <string name="monthly">Monthly</string>
 
+    <!-- Dashboard -->
+    <string name="incomes">Incomes</string>
+    <string name="outcomes">Outcomes</string>
+    <string name="upcoming_payments">Upcoming Payments</string>
+    <plurals name="due_in">
+        <item quantity="one">Due in %1$d day</item>
+        <item quantity="other">Due in %1$d days</item>
+    </plurals>
+
     <!-- Settings Screen -->
     <string name="settings">Settings</string>
     <string name="section_interface">Interface</string>
