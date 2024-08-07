@@ -14,9 +14,13 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Button
-import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -32,7 +36,10 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import moinobudget.composeapp.generated.resources.Res
+import moinobudget.composeapp.generated.resources.add_operation
+import moinobudget.composeapp.generated.resources.app_name
 import moinobudget.composeapp.generated.resources.due_in
+import moinobudget.composeapp.generated.resources.go_to_settings_help
 import moinobudget.composeapp.generated.resources.incomes
 import moinobudget.composeapp.generated.resources.outcomes
 import moinobudget.composeapp.generated.resources.upcoming_payments
@@ -40,55 +47,49 @@ import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 import presentation.data.ExpenseUI
 import ui.Screen
-import ui.theme.Orange40
 import ui.theme.Orange80
-import ui.theme.OrangeGrey40
-import ui.theme.OrangeGrey80
 
 @Composable
 fun DashboardScreen(
     state: DashboardState,
     onEvent: (DashboardEvent) -> Unit,
     goTo: (Screen) -> Unit
-) {
-    Column(modifier = Modifier.padding(16.dp)) {
-        MonthlySummary()
-        Spacer(modifier = Modifier.height(16.dp))
-        QuickActions()
+) = Box {
+    IconButton(modifier = Modifier.align(Alignment.TopEnd).padding(8.dp),
+        onClick = { goTo(Screen.Settings) }) {
+        Icon(modifier = Modifier.size(32.dp),
+            imageVector = Icons.Default.Settings, contentDescription = stringResource(Res.string.go_to_settings_help))
+    }
+    Column(modifier = Modifier.padding(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally) {
+        Text(stringResource(Res.string.app_name).uppercase(),
+            fontWeight = FontWeight.SemiBold,
+            style = MaterialTheme.typography.headlineLarge)
         Spacer(modifier = Modifier.height(16.dp))
         FinancialSummary(
             totalExpenses = state.upcomingPayments,
             disposableIncome = state.disposableIncomes
         )
         Spacer(modifier = Modifier.height(16.dp))
+        RegisterOperation {  }
+        Spacer(modifier = Modifier.height(16.dp))
         UpcomingPayments(state.expenses)
     }
 }
 
 @Composable
-fun MonthlySummary() {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween
-    ) {
-        Text("Monthly Summary", fontSize = 20.sp, fontWeight = FontWeight.Bold)
-        Text("Quick Actions", fontSize = 20.sp, fontWeight = FontWeight.Bold)
-    }
-}
-
-@Composable
-fun QuickActions() {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween
-    ) {
-        Button(onClick = { /* TODO: Add New Expense */ }) {
-            Text("Add New Expense")
-        }
-        Button(onClick = { /* TODO: Add New Label */ }) {
-            Text("Add New Label")
-        }
-    }
+fun RegisterOperation(onClick: () -> Unit) = Button(onClick = onClick,
+    modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp),
+    shape = RoundedCornerShape(8.dp),
+    colors = ButtonDefaults.buttonColors(
+        containerColor = MaterialTheme.colorScheme.primary,
+        contentColor = MaterialTheme.colorScheme.onPrimary
+    )
+) {
+    Icon(imageVector = Icons.Default.Add, contentDescription = stringResource(Res.string.add_operation))
+    Text(stringResource(Res.string.add_operation),
+        modifier = Modifier.padding(horizontal = 8.dp),
+        fontWeight = FontWeight.SemiBold)
 }
 
 @Composable
@@ -110,7 +111,7 @@ fun FinancialSummary(totalExpenses: Float, disposableIncome: Float) {
                 style = MaterialTheme.typography.displaySmall)
             Text(stringResource(Res.string.outcomes).uppercase(), fontWeight = FontWeight.Bold, fontSize = 18.sp)
         }
-        // Year / Month modes
+        // TODO - Year / Month modes
     }
 }
 

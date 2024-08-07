@@ -19,10 +19,10 @@ interface ExpenseLabelDao {
     suspend fun insertExpenseLabelCrossRef(crossRef: ExpenseLabelCrossRef)
 
     @Transaction
-    @Query("SELECT * FROM expense WHERE expenseId = :expenseId")
+    @Query("SELECT * FROM expenses WHERE id = :expenseId")
     suspend fun getExpenseWithLabels(expenseId: Long): List<ExpenseWithLabels>
 
     @Transaction
-    @Query("SELECT * FROM label WHERE labelId = :labelId")
+    @Query("SELECT * FROM labels WHERE id = :labelId")
     suspend fun getLabelWithExpenses(labelId: Long): List<LabelWithExpenses>
 }

@@ -8,7 +8,11 @@
     <string name="quarterly">Quarterly</string>
     <string name="monthly">Monthly</string>
 
+    <!-- Navigation -->
+    <string name="go_to_settings_help">Go to settings</string>
+
     <!-- Dashboard -->
+    <string name="add_operation">Register an operation</string>
     <string name="incomes">Incomes</string>
     <string name="outcomes">Outcomes</string>
     <string name="upcoming_payments">Upcoming Payments</string>
