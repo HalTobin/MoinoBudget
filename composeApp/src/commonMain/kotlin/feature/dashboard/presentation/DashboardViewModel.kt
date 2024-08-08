@@ -31,18 +31,18 @@ class DashboardViewModel(): ViewModel() {
             upcomingPaymentsMonthly = 500.0f,
             upcomingPaymentsAnnual = 6750.0f,
             expenses = listOf(
-                ExpenseUI(1, 15f, IncomeOrOutcome.Outcome,"Subscription A", ExpenseIcon.Transport, ExpenseFrequency.Monthly, false, 6, now, now.minusMonthsCompat(1), listOf(
+                ExpenseUI(1, 15f, IncomeOrOutcome.Outcome,"Netflix", ExpenseIcon.Film, ExpenseFrequency.Monthly, false, 6, now, now.minusMonthsCompat(1), listOf(
                     Color.Red, Color.Green)),
-                ExpenseUI(2, 235f, IncomeOrOutcome.Outcome,"Electricity", ExpenseIcon.Transport, ExpenseFrequency.Monthly, true, 2, now.plusDaysCompat(5), now.minusMonthsCompat(1), listOf(Color.Yellow)),
-                ExpenseUI(3, 700f, IncomeOrOutcome.Outcome, "Rent", ExpenseIcon.Transport, ExpenseFrequency.Monthly, false, 17, now.plusDaysCompat(10), now.minusMonthsCompat(1), listOf(
+                ExpenseUI(2, 235f, IncomeOrOutcome.Outcome,"Electricity", ExpenseIcon.Electricity, ExpenseFrequency.Monthly, true, 2, now.plusDaysCompat(5), now.minusMonthsCompat(1), listOf(Color.Yellow)),
+                ExpenseUI(3, 700f, IncomeOrOutcome.Outcome, "Rent", ExpenseIcon.Housing, ExpenseFrequency.Monthly, false, 17, now.plusDaysCompat(10), now.minusMonthsCompat(1), listOf(
                     Color.Green)),
-                ExpenseUI(4, 20f, IncomeOrOutcome.Outcome, "Internet", ExpenseIcon.Transport, ExpenseFrequency.Monthly, true, 2, now.plusDaysCompat(2), now.minusMonthsCompat(1), listOf(Color.Red)),
-                ExpenseUI(5, 150f, IncomeOrOutcome.Outcome, "Water", ExpenseIcon.Transport, ExpenseFrequency.Monthly, false, 1, now.plusDaysCompat(7), now.minusMonthsCompat(1), listOf(
+                ExpenseUI(4, 20f, IncomeOrOutcome.Outcome, "Internet", ExpenseIcon.Internet, ExpenseFrequency.Monthly, true, 2, now.plusDaysCompat(2), now.minusMonthsCompat(1), listOf(Color.Red)),
+                ExpenseUI(5, 150f, IncomeOrOutcome.Outcome, "Water", ExpenseIcon.Water, ExpenseFrequency.Monthly, false, 1, now.plusDaysCompat(7), now.minusMonthsCompat(1), listOf(
                     Color.Yellow)),
-                ExpenseUI(6, 1656f, IncomeOrOutcome.Income, "Salary", ExpenseIcon.Transport, ExpenseFrequency.Monthly, false, 17, now.plusDaysCompat(10), now.minusMonthsCompat(1), listOf(
+                ExpenseUI(6, 1656f, IncomeOrOutcome.Income, "Salary", ExpenseIcon.Incomes, ExpenseFrequency.Monthly, false, 17, now.plusDaysCompat(10), now.minusMonthsCompat(1), listOf(
                     Color.Green)),
-                ExpenseUI(7, 185f, IncomeOrOutcome.Income, "CAF", ExpenseIcon.Transport, ExpenseFrequency.Monthly, true, 2, now.plusDaysCompat(2), now.minusMonthsCompat(1), listOf(Color.Red)),
-                ExpenseUI(8, 45f, IncomeOrOutcome.Income, "TR", ExpenseIcon.Transport, ExpenseFrequency.Monthly, false, 1, now.plusDaysCompat(7), now.minusMonthsCompat(1), listOf(
+                ExpenseUI(7, 185f, IncomeOrOutcome.Income, "CAF", ExpenseIcon.Help, ExpenseFrequency.Monthly, true, 2, now.plusDaysCompat(2), now.minusMonthsCompat(1), listOf(Color.Red)),
+                ExpenseUI(8, 45f, IncomeOrOutcome.Income, "TR", ExpenseIcon.Store, ExpenseFrequency.Monthly, false, 1, now.plusDaysCompat(7), now.minusMonthsCompat(1), listOf(
                     Color.Yellow))
             )
         )
