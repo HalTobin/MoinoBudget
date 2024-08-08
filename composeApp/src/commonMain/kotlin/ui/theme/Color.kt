@@ -11,3 +11,4 @@ val OrangeGrey40 = Color(0xFFFFE699)
 val Red80 = Color(0xFFDF4853)
 
 val DarkSurface = Color(0xFF333333)
+val LightSurface = Color(0xFFCCCCCC)

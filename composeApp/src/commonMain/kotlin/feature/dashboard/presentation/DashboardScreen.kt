@@ -211,7 +211,7 @@ fun FinancialSummary(
                     .offset { offset }
                     .size(32.dp)
                     .align(Alignment.TopCenter)
-                    .clip(CircleShape)
+                    .clip(RoundedCornerShape(12.dp))
                     .background(MaterialTheme.colorScheme.primary)
             )
             Text(stringResource(Res.string.year).first().uppercase(),

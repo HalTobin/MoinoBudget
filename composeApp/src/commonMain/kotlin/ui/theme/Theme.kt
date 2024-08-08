@@ -25,6 +25,7 @@ private val DarkOledColorScheme = darkColorScheme(
 private val LightColorScheme = lightColorScheme(
     primary = Orange40,
     onPrimary = OrangeGrey40,
+    surface = LightSurface
 
     /* Other default colors to override
     background = Color(0xFFFFFBFE),

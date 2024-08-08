@@ -24,27 +24,20 @@ class DashboardViewModel(): ViewModel() {
 
     init {
         // Load expenses and payments...
-        val now = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date
+        val expenses = getExpenses()
+        val yearIncomes = expenses
+            .filter { it.type == IncomeOrOutcome.Income }
+            .sumOf { it.amount * it.frequency.multiplier.toDouble() }
+        val yearOutcomes = expenses
+            .filter { it.type == IncomeOrOutcome.Outcome }
+            .sumOf { it.amount * it.frequency.multiplier.toDouble() }
+
         val dummyDashboard = DashboardState(
             disposableIncomesMonthly = 1275.0f,
-            disposableIncomesAnnual = 14250.0f,
+            disposableIncomesAnnual = (yearIncomes - yearOutcomes).toFloat(),
             upcomingPaymentsMonthly = 500.0f,
-            upcomingPaymentsAnnual = 6750.0f,
-            expenses = listOf(
-                ExpenseUI(1, 15f, IncomeOrOutcome.Outcome,"Netflix", ExpenseIcon.Film, ExpenseFrequency.Monthly, false, 6, now, now.minusMonthsCompat(1), listOf(
-                    Color.Red, Color.Green)),
-                ExpenseUI(2, 235f, IncomeOrOutcome.Outcome,"Electricity", ExpenseIcon.Electricity, ExpenseFrequency.Monthly, true, 2, now.plusDaysCompat(5), now.minusMonthsCompat(1), listOf(Color.Yellow)),
-                ExpenseUI(3, 700f, IncomeOrOutcome.Outcome, "Rent", ExpenseIcon.Housing, ExpenseFrequency.Monthly, false, 17, now.plusDaysCompat(10), now.minusMonthsCompat(1), listOf(
-                    Color.Green)),
-                ExpenseUI(4, 20f, IncomeOrOutcome.Outcome, "Internet", ExpenseIcon.Internet, ExpenseFrequency.Monthly, true, 2, now.plusDaysCompat(2), now.minusMonthsCompat(1), listOf(Color.Red)),
-                ExpenseUI(5, 150f, IncomeOrOutcome.Outcome, "Water", ExpenseIcon.Water, ExpenseFrequency.Monthly, false, 1, now.plusDaysCompat(7), now.minusMonthsCompat(1), listOf(
-                    Color.Yellow)),
-                ExpenseUI(6, 1656f, IncomeOrOutcome.Income, "Salary", ExpenseIcon.Incomes, ExpenseFrequency.Monthly, false, 17, now.plusDaysCompat(10), now.minusMonthsCompat(1), listOf(
-                    Color.Green)),
-                ExpenseUI(7, 185f, IncomeOrOutcome.Income, "CAF", ExpenseIcon.Help, ExpenseFrequency.Monthly, true, 2, now.plusDaysCompat(2), now.minusMonthsCompat(1), listOf(Color.Red)),
-                ExpenseUI(8, 45f, IncomeOrOutcome.Income, "TR", ExpenseIcon.Store, ExpenseFrequency.Monthly, false, 1, now.plusDaysCompat(7), now.minusMonthsCompat(1), listOf(
-                    Color.Yellow))
-            )
+            upcomingPaymentsAnnual = yearOutcomes.toFloat(),
+            expenses = expenses
         )
 
         _state.update { dummyDashboard }
@@ -54,6 +47,25 @@ class DashboardViewModel(): ViewModel() {
         when (event) {
             else -> {}
         }
+    }
+
+    private fun getExpenses(): List<ExpenseUI> {
+        val now = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date
+        return listOf(
+            ExpenseUI(1, 15f, IncomeOrOutcome.Outcome,"Netflix", ExpenseIcon.Film, ExpenseFrequency.Monthly, false, 6, now, now.minusMonthsCompat(1), listOf(
+                Color.Red, Color.Green)),
+            ExpenseUI(2, 235f, IncomeOrOutcome.Outcome,"Electricity", ExpenseIcon.Electricity, ExpenseFrequency.Monthly, true, 2, now.plusDaysCompat(5), now.minusMonthsCompat(1), listOf(Color.Yellow)),
+            ExpenseUI(3, 700f, IncomeOrOutcome.Outcome, "Rent", ExpenseIcon.Housing, ExpenseFrequency.Monthly, false, 17, now.plusDaysCompat(10), now.minusMonthsCompat(1), listOf(
+                Color.Green)),
+            ExpenseUI(4, 20f, IncomeOrOutcome.Outcome, "Internet", ExpenseIcon.Internet, ExpenseFrequency.Monthly, true, 2, now.plusDaysCompat(2), now.minusMonthsCompat(1), listOf(Color.Red)),
+            ExpenseUI(5, 150f, IncomeOrOutcome.Outcome, "Water", ExpenseIcon.Water, ExpenseFrequency.Monthly, false, 1, now.plusDaysCompat(7), now.minusMonthsCompat(1), listOf(
+                Color.Yellow)),
+            ExpenseUI(6, 1656f, IncomeOrOutcome.Income, "Salary", ExpenseIcon.Incomes, ExpenseFrequency.Monthly, false, 17, now.plusDaysCompat(10), now.minusMonthsCompat(1), listOf(
+                Color.Green)),
+            ExpenseUI(7, 185f, IncomeOrOutcome.Income, "CAF", ExpenseIcon.Help, ExpenseFrequency.Monthly, true, 2, now.plusDaysCompat(2), now.minusMonthsCompat(1), listOf(Color.Red)),
+            ExpenseUI(8, 45f, IncomeOrOutcome.Income, "TR", ExpenseIcon.Store, ExpenseFrequency.Monthly, false, 1, now.plusDaysCompat(7), now.minusMonthsCompat(1), listOf(
+                Color.Yellow))
+        )
     }
 
     // Extension functions to handle date operations
