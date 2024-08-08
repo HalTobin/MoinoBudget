@@ -73,11 +73,12 @@ import kotlinx.coroutines.launch
 import moinobudget.composeapp.generated.resources.Res
 import moinobudget.composeapp.generated.resources.add_operation
 import moinobudget.composeapp.generated.resources.app_name
+import moinobudget.composeapp.generated.resources.available_in
 import moinobudget.composeapp.generated.resources.due_in
 import moinobudget.composeapp.generated.resources.go_to_settings_help
 import moinobudget.composeapp.generated.resources.incomes
 import moinobudget.composeapp.generated.resources.month
-import moinobudget.composeapp.generated.resources.monthly
+import moinobudget.composeapp.generated.resources.my_incomes
 import moinobudget.composeapp.generated.resources.outcomes
 import moinobudget.composeapp.generated.resources.upcoming_payments
 import moinobudget.composeapp.generated.resources.year
@@ -116,7 +117,6 @@ fun DashboardScreen(
             )
             Spacer(modifier = Modifier.height(16.dp))
             RegisterOperation(onClick = {})
-            Spacer(modifier = Modifier.height(16.dp))
         }
         Column {
             val pagerState = rememberPagerState(pageCount = { 2 })
@@ -124,8 +124,8 @@ fun DashboardScreen(
                 pagerState.animateScrollToPage(it) }})
             Spacer(Modifier.height(8.dp))
             HorizontalPager(state = pagerState) { page ->
-                if (page == IncomeOrOutcome.Outcome.tabId) UpcomingPayments(state.expenses)
-                else UpcomingPayments(state.expenses)
+                if (page == IncomeOrOutcome.Outcome.tabId) PaymentsSection(IncomeOrOutcome.Outcome, state.expenses)
+                else PaymentsSection(IncomeOrOutcome.Income, state.expenses)
             }
         }
     }
@@ -261,58 +261,59 @@ fun BigValue(modifier: Modifier, yearWithData: MonthYearWithData, color: Color, 
 }
 
 @Composable
-fun UpcomingPayments(dueExpenses: List<ExpenseUI>) {
-    Column(modifier = Modifier.fillMaxWidth(),
-        horizontalAlignment = Alignment.CenterHorizontally) {
-        Text(stringResource(Res.string.upcoming_payments),
-            modifier = Modifier.padding(top = 8.dp),
-            fontSize = 20.sp, fontWeight = FontWeight.Bold)
-        Spacer(modifier = Modifier.height(8.dp))
-        LazyColumn {
-            items(dueExpenses.sortedBy { it.dueIn }) { dueExpense ->
-                DueExpenseItem(dueExpense)
-            }
+fun PaymentsSection(incomeOrOutcome: IncomeOrOutcome,
+    dueExpenses: List<ExpenseUI>) = Column(modifier = Modifier.fillMaxWidth(),
+    horizontalAlignment = Alignment.CenterHorizontally) {
+    Text(stringResource(if (incomeOrOutcome == IncomeOrOutcome.Outcome) Res.string.upcoming_payments else Res.string.my_incomes),
+        fontSize = 20.sp, fontWeight = FontWeight.Bold)
+    Spacer(modifier = Modifier.height(8.dp))
+    LazyColumn(Modifier.weight(1f)) {
+        items(dueExpenses.filter { it.type == incomeOrOutcome }.sortedBy { it.dueIn }) { dueExpense ->
+            DueExpenseItem(dueExpense)
         }
     }
 }
 
 @Composable
-fun DueExpenseItem(dueExpense: ExpenseUI) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(8.dp)
-            .clip(RoundedCornerShape(8.dp))
-            .background(MaterialTheme.colorScheme.surface)
-            .padding(8.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Icon(modifier = Modifier.padding(horizontal = 8.dp).size(32.dp),
-            imageVector = dueExpense.icon.icon, contentDescription = null)
+fun DueExpenseItem(dueExpense: ExpenseUI) = Row(
+    modifier = Modifier
+        .fillMaxWidth()
+        .padding(horizontal = 16.dp, vertical = 8.dp)
+        .clip(RoundedCornerShape(8.dp))
+        .background(MaterialTheme.colorScheme.surface)
+        .padding(8.dp),
+    verticalAlignment = Alignment.CenterVertically
+) {
+    Icon(modifier = Modifier.padding(horizontal = 8.dp).size(32.dp),
+        imageVector = dueExpense.icon.icon, contentDescription = null)
 
-        Column(Modifier.padding(start = 4.dp)) {
-            Row {
-                Text(dueExpense.title, modifier = Modifier.weight(1f), fontSize = 16.sp, fontWeight = FontWeight.Bold)
-                Text("$${dueExpense.amount}",
-                    textAlign = TextAlign.End,
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Bold)
+    Column(Modifier.padding(start = 4.dp)) {
+        Row {
+            Text(dueExpense.title, modifier = Modifier.weight(1f), fontSize = 16.sp, fontWeight = FontWeight.Bold)
+            Text("${if (dueExpense.type == IncomeOrOutcome.Outcome) "-" else "+"}${dueExpense.amount}$",
+                textAlign = TextAlign.End,
+                color = if (dueExpense.type == IncomeOrOutcome.Outcome) Color.Red else Color.Green,
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Bold)
+        }
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            fun getColorFromDueInDays(dueIn: Int): Color = if (dueIn < 7) {
+                if (dueExpense.type == IncomeOrOutcome.Outcome) Color.Red else Color.Green
+            } else if (dueIn < 30) Orange80 else Color.Green
+            val dueInText = pluralStringResource(
+                if (dueExpense.type == IncomeOrOutcome.Outcome) Res.plurals.due_in else Res.plurals.available_in,
+                dueExpense.dueIn, dueExpense.dueIn)
+            val numberText = dueExpense.dueIn.toString()
+            val styledText = buildAnnotatedString {
+                val splitText = dueInText.split(numberText)
+                append(splitText[0])
+                withStyle(style = SpanStyle(color = getColorFromDueInDays(dueExpense.dueIn),
+                    fontWeight = FontWeight.SemiBold)) { append(numberText) }
+                append(splitText[1])
             }
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                fun getColorFromDueInDays(dueIn: Int): Color = if (dueIn < 7) Color.Red else if (dueIn < 30) Orange80 else Color.Green
-                val dueInText = pluralStringResource(Res.plurals.due_in, dueExpense.dueIn, dueExpense.dueIn)
-                val numberText = dueExpense.dueIn.toString()
-                val styledText = buildAnnotatedString {
-                    val splitText = dueInText.split(numberText)
-                    append(splitText[0])
-                    withStyle(style = SpanStyle(color = getColorFromDueInDays(dueExpense.dueIn),
-                        fontWeight = FontWeight.SemiBold)) { append(numberText) }
-                    append(splitText[1])
-                }
-                Text(styledText, fontSize = 14.sp, modifier = Modifier.weight(1f))
-                dueExpense.labels.forEach {
-                    Box(Modifier.padding(horizontal = 4.dp).size(20.dp).clip(CircleShape).background(it))
-                }
+            Text(styledText, fontSize = 14.sp, modifier = Modifier.weight(1f))
+            dueExpense.labels.forEach {
+                Box(Modifier.padding(horizontal = 4.dp).size(20.dp).clip(CircleShape).background(it))
             }
         }
     }

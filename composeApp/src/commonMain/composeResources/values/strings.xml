@@ -22,9 +22,14 @@
     <string name="payments">Payments</string>
     <string name="earnings">Earnings</string>
     <string name="upcoming_payments">Upcoming Payments</string>
+    <string name="my_incomes">My Incomes</string>
     <plurals name="due_in">
         <item quantity="one">Due in %1$d day</item>
         <item quantity="other">Due in %1$d days</item>
+    </plurals>
+    <plurals name="available_in">
+        <item quantity="one">Available in %1$d day</item>
+        <item quantity="other">Available in %1$d days</item>
     </plurals>
 
     <!-- Settings Screen -->

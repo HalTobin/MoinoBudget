@@ -38,6 +38,11 @@ class DashboardViewModel(): ViewModel() {
                     Color.Green)),
                 ExpenseUI(4, 20f, IncomeOrOutcome.Outcome, "Internet", ExpenseIcon.Transport, ExpenseFrequency.Monthly, true, 2, now.plusDaysCompat(2), now.minusMonthsCompat(1), listOf(Color.Red)),
                 ExpenseUI(5, 150f, IncomeOrOutcome.Outcome, "Water", ExpenseIcon.Transport, ExpenseFrequency.Monthly, false, 1, now.plusDaysCompat(7), now.minusMonthsCompat(1), listOf(
+                    Color.Yellow)),
+                ExpenseUI(6, 1656f, IncomeOrOutcome.Income, "Salary", ExpenseIcon.Transport, ExpenseFrequency.Monthly, false, 17, now.plusDaysCompat(10), now.minusMonthsCompat(1), listOf(
+                    Color.Green)),
+                ExpenseUI(7, 185f, IncomeOrOutcome.Income, "CAF", ExpenseIcon.Transport, ExpenseFrequency.Monthly, true, 2, now.plusDaysCompat(2), now.minusMonthsCompat(1), listOf(Color.Red)),
+                ExpenseUI(8, 45f, IncomeOrOutcome.Income, "TR", ExpenseIcon.Transport, ExpenseFrequency.Monthly, false, 1, now.plusDaysCompat(7), now.minusMonthsCompat(1), listOf(
                     Color.Yellow))
             )
         )
