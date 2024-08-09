@@ -34,6 +34,7 @@ import moinobudget.composeapp.generated.resources.about
 import moinobudget.composeapp.generated.resources.about_credits
 import moinobudget.composeapp.generated.resources.about_version
 import moinobudget.composeapp.generated.resources.back_home_description
+import moinobudget.composeapp.generated.resources.card_style
 import moinobudget.composeapp.generated.resources.currency
 import moinobudget.composeapp.generated.resources.decimal_mode
 import moinobudget.composeapp.generated.resources.language
@@ -42,6 +43,8 @@ import moinobudget.composeapp.generated.resources.settings
 import moinobudget.composeapp.generated.resources.theme
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
+import presentation.LabelBackground
+import presentation.data.LabelStyle
 
 @Composable
 fun SettingsScreen(
@@ -93,6 +96,22 @@ fun SettingsScreen(
                     .background(it.color)
                     .border(width = 2.dp, color = Color.Black, shape = CircleShape)) } },
         onChange = { onEvent(SettingsEvent.ChangeTheme(it)) })
+
+    ListEntry(title = stringResource(Res.string.card_style),
+        currentKey = preferences.cardStyle.id.toString(),
+        currentText = stringResource(preferences.cardStyle.title),
+        items = LabelStyle.list.map { Triple(
+            it.id.toString(),
+            stringResource(it.title)
+        ) {
+            LabelBackground(background = it.background,
+                modifier = Modifier
+                    .size(40.dp)
+                    .padding(4.dp)
+                    .clip(CircleShape)
+                    .border(width = 2.dp, color = Color.Black, shape = CircleShape)
+            ) } },
+        onChange = { onEvent(SettingsEvent.ChangeCardStyle(it.toInt())) })
 
     ListEntry(title = stringResource(Res.string.language),
         currentKey = preferences.language.key,

@@ -5,6 +5,7 @@ import androidx.compose.material.icons.filled.AccountBalance
 import androidx.compose.material.icons.filled.Bolt
 import androidx.compose.material.icons.filled.Celebration
 import androidx.compose.material.icons.filled.Class
+import androidx.compose.material.icons.filled.Cloud
 import androidx.compose.material.icons.filled.Diversity3
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.LocalGroceryStore
@@ -20,22 +21,23 @@ import androidx.compose.material.icons.filled.WaterDrop
 import androidx.compose.material.icons.filled.Wifi
 import androidx.compose.ui.graphics.vector.ImageVector
 
-sealed class ExpenseIcon(val id: Int, val keywords: String, val icon: ImageVector) {
-    data object Transport: ExpenseIcon(1, "transport", Icons.Default.Train)
-    data object Housing: ExpenseIcon(2, "house", Icons.Default.Home)
-    data object Grocery: ExpenseIcon(3, "groceries", Icons.Default.LocalGroceryStore)
-    data object Phone: ExpenseIcon(4, "phone", Icons.Default.Phone)
-    data object Help: ExpenseIcon(5, "diversity, solidarity", Icons.Default.Diversity3)
-    data object Savings: ExpenseIcon(6, "savings", Icons.Default.Savings)
-    data object Bank: ExpenseIcon(7, "bank", Icons.Default.AccountBalance)
-    data object Incomes: ExpenseIcon(8, "incomes, cash", Icons.Default.Payments)
-    data object Store: ExpenseIcon(9, "storefront, store, restaurant", Icons.Default.Storefront)
-    data object Party: ExpenseIcon(10, "out, party", Icons.Default.Celebration)
-    data object Film: ExpenseIcon(11, "film", Icons.Default.VideoLibrary)
-    data object Internet: ExpenseIcon(12, "internet, wifi", Icons.Default.Wifi)
-    data object Class: ExpenseIcon(12, "class", Icons.Default.Class)
-    data object VideoGame: ExpenseIcon(13, "video game", Icons.Default.VideogameAsset)
-    data object Health: ExpenseIcon(14, "health", Icons.Default.Medication)
-    data object Water: ExpenseIcon(15, "water", Icons.Default.WaterDrop)
-    data object Electricity: ExpenseIcon(16, "electricity", Icons.Default.Bolt)
+enum class ExpenseIcon(val id: Int, val keywords: String, val icon: ImageVector) {
+    Transport(1, "transport", Icons.Default.Train),
+    Housing(2, "house", Icons.Default.Home),
+    Grocery(3, "groceries", Icons.Default.LocalGroceryStore),
+    Phone(4, "phone", Icons.Default.Phone),
+    Help(5, "diversity, solidarity", Icons.Default.Diversity3),
+    Savings(6, "savings", Icons.Default.Savings),
+    Bank(7, "bank", Icons.Default.AccountBalance),
+    Incomes(8, "incomes, cash", Icons.Default.Payments),
+    Store(9, "storefront, store, restaurant", Icons.Default.Storefront),
+    Party(10, "out, party", Icons.Default.Celebration),
+    Film(11, "film", Icons.Default.VideoLibrary),
+    Internet(12, "internet, wifi", Icons.Default.Wifi),
+    Class(12, "class", Icons.Default.Class),
+    VideoGame(13, "video game", Icons.Default.VideogameAsset),
+    Health(14, "health", Icons.Default.Medication),
+    Water(15, "water", Icons.Default.WaterDrop),
+    Electricity(16, "electricity", Icons.Default.Bolt),
+    Cloud(17, "cloud", Icons.Default.Cloud)
 }

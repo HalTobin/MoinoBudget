@@ -17,6 +17,6 @@ enum class IncomeOrOutcome(
     val color: Color,
     val icon: ImageVector
 ) {
-    Income(dbId = true, tabId = 1, text = Res.string.incomes, color = Color.Green, icon = Icons.Default.AccountBalanceWallet),
-    Outcome(dbId = false, tabId = 0, text = Res.string.outcomes, color = Color.Red, icon = Icons.Default.CreditCard)
+    Income(dbId = true, tabId = 1, text = Res.string.incomes, color = Color(0xFF1FC600), icon = Icons.Default.AccountBalanceWallet),
+    Outcome(dbId = false, tabId = 0, text = Res.string.outcomes, color = Color(0xFFF70A0A), icon = Icons.Default.CreditCard)
 }

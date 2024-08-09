@@ -8,7 +8,6 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.animation.togetherWith
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -53,7 +52,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
@@ -64,6 +62,7 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import data.repository.AppPreferences
 import feature.dashboard.data.annual
 import feature.dashboard.data.monthly
 import kotlinx.coroutines.launch
@@ -71,7 +70,6 @@ import moinobudget.composeapp.generated.resources.Res
 import moinobudget.composeapp.generated.resources.add_operation
 import moinobudget.composeapp.generated.resources.app_name
 import moinobudget.composeapp.generated.resources.available_in
-import moinobudget.composeapp.generated.resources.bg_card_1
 import moinobudget.composeapp.generated.resources.disposable_dd
 import moinobudget.composeapp.generated.resources.due_in
 import moinobudget.composeapp.generated.resources.go_to_settings_help
@@ -81,17 +79,19 @@ import moinobudget.composeapp.generated.resources.payments_dd
 import moinobudget.composeapp.generated.resources.to_put_aside_dd
 import moinobudget.composeapp.generated.resources.upcoming_payments
 import moinobudget.composeapp.generated.resources.year
-import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
+import presentation.LabelBackground
 import presentation.data.ExpenseUI
 import presentation.data.IncomeOrOutcome
+import presentation.data.LabelUI
 import ui.Screen
 import ui.theme.Orange80
 import kotlin.math.roundToInt
 
 @Composable
 fun DashboardScreen(
+    preferences: AppPreferences,
     state: DashboardState,
     onEvent: (DashboardEvent) -> Unit,
     goTo: (Screen) -> Unit
@@ -110,6 +110,8 @@ fun DashboardScreen(
                 style = MaterialTheme.typography.headlineLarge)
             Spacer(modifier = Modifier.height(16.dp))
             FinancialSummary(
+                preferences = preferences,
+                labels = state.labels,
                 monthPayments = state.monthPayments,
                 toPutAside = state.toPutAside,
                 disposableIncomes = state.disposableIncomes
@@ -172,6 +174,8 @@ fun RegisterOperation(onClick: () -> Unit) = Button(onClick = onClick,
 
 @Composable
 fun FinancialSummary(
+    preferences: AppPreferences,
+    labels: List<LabelUI>,
     disposableIncomes: Pair<Float, Float>,
     monthPayments: Pair<Float, Float>,
     toPutAside: Pair<Float, Float>
@@ -182,22 +186,24 @@ fun FinancialSummary(
             .padding(start = 8.dp, end = 32.dp)
             .weight(1f)
             .height(152.dp),
-            shape = RoundedCornerShape(32.dp),
+            shape = RoundedCornerShape(24.dp),
             elevation = CardDefaults.cardElevation(32.dp)
         ) {
             Box {
-                Image(modifier = Modifier.fillMaxSize(),
-                    painter = painterResource(Res.drawable.bg_card_1),
-                    contentScale = ContentScale.Crop,
-                    contentDescription = null)
-                Column(Modifier.fillMaxSize().padding(16.dp)) {
+                LabelBackground(modifier = Modifier.fillMaxSize(), background = preferences.cardStyle.background)
+                Column(Modifier.fillMaxSize().padding(horizontal = 16.dp, vertical = 8.dp)) {
+                    Text("My budget".uppercase(),
+                        textAlign = TextAlign.Center,
+                        fontWeight = FontWeight.SemiBold,
+                        modifier = Modifier.fillMaxWidth())
+                    Spacer(Modifier.height(8.dp))
                     Text(stringResource(Res.string.disposable_dd))
                     MonthYearText(
                         isYear = year,
                         values = disposableIncomes,
                         textStyle = MaterialTheme.typography.titleLarge,
                         incomeOrOutcome = IncomeOrOutcome.Income)
-                    Spacer(Modifier.weight(1f))
+                    Spacer(Modifier.height(8.dp))
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Column {
                             Text(stringResource(Res.string.payments_dd),
@@ -218,6 +224,18 @@ fun FinancialSummary(
                                 textStyle = MaterialTheme.typography.titleSmall,
                                 incomeOrOutcome = IncomeOrOutcome.Outcome)
                         }
+                    }
+                }
+                Column(Modifier
+                    .padding(end = 8.dp)
+                    .align(Alignment.CenterEnd)
+                    .clip(CircleShape)
+                    .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.6f))
+                    .padding(4.dp)
+                ) {
+                    labels.forEach { label ->
+                        Box(Modifier.padding(vertical = 2.dp)
+                            .size(20.dp).clip(CircleShape).background(label.color))
                     }
                 }
             }

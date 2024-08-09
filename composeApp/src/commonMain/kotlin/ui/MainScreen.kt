@@ -39,6 +39,7 @@ fun MainScreen(
                 val viewModel = koinViewModel<DashboardViewModel>()
                 val state by viewModel.state.collectAsState()
                 DashboardScreen(
+                    preferences = preferences,
                     state = state,
                     onEvent = viewModel::onEvent,
                     goTo = { navController.navigate(it.route) })

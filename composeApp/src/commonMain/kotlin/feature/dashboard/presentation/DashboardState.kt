@@ -1,6 +1,7 @@
 package feature.dashboard.presentation
 
 import presentation.data.ExpenseUI
+import presentation.data.LabelUI
 
 // NOTE: Every Pair represent an <Monthly, Annual> value
 data class DashboardState(
@@ -10,4 +11,5 @@ data class DashboardState(
     val toPutAside: Pair<Float, Float> = Pair(0f, 0f),
     val disposableIncomes: Pair<Float, Float> = Pair(0f, 0f),
     val expenses: List<ExpenseUI> = emptyList(),
+    val labels: List<LabelUI> = emptyList()
 )

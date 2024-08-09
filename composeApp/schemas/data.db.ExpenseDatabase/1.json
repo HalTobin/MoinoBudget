@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "22e71e5b624b73cc66c11daf14c21043",
+    "identityHash": "f664b4f90c1e3a03fc1cfb866ccdfb97",
     "entities": [
       {
         "tableName": "expenses",
@@ -71,7 +71,7 @@
       },
       {
         "tableName": "labels",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT NOT NULL, `color` INTEGER NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT NOT NULL, `color` INTEGER NOT NULL, `backgroundId` INTEGER NOT NULL)",
         "fields": [
           {
             "fieldPath": "id",
@@ -88,6 +88,12 @@
           {
             "fieldPath": "color",
             "columnName": "color",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "backgroundId",
+            "columnName": "backgroundId",
             "affinity": "INTEGER",
             "notNull": true
           }
@@ -151,7 +157,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '22e71e5b624b73cc66c11daf14c21043')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'f664b4f90c1e3a03fc1cfb866ccdfb97')"
     ]
   }
 }

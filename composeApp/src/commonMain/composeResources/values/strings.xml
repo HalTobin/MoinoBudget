@@ -24,6 +24,9 @@
     <string name="outcomes">Outcomes</string>
     <string name="payments">Payments</string>
     <string name="earnings">Earnings</string>
+    <string name="disposable_dd">Disposable:</string>
+    <string name="payments_dd">Payments:</string>
+    <string name="to_put_aside_dd">To put aside:</string>
     <string name="upcoming_payments">Upcoming Payments</string>
     <string name="my_incomes">My Incomes</string>
     <plurals name="due_in">
@@ -40,6 +43,7 @@
     <string name="section_interface">Interface</string>
     <string name="currency">Currency</string>
     <string name="decimal_mode">Decimal numbers</string>
+    <string name="card_style">Card's style</string>
     <string name="theme">Theme</string>
     <string name="theme_dark">Dark</string>
     <string name="theme_dark_oled">Dark (OLED)</string>
@@ -48,6 +52,11 @@
     <string name="about">About the app</string>
     <string name="about_version">Version</string>
     <string name="about_credits">Credits, Dev</string>
+
+    <!-- Labels -->
+    <string name="label_waves">Waves</string>
+    <string name="label_winter">Winter</string>
+    <string name="label_citrus">Citrus Juice</string>
 
     <!-- General purpose -->
     <string name="back_home_description">Navigate back to home screen</string>

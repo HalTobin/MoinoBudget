@@ -17,10 +17,12 @@ object PrefKey {
     const val DECIMAL_MODE = "decimal_mode"
     const val THEME = "theme"
     const val LANGUAGE = "language"
+    const val CARD_STYLE = "card_style"
 }
 
 object PrefDefault {
     const val CURRENCY = "€"
+    const val CARD_STYLE = 3
 
     // Values for themes
     const val THEME_DARK = "dark"

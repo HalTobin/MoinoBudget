@@ -14,6 +14,8 @@ import data.value.Theme
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
+import presentation.data.Background
+import presentation.data.LabelStyle
 
 class PreferenceRepositoryImpl(
     private val prefs: DataStore<Preferences>
@@ -24,6 +26,9 @@ class PreferenceRepositoryImpl(
 
     /*override suspend fun setDecimalMode(value: Boolean) =
         updateBooleanPreference(PrefKey.DECIMAL_MODE, value)*/
+
+    override suspend fun setCardStyle(value: Int) =
+        updateIntPreference(PrefKey.CARD_STYLE, value)
 
     override suspend fun setTheme(value: String) =
         updateStringPreference(PrefKey.THEME, value)
@@ -64,6 +69,7 @@ val DataStore<Preferences>.appPreferences get() = this.data.map { dataStore ->
     AppPreferences(
         currency = dataStore.getStringPreference(PrefKey.CURRENCY, PrefDefault.CURRENCY).toCurrency(),
         decimalMode = dataStore.getBooleanPreference(PrefKey.DECIMAL_MODE, true),
+        cardStyle = dataStore.getIntPreference(PrefKey.CARD_STYLE, PrefDefault.CARD_STYLE).toLabelStyle(),
         theme = dataStore.getStringPreference(PrefKey.THEME, PrefDefault.THEME).toTheme(),
         language = dataStore.getStringPreference(PrefKey.LANGUAGE, PrefDefault.LANGUAGE).toLanguage()
     )
@@ -84,6 +90,13 @@ fun String.toTheme(): Theme = when (this) {
     Theme.Light.key -> Theme.Light
     Theme.DarkOled.key -> Theme.DarkOled
     else -> Theme.Dark
+}
+
+fun Int.toLabelStyle(): LabelStyle = when (this) {
+    LabelStyle.CitrusJuice.id -> LabelStyle.CitrusJuice
+    LabelStyle.Winter.id -> LabelStyle.Winter
+    LabelStyle.Wave.id -> LabelStyle.Wave
+    else -> LabelStyle.CitrusJuice
 }
 
 fun String.toLanguage(): Language = when (this) {
@@ -114,6 +127,7 @@ interface PreferenceRepository {
     //suspend fun setDecimalMode(value: Boolean)
     suspend fun setTheme(value: String)
     suspend fun setLanguage(value: String)
+    suspend fun setCardStyle(value: Int)
 
     suspend fun getPreferences(): AppPreferences
     val preferences: Flow<AppPreferences>
@@ -122,6 +136,7 @@ interface PreferenceRepository {
 data class AppPreferences(
     val currency: Currency = Currency.Euro,
     val decimalMode: Boolean = true,
+    val cardStyle: LabelStyle = LabelStyle.CitrusJuice,
     val theme: Theme = Theme.Dark,
     val language: Language = Language.English
 )

@@ -17,6 +17,8 @@ import presentation.data.ExpenseFrequency
 import presentation.data.ExpenseIcon
 import presentation.data.ExpenseUI
 import presentation.data.IncomeOrOutcome
+import presentation.data.LabelStyle
+import presentation.data.LabelUI
 
 class DashboardViewModel(): ViewModel() {
 
@@ -26,6 +28,7 @@ class DashboardViewModel(): ViewModel() {
     init {
         // Load expenses and payments...
         val expenses = getExpenses()
+        val labels = getLabels()
         val yearIncomes = expenses
             .filter { it.type == IncomeOrOutcome.Income }
             .sumOf { it.amount * it.frequency.multiplier.toDouble() }
@@ -40,6 +43,7 @@ class DashboardViewModel(): ViewModel() {
             .sumOf { it.amount * it.frequency.multiplier.toDouble() }
 
         val dummyDashboard = DashboardState(
+            labels = labels,
             rawIncomes = MonthYearPair(annual = yearIncomes),
             toPutAside = MonthYearPair(annual = toPutAside),
             monthPayments = MonthYearPair(annual = monthPayments),
@@ -71,7 +75,17 @@ class DashboardViewModel(): ViewModel() {
                 Color.Green)),
             ExpenseUI(7, 185f, IncomeOrOutcome.Income, "CAF", ExpenseIcon.Help, ExpenseFrequency.Monthly, true, 2, now.plusDaysCompat(2), now.minusMonthsCompat(1), listOf(Color.Red)),
             ExpenseUI(8, 45f, IncomeOrOutcome.Income, "TR", ExpenseIcon.Store, ExpenseFrequency.Monthly, false, 1, now.plusDaysCompat(7), now.minusMonthsCompat(1), listOf(
+                Color.Yellow)),
+            ExpenseUI(9, 100f, IncomeOrOutcome.Outcome, "TR", ExpenseIcon.Cloud, ExpenseFrequency.Annually, false, 1, now.plusDaysCompat(7), now.minusMonthsCompat(1), listOf(
                 Color.Yellow))
+        )
+    }
+
+    private fun getLabels(): List<LabelUI> {
+        return listOf(
+            LabelUI(2, "Famille", Color.Red, LabelStyle.CitrusJuice),
+            LabelUI(1, "Perso", Color.Green, LabelStyle.Wave),
+            LabelUI(3, "Entreprise", Color.Yellow, LabelStyle.Wave),
         )
     }
 
