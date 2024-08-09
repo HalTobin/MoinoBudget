@@ -58,7 +58,8 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import feature.dashboard.data.MonthYearWithData
+import feature.dashboard.data.annual
+import feature.dashboard.data.monthly
 import kotlinx.coroutines.launch
 import moinobudget.composeapp.generated.resources.Res
 import moinobudget.composeapp.generated.resources.add_operation
@@ -100,10 +101,8 @@ fun DashboardScreen(
                 style = MaterialTheme.typography.headlineLarge)
             Spacer(modifier = Modifier.height(16.dp))
             FinancialSummary(
-                totalExpensesMonth = state.upcomingPaymentsMonthly,
-                disposableIncomeMonth = state.disposableIncomesMonthly,
-                totalExpensesYear = state.upcomingPaymentsAnnual,
-                disposableIncomeYear = state.disposableIncomesAnnual
+                totalExpenses = state.upcomingPayments,
+                disposableIncomes = state.disposableIncomes
             )
             Spacer(modifier = Modifier.height(16.dp))
             RegisterOperation(onClick = {})
@@ -114,8 +113,8 @@ fun DashboardScreen(
                 pagerState.animateScrollToPage(it) }})
             Spacer(Modifier.height(8.dp))
             HorizontalPager(state = pagerState) { page ->
-                if (page == IncomeOrOutcome.Outcome.tabId) PaymentsSection(IncomeOrOutcome.Outcome, state.expenses)
-                else PaymentsSection(IncomeOrOutcome.Income, state.expenses)
+                if (page == IncomeOrOutcome.Outcome.tabId) PaymentsSection(IncomeOrOutcome.Outcome, state.upcomingPayments.first, state.expenses)
+                else PaymentsSection(IncomeOrOutcome.Income, state.rawIncomes.first, state.expenses)
             }
         }
     }
@@ -163,31 +162,19 @@ fun RegisterOperation(onClick: () -> Unit) = Button(onClick = onClick,
 
 @Composable
 fun FinancialSummary(
-    totalExpensesMonth: Float,
-    disposableIncomeMonth: Float,
-    totalExpensesYear: Float,
-    disposableIncomeYear: Float
+    totalExpenses: Pair<Float, Float>,
+    disposableIncomes: Pair<Float, Float>,
 ) {
     var year by remember { mutableStateOf(false) }
     Row(verticalAlignment = Alignment.CenterVertically) {
         BigValue(modifier = Modifier.weight(1f),
-            yearWithData = MonthYearWithData(
-                isYear = year,
-                yearAmount = disposableIncomeYear,
-                monthAmount = disposableIncomeMonth
-            ),
-            color = Color.Green,
-            title = stringResource(Res.string.incomes)
-        )
+            isYear = year,
+            values = disposableIncomes,
+            incomeOrOutcome = IncomeOrOutcome.Income)
         BigValue(modifier = Modifier.weight(1f),
-            yearWithData = MonthYearWithData(
-                isYear = year,
-                yearAmount = totalExpensesYear,
-                monthAmount = totalExpensesMonth
-            ),
-            color = Color.Red,
-            title = stringResource(Res.string.outcomes)
-        )
+            isYear = year,
+            values = totalExpenses,
+            incomeOrOutcome = IncomeOrOutcome.Outcome)
         Box(Modifier
             .padding(end = 8.dp)
             .width(40.dp)
@@ -227,12 +214,16 @@ fun FinancialSummary(
 }
 
 @Composable
-fun BigValue(modifier: Modifier, yearWithData: MonthYearWithData, color: Color, title: String) =
+fun BigValue(modifier: Modifier,
+             values: Pair<Float, Float>,
+             isYear: Boolean,
+             incomeOrOutcome: IncomeOrOutcome) =
     Column(modifier = modifier,
     horizontalAlignment = Alignment.CenterHorizontally) {
+        val yearWithData = Pair(isYear, values)
         AnimatedContent(targetState = yearWithData,
             transitionSpec = {
-                if (!targetState.isYear) {
+                if (!targetState.first) {
                     slideInVertically(initialOffsetY = { -it }, animationSpec = tween(300)) + fadeIn() togetherWith
                             slideOutVertically(targetOffsetY = { it }, animationSpec = tween(300)) + fadeOut()
                 } else {
@@ -240,22 +231,32 @@ fun BigValue(modifier: Modifier, yearWithData: MonthYearWithData, color: Color, 
                             slideOutVertically(targetOffsetY = { -it }, animationSpec = tween(300)) + fadeOut()
                 }
             }) { state ->
-            Text("${ if (!state.isYear) state.monthAmount else state.yearAmount}",
+            Text("${ if (!state.first) state.second.monthly else state.second.annual}",
                 modifier = Modifier.fillMaxWidth(),
-                color = color,
+                color = incomeOrOutcome.color,
                 textAlign = TextAlign.Center,
                 fontWeight = FontWeight.Bold,
                 style = MaterialTheme.typography.displaySmall)
         }
-        Text(title.uppercase(), fontWeight = FontWeight.Bold, fontSize = 18.sp)
+        Text(stringResource(incomeOrOutcome.text).uppercase(), fontWeight = FontWeight.Bold, fontSize = 18.sp)
 }
 
 @Composable
 fun PaymentsSection(incomeOrOutcome: IncomeOrOutcome,
-    dueExpenses: List<ExpenseUI>) = Column(modifier = Modifier.fillMaxWidth(),
+    amount: Float,
+    dueExpenses: List<ExpenseUI>
+) = Column(modifier = Modifier.fillMaxWidth(),
     horizontalAlignment = Alignment.CenterHorizontally) {
-    Text(stringResource(if (incomeOrOutcome == IncomeOrOutcome.Outcome) Res.string.upcoming_payments else Res.string.my_incomes),
-        fontSize = 20.sp, fontWeight = FontWeight.Bold)
+    Row(Modifier.padding(horizontal = 16.dp),
+        verticalAlignment = Alignment.CenterVertically) {
+        Text(stringResource(if (incomeOrOutcome == IncomeOrOutcome.Outcome) Res.string.upcoming_payments else Res.string.my_incomes),
+            modifier = Modifier.weight(1f),
+            fontSize = 20.sp, fontWeight = FontWeight.Bold)
+        Text("$${amount}",
+            style = MaterialTheme.typography.titleLarge,
+            fontWeight = FontWeight.SemiBold,
+            color = incomeOrOutcome.color)
+    }
     Spacer(modifier = Modifier.height(8.dp))
     LazyColumn(Modifier.weight(1f)) {
         items(dueExpenses.filter { it.type == incomeOrOutcome }.sortedBy { it.dueIn }) { dueExpense ->
@@ -282,7 +283,7 @@ fun DueExpenseItem(dueExpense: ExpenseUI) = Row(
             Text(dueExpense.title, modifier = Modifier.weight(1f), fontSize = 16.sp, fontWeight = FontWeight.Bold)
             Text("${if (dueExpense.type == IncomeOrOutcome.Outcome) "-" else "+"}${dueExpense.amount}$",
                 textAlign = TextAlign.End,
-                color = if (dueExpense.type == IncomeOrOutcome.Outcome) Color.Red else Color.Green,
+                color = dueExpense.type.color,
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Bold)
         }

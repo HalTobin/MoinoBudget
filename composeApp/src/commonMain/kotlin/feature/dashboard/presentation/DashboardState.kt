@@ -2,14 +2,10 @@ package feature.dashboard.presentation
 
 import presentation.data.ExpenseUI
 
+// NOTE: Every Pair represent an <Monthly, Annual> value
 data class DashboardState(
-    val rawIncomesMonth: Float = 0f,
-    val rawIncomesYear: Float = 0f,
-
-    val upcomingPaymentsMonthly: Float = 0f,
-    val upcomingPaymentsAnnual: Float = 0f,
-
-    val disposableIncomesMonthly: Float = 0f,
-    val disposableIncomesAnnual: Float = 0f,
+    val rawIncomes: Pair<Float, Float> = Pair(0f, 0f),
+    val upcomingPayments: Pair<Float, Float> = Pair(0f, 0f),
+    val disposableIncomes: Pair<Float, Float> = Pair(0f, 0f),
     val expenses: List<ExpenseUI> = emptyList(),
 )

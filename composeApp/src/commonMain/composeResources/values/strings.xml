@@ -12,7 +12,10 @@
     <string name="go_to_settings_help">Go to settings</string>
 
     <!-- Days, Month, Year -->
+    <string name="every">Every</string>
     <string name="year">Year</string>
+    <string name="half-year">Half-Year</string>
+    <string name="semester">Semester</string>
     <string name="month">Month</string>
 
     <!-- Dashboard -->

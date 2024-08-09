@@ -2,6 +2,7 @@ package feature.dashboard.presentation
 
 import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
+import feature.dashboard.data.MonthYearPair
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -33,12 +34,10 @@ class DashboardViewModel(): ViewModel() {
             .sumOf { it.amount * it.frequency.multiplier.toDouble() }
 
         val dummyDashboard = DashboardState(
-            disposableIncomesMonthly = 1275.0f,
-            disposableIncomesAnnual = (yearIncomes - yearOutcomes).toFloat(),
-            upcomingPaymentsMonthly = 500.0f,
-            upcomingPaymentsAnnual = yearOutcomes.toFloat(),
-            expenses = expenses
-        )
+            rawIncomes = MonthYearPair(annual = yearIncomes),
+            disposableIncomes = MonthYearPair(annual = yearIncomes - yearOutcomes),
+            upcomingPayments = MonthYearPair(annual = yearOutcomes),
+            expenses = expenses)
 
         _state.update { dummyDashboard }
     }
