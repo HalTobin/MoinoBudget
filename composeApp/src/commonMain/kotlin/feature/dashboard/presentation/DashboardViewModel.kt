@@ -32,9 +32,17 @@ class DashboardViewModel(): ViewModel() {
         val yearOutcomes = expenses
             .filter { it.type == IncomeOrOutcome.Outcome }
             .sumOf { it.amount * it.frequency.multiplier.toDouble() }
+        val monthPayments = expenses
+            .filter { it.frequency == ExpenseFrequency.Monthly }
+            .sumOf { it.amount.toDouble() }
+        val toPutAside = expenses
+            .filter { it.frequency != ExpenseFrequency.Monthly }
+            .sumOf { it.amount * it.frequency.multiplier.toDouble() }
 
         val dummyDashboard = DashboardState(
             rawIncomes = MonthYearPair(annual = yearIncomes),
+            toPutAside = MonthYearPair(annual = toPutAside),
+            monthPayments = MonthYearPair(annual = monthPayments),
             disposableIncomes = MonthYearPair(annual = yearIncomes - yearOutcomes),
             upcomingPayments = MonthYearPair(annual = yearOutcomes),
             expenses = expenses)

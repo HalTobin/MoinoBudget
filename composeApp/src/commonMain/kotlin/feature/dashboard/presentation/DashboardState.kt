@@ -6,6 +6,8 @@ import presentation.data.ExpenseUI
 data class DashboardState(
     val rawIncomes: Pair<Float, Float> = Pair(0f, 0f),
     val upcomingPayments: Pair<Float, Float> = Pair(0f, 0f),
+    val monthPayments: Pair<Float, Float> = Pair(0f, 0f),
+    val toPutAside: Pair<Float, Float> = Pair(0f, 0f),
     val disposableIncomes: Pair<Float, Float> = Pair(0f, 0f),
     val expenses: List<ExpenseUI> = emptyList(),
 )
