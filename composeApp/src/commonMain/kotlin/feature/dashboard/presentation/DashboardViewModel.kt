@@ -13,11 +13,12 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.minus
 import kotlinx.datetime.plus
 import kotlinx.datetime.toLocalDateTime
+import presentation.data.BudgetStyle
+import presentation.data.BudgetUI
 import presentation.data.ExpenseFrequency
 import presentation.data.ExpenseIcon
 import presentation.data.ExpenseUI
 import presentation.data.IncomeOrOutcome
-import presentation.data.LabelStyle
 import presentation.data.LabelUI
 
 class DashboardViewModel(): ViewModel() {
@@ -43,13 +44,19 @@ class DashboardViewModel(): ViewModel() {
             .sumOf { it.amount * it.frequency.multiplier.toDouble() }
 
         val dummyDashboard = DashboardState(
-            labels = labels,
-            rawIncomes = MonthYearPair(annual = yearIncomes),
-            toPutAside = MonthYearPair(annual = toPutAside),
-            monthPayments = MonthYearPair(annual = monthPayments),
-            disposableIncomes = MonthYearPair(annual = yearIncomes - yearOutcomes),
-            upcomingPayments = MonthYearPair(annual = yearOutcomes),
-            expenses = expenses)
+            budgets = listOf(BudgetUI(
+                id = 0,
+                name = "My budget",
+                labels = labels,
+                expenses = expenses,
+                style = BudgetStyle.CitrusJuice,
+                rawIncomes = MonthYearPair(annual = yearIncomes),
+                toPutAside = MonthYearPair(annual = toPutAside),
+                monthPayments = MonthYearPair(annual = monthPayments),
+                disposableIncomes = MonthYearPair(annual = yearIncomes - yearOutcomes),
+                upcomingPayments = MonthYearPair(annual = yearOutcomes),
+            ),
+        ))
 
         _state.update { dummyDashboard }
     }
@@ -83,9 +90,9 @@ class DashboardViewModel(): ViewModel() {
 
     private fun getLabels(): List<LabelUI> {
         return listOf(
-            LabelUI(2, "Famille", Color.Red, LabelStyle.CitrusJuice),
-            LabelUI(1, "Perso", Color.Green, LabelStyle.Wave),
-            LabelUI(3, "Entreprise", Color.Yellow, LabelStyle.Wave),
+            LabelUI(2, "Famille", Color.Red),
+            LabelUI(1, "Perso", Color.Green),
+            LabelUI(3, "Entreprise", Color.Yellow),
         )
     }
 

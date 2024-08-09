@@ -5,7 +5,6 @@ import androidx.room.Delete
 import androidx.room.Query
 import androidx.room.Upsert
 import data.db.table.Label
-import data.db.table.Expense
 import kotlinx.coroutines.flow.Flow
 
 @Dao

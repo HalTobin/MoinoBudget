@@ -8,5 +8,4 @@ data class Label(
     @PrimaryKey(autoGenerate = true) val id: Int,
     val name: String,
     val color: Int,
-    val backgroundId: Int
 )

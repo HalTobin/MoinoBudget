@@ -6,6 +6,8 @@ import androidx.sqlite.driver.bundled.BundledSQLiteDriver
 import data.db.dao.ExpenseDao
 import data.db.dao.ExpenseLabelDao
 import data.db.dao.LabelDao
+import data.db.table.Budget
+import data.db.table.BudgetLabelCrossRef
 import data.db.table.Label
 import data.db.table.Expense
 import data.db.table.ExpenseLabelCrossRef
@@ -13,7 +15,11 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 
 @Database(
-    entities = [Expense::class, Label::class, ExpenseLabelCrossRef::class],
+    entities = [Expense::class,
+        Label::class,
+        ExpenseLabelCrossRef::class,
+        Budget::class,
+        BudgetLabelCrossRef::class],
     version = 1
 )
 abstract class ExpenseDatabase: RoomDatabase(), DB {

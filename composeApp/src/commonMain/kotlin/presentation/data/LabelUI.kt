@@ -6,5 +6,4 @@ data class LabelUI(
     val id: Int,
     val name: String,
     val color: Color,
-    val style: LabelStyle
 )

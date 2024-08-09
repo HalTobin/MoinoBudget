@@ -111,10 +111,10 @@ fun DashboardScreen(
             Spacer(modifier = Modifier.height(16.dp))
             FinancialSummary(
                 preferences = preferences,
-                labels = state.labels,
-                monthPayments = state.monthPayments,
-                toPutAside = state.toPutAside,
-                disposableIncomes = state.disposableIncomes
+                labels = state.budgets.first().labels,
+                monthPayments = state.budgets.first().monthPayments,
+                toPutAside = state.budgets.first().toPutAside,
+                disposableIncomes = state.budgets.first().disposableIncomes
             )
             Spacer(modifier = Modifier.height(16.dp))
             RegisterOperation(onClick = {})
@@ -125,8 +125,8 @@ fun DashboardScreen(
                 pagerState.animateScrollToPage(it) }})
             Spacer(Modifier.height(8.dp))
             HorizontalPager(state = pagerState) { page ->
-                if (page == IncomeOrOutcome.Outcome.tabId) PaymentsSection(IncomeOrOutcome.Outcome, state.upcomingPayments.first, state.expenses)
-                else PaymentsSection(IncomeOrOutcome.Income, state.rawIncomes.first, state.expenses)
+                if (page == IncomeOrOutcome.Outcome.tabId) PaymentsSection(IncomeOrOutcome.Outcome, state.budgets.first().upcomingPayments.first, state.budgets.first().expenses)
+                else PaymentsSection(IncomeOrOutcome.Income, state.budgets.first().rawIncomes.first, state.budgets.first().expenses)
             }
         }
     }
