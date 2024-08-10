@@ -14,5 +14,5 @@ data class ExpenseUI(
     val dueIn: Int,
     val nextPayment: LocalDate,
     val lastPayment: LocalDate,
-    val labels: List<Color>
+    val labels: List<LabelUI>
 )

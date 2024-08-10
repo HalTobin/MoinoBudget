@@ -10,8 +10,10 @@ import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -52,6 +54,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
@@ -61,6 +64,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.util.lerp
 import data.repository.AppPreferences
 import feature.dashboard.data.annual
 import feature.dashboard.data.monthly
@@ -86,6 +90,7 @@ import presentation.data.IncomeOrOutcome
 import presentation.formatCurrency
 import ui.Screen
 import ui.theme.Orange80
+import kotlin.math.absoluteValue
 
 @Composable
 fun DashboardScreen(
@@ -96,7 +101,6 @@ fun DashboardScreen(
 ) = Box {
     val scope = rememberCoroutineScope()
     var year by remember { mutableStateOf(false) }
-
 
     Column {
         Row(modifier = Modifier.fillMaxWidth().padding(8.dp),
@@ -119,26 +123,55 @@ fun DashboardScreen(
                     imageVector = Icons.Default.Settings, contentDescription = stringResource(Res.string.go_to_settings_help))
             }
         }
-        Column(modifier = Modifier.padding(horizontal = 16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally) {
-            Spacer(modifier = Modifier.height(8.dp))
-            FinancialSummary(preferences = preferences,
+        Spacer(modifier = Modifier.height(8.dp))
+        val budgetState = rememberPagerState(initialPage = 0, pageCount = { state.budgets.size })
+        HorizontalPager(
+            modifier = Modifier.fillMaxWidth(),
+            state = budgetState,
+            contentPadding = PaddingValues(horizontal = 32.dp),
+            ) { page ->
+            FinancialSummary(
+                modifier = Modifier.graphicsLayer {
+                    // Calculate the absolute offset for the current page from the
+                    // scroll position. We use the absolute value which allows us to mirror
+                    // any effects for both directions
+                    val pageOffset = (
+                            (budgetState.currentPage - page) + budgetState
+                                .currentPageOffsetFraction
+                            ).absoluteValue
+
+                    // We animate the alpha, between 50% and 100%
+                    alpha = lerp(
+                        start = 0.5f,
+                        stop = 1f,
+                        fraction = 1f - pageOffset.coerceIn(0f, 1f)
+                    )
+                }
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
+                preferences = preferences,
                 year = year,
-                budget = state.budgets.first())
-            Spacer(modifier = Modifier.height(16.dp))
-            //RegisterOperation(onClick = {})
-            QuickActions({}, {})
+                budget = state.budgets[page])
         }
+
+        Spacer(modifier = Modifier.height(16.dp))
+        QuickActions({}, {})
         Spacer(Modifier.height(8.dp))
-        Column {
-            val pagerState = rememberPagerState(pageCount = { 2 })
-            DashboardTab(pagerState, onSelect = { scope.launch {
-                pagerState.animateScrollToPage(it) }})
-            Spacer(Modifier.height(8.dp))
-            HorizontalPager(state = pagerState) { page ->
-                if (page == IncomeOrOutcome.Outcome.tabId) PaymentsSection(preferences, IncomeOrOutcome.Outcome, state.budgets.first().upcomingPayments.first, state.budgets.first().expenses)
-                else PaymentsSection(preferences, IncomeOrOutcome.Income, state.budgets.first().rawIncomes.first, state.budgets.first().expenses)
-            }
+        val dashboardState = rememberPagerState(pageCount = { 2 })
+        DashboardTab(dashboardState, onSelect = { scope.launch {
+            dashboardState.animateScrollToPage(it) }})
+        Spacer(Modifier.height(8.dp))
+        HorizontalPager(state = dashboardState) { page ->
+            if (page == IncomeOrOutcome.Outcome.tabId) PaymentsSection(preferences = preferences,
+                budget = state.budgets[budgetState.currentPage],
+                incomeOrOutcome = IncomeOrOutcome.Outcome,
+                amount = state.budgets[budgetState.currentPage].upcomingPayments.first,
+                dueExpenses = state.budgets.first().expenses)
+            else PaymentsSection(preferences = preferences,
+                budget = state.budgets[budgetState.currentPage],
+                incomeOrOutcome = IncomeOrOutcome.Income,
+                amount = state.budgets.first().rawIncomes.first,
+                dueExpenses = state.budgets[budgetState.currentPage].expenses)
         }
     }
 }
@@ -168,26 +201,10 @@ fun DashboardTab(pagerState: PagerState,
 }
 
 @Composable
-fun RegisterOperation(onClick: () -> Unit) = Button(onClick = onClick,
-    modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp),
-    shape = RoundedCornerShape(8.dp),
-    colors = ButtonDefaults.buttonColors(
-        containerColor = MaterialTheme.colorScheme.primary,
-        contentColor = MaterialTheme.colorScheme.onPrimary
-    )
-) {
-    Icon(imageVector = Icons.Default.Add, contentDescription = stringResource(Res.string.operation))
-    Text(stringResource(Res.string.operation),
-        modifier = Modifier.padding(horizontal = 8.dp),
-        fontWeight = FontWeight.SemiBold
-    )
-}
-
-@Composable
 fun QuickActions(
     createBudget: () -> Unit,
     addOperation: () -> Unit
-) = Row {
+) = Row(Modifier.padding(horizontal = 8.dp)) {
     QuickActionButton(
         modifier = Modifier.weight(1f).padding(horizontal = 8.dp),
         title = stringResource(Res.string.budget),
@@ -229,71 +246,67 @@ fun YearMonthSwitch(
 
 @Composable
 fun FinancialSummary(
+    modifier: Modifier,
     year: Boolean,
     preferences: AppPreferences,
     budget: BudgetUI,
+) = Card(modifier = modifier
+    .height(164.dp)
+    .aspectRatio(1.9f),
+    shape = RoundedCornerShape(24.dp),
+    elevation = CardDefaults.cardElevation(32.dp)
 ) {
-    Row(verticalAlignment = Alignment.CenterVertically) {
-        Card(modifier = Modifier
-            .padding(horizontal = 32.dp)
-            .weight(1f)
-            .height(164.dp),
-            shape = RoundedCornerShape(24.dp),
-            elevation = CardDefaults.cardElevation(32.dp)
-        ) {
-            Box {
-                LabelBackground(modifier = Modifier.fillMaxSize(), background = budget.style.background)
-                Column(Modifier.fillMaxSize().padding(horizontal = 16.dp, vertical = 8.dp)) {
-                    Text("My budget".uppercase(),
-                        style = MaterialTheme.typography.titleLarge,
-                        textAlign = TextAlign.Center,
-                        fontWeight = FontWeight.SemiBold,
-                        modifier = Modifier.fillMaxWidth())
-                    Spacer(Modifier.height(8.dp))
-                    Text(stringResource(Res.string.disposable_dd))
+    Box {
+        LabelBackground(modifier = Modifier.fillMaxSize(), background = budget.style.background)
+        Column(Modifier.fillMaxSize().padding(horizontal = 16.dp, vertical = 8.dp)) {
+            Text("My budget".uppercase(),
+                style = MaterialTheme.typography.titleLarge,
+                textAlign = TextAlign.Center,
+                fontWeight = FontWeight.SemiBold,
+                modifier = Modifier.fillMaxWidth())
+            Spacer(Modifier.height(8.dp))
+            Text(stringResource(Res.string.disposable_dd))
+            MonthYearText(
+                preferences = preferences,
+                isYear = year,
+                values = budget.disposableIncomes,
+                textStyle = MaterialTheme.typography.titleLarge,
+                incomeOrOutcome = IncomeOrOutcome.Income)
+            Spacer(Modifier.height(8.dp))
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Column {
+                    Text(stringResource(Res.string.payments_dd),
+                        style = MaterialTheme.typography.titleSmall)
                     MonthYearText(
                         preferences = preferences,
                         isYear = year,
-                        values = budget.disposableIncomes,
-                        textStyle = MaterialTheme.typography.titleLarge,
-                        incomeOrOutcome = IncomeOrOutcome.Income)
-                    Spacer(Modifier.height(8.dp))
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Column {
-                            Text(stringResource(Res.string.payments_dd),
-                                style = MaterialTheme.typography.titleSmall)
-                            MonthYearText(
-                                preferences = preferences,
-                                isYear = year,
-                                values = budget.monthPayments,
-                                textStyle = MaterialTheme.typography.titleSmall,
-                                incomeOrOutcome = IncomeOrOutcome.Outcome)
-                        }
-                        Spacer(Modifier.width(16.dp))
-                        Column {
-                            Text(stringResource(Res.string.to_put_aside_dd),
-                                style = MaterialTheme.typography.titleSmall)
-                            MonthYearText(
-                                preferences = preferences,
-                                isYear = year,
-                                values = budget.toPutAside,
-                                textStyle = MaterialTheme.typography.titleSmall,
-                                incomeOrOutcome = IncomeOrOutcome.Outcome)
-                        }
-                    }
+                        values = budget.monthPayments,
+                        textStyle = MaterialTheme.typography.titleSmall,
+                        incomeOrOutcome = IncomeOrOutcome.Outcome)
                 }
-                Column(Modifier
-                    .padding(end = 8.dp)
-                    .align(Alignment.CenterEnd)
-                    .clip(CircleShape)
-                    .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.6f))
-                    .padding(4.dp)
-                ) {
-                    budget.labels.forEach { label ->
-                        Box(Modifier.padding(vertical = 2.dp)
-                            .size(20.dp).clip(CircleShape).background(label.color))
-                    }
+                Spacer(Modifier.width(16.dp))
+                Column {
+                    Text(stringResource(Res.string.to_put_aside_dd),
+                        style = MaterialTheme.typography.titleSmall)
+                    MonthYearText(
+                        preferences = preferences,
+                        isYear = year,
+                        values = budget.toPutAside,
+                        textStyle = MaterialTheme.typography.titleSmall,
+                        incomeOrOutcome = IncomeOrOutcome.Outcome)
                 }
+            }
+        }
+        Column(Modifier
+            .padding(end = 8.dp)
+            .align(Alignment.CenterEnd)
+            .clip(CircleShape)
+            .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.6f))
+            .padding(4.dp)
+        ) {
+            budget.labels.forEach { label ->
+                Box(Modifier.padding(vertical = 2.dp)
+                    .size(20.dp).clip(CircleShape).background(label.color))
             }
         }
     }
@@ -331,6 +344,7 @@ fun MonthYearText(
 @Composable
 fun PaymentsSection(
     preferences: AppPreferences,
+    budget: BudgetUI,
     incomeOrOutcome: IncomeOrOutcome,
     amount: Float,
     dueExpenses: List<ExpenseUI>
@@ -349,7 +363,9 @@ fun PaymentsSection(
     }
     Spacer(modifier = Modifier.height(8.dp))
     LazyColumn(Modifier.weight(1f)) {
-        items(dueExpenses.filter { it.type == incomeOrOutcome }.sortedBy { it.dueIn }) { dueExpense ->
+        items(dueExpenses
+            .filter { it.type == incomeOrOutcome && it.labels.any { label -> budget.labels.any { budget -> budget.id == label.id } } }
+            .sortedBy { it.dueIn }) { dueExpense ->
             DueExpenseItem(modifier = Modifier.animateItem(),
                 preferences = preferences,
                 dueExpense = dueExpense)
@@ -399,7 +415,7 @@ fun DueExpenseItem(
             }
             Text(styledText, fontSize = 14.sp, modifier = Modifier.weight(1f))
             dueExpense.labels.forEach {
-                Box(Modifier.padding(horizontal = 4.dp).size(20.dp).clip(CircleShape).background(it))
+                Box(Modifier.padding(horizontal = 4.dp).size(20.dp).clip(CircleShape).background(it.color))
             }
         }
     }
