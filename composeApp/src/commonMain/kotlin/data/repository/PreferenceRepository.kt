@@ -87,13 +87,6 @@ fun String.toTheme(): Theme = when (this) {
     else -> Theme.Dark
 }
 
-fun Int.toLabelStyle(): BudgetStyle = when (this) {
-    BudgetStyle.CitrusJuice.id -> BudgetStyle.CitrusJuice
-    BudgetStyle.Winter.id -> BudgetStyle.Winter
-    BudgetStyle.Wave.id -> BudgetStyle.Wave
-    else -> BudgetStyle.CitrusJuice
-}
-
 fun String.toLanguage(): Language = when (this) {
     Language.English.key -> Language.English
     Language.French.key -> Language.French

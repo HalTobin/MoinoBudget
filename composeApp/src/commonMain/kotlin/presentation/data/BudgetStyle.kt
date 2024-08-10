@@ -3,12 +3,11 @@ package presentation.data
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.Blue
 import androidx.compose.ui.graphics.Color.Companion.Green
-import androidx.compose.ui.graphics.Color.Companion.Red
 import moinobudget.composeapp.generated.resources.Res
 import moinobudget.composeapp.generated.resources.bg_card_1
 import moinobudget.composeapp.generated.resources.style_citrus
 import moinobudget.composeapp.generated.resources.style_grass_sea
-import moinobudget.composeapp.generated.resources.style_waves
+import moinobudget.composeapp.generated.resources.style_red_waves
 import moinobudget.composeapp.generated.resources.style_winter
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.StringResource
@@ -41,7 +40,7 @@ enum class BudgetStyle(
     val primary: Pair<Color, Color> = Pair(Orange40, Orange80), // <Light, Dark>
     val onPrimary: Pair<Color, Color> = Pair(OrangeGrey40, OrangeGrey80)
 ) {
-    Wave(id = 1, title = Res.string.style_waves, Background.Image(Res.drawable.bg_card_1),
+    RedWaves(id = 1, title = Res.string.style_red_waves, Background.Image(Res.drawable.bg_card_1),
         primary = Pair(Red40, Red80), onPrimary = Pair(RedGrey40, RedGrey80)),
     Winter(id = 2, title = Res.string.style_winter, Background.Gradient(listOf(Cyan, LightBlue, Purple)),
         primary = Pair(Cyan40, Cyan80), onPrimary = Pair(CyanGrey40, CyanGrey80)),
@@ -49,7 +48,7 @@ enum class BudgetStyle(
     GrassAndSea(id = 4, title = Res.string.style_grass_sea, Background.Gradient(listOf(Blue, Green)),
         primary = Pair(Green40, Green80), onPrimary = Pair(GreenGrey40, GreenGrey80));
     companion object {
-        val list = listOf(Wave, Winter, CitrusJuice, GrassAndSea)
+        val list = listOf(RedWaves, Winter, CitrusJuice, GrassAndSea)
     }
 }
 
