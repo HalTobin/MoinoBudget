@@ -1,6 +1,6 @@
 package feature.dashboard.presentation.dialog
 
-import androidx.compose.animation.Crossfade
+import androidx.compose.animation.Animatable
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -51,14 +51,13 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
-import moinobudget.composeapp.generated.resources.edit_budget
 import moinobudget.composeapp.generated.resources.Res
 import moinobudget.composeapp.generated.resources.close_dialog_description
+import moinobudget.composeapp.generated.resources.edit_budget
 import moinobudget.composeapp.generated.resources.labels
 import moinobudget.composeapp.generated.resources.new_budget
 import moinobudget.composeapp.generated.resources.save
 import moinobudget.composeapp.generated.resources.title
-import org.jetbrains.compose.resources.Font
 import org.jetbrains.compose.resources.stringResource
 import presentation.BudgetBackground
 import presentation.data.BudgetStyle
@@ -72,13 +71,20 @@ fun NewEditBudgetDialog(
     style: BudgetStyle = BudgetStyle.GrassAndSea
 ) = Dialog(onDismissRequest = onDismiss) {
     val styles = BudgetStyle.list
+    val primary = remember { Animatable(style.primary.second) }
+    val onPrimary = remember { Animatable(style.onPrimary.second) }
     val pagerState = rememberPagerState(initialPage = 0, pageCount = { styles.size })
 
     var budgetTitle by remember { mutableStateOf("") }
     val budgetLabels = mutableListOf<Int>()
 
     var styleState by remember { mutableStateOf(style) }
-    LaunchedEffect(key1 = pagerState.settledPage) { styleState = styles[pagerState.settledPage] }
+
+    LaunchedEffect(key1 = pagerState.settledPage) {
+        styleState = styles[pagerState.settledPage]
+        primary.animateTo(styleState.primary.second)
+        onPrimary.animateTo(styleState.onPrimary.second)
+    }
 
     Surface(
         color = MaterialTheme.colorScheme.background,
@@ -114,58 +120,58 @@ fun NewEditBudgetDialog(
                 }
             }
             Spacer(Modifier.height(8.dp))
-            Crossfade(targetState = styleState) { currentStyle ->
-                MaterialTheme(
-                    colorScheme = MaterialTheme.colorScheme.copy(
-                        primary = currentStyle.primary.second,
-                        onPrimary = currentStyle.onPrimary.second)
+            MaterialTheme(
+                colorScheme = MaterialTheme.colorScheme.copy(
+                    primary = primary.value,
+                    onPrimary = onPrimary.value)
+            ) {
+                Column(Modifier.padding(bottom = 8.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally) {
+                    var titleError by remember { mutableStateOf(false) }
+                    TextField(modifier = Modifier.clip(RoundedCornerShape(16.dp)),
+                        isError = titleError,
+                        value = budgetTitle,
+                        onValueChange = {
+                            if (titleError) titleError = false
+                            budgetTitle = it },
+                        label = { Text(stringResource(Res.string.title)) },
+                        colors = TextFieldDefaults.colors(
+                            unfocusedIndicatorColor = MaterialTheme.colorScheme.primary
+                        ),
+                        maxLines = 1,
+                        singleLine = true,
+                        shape = RoundedCornerShape(16.dp)
+                    )
+                    Spacer(Modifier.height(8.dp))
+                    Text(stringResource(Res.string.labels),
+                        modifier = Modifier.padding(start = 64.dp, top = 8.dp).fillMaxWidth(),
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                    LazyVerticalGrid(
+                        GridCells.Adaptive(minSize = 128.dp),
+                        contentPadding = PaddingValues(4.dp)
                     ) {
-                    Column(Modifier.padding(bottom = 8.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally) {
-                        var titleError by remember { mutableStateOf(false) }
-                        TextField(modifier = Modifier.clip(RoundedCornerShape(16.dp)),
-                            isError = titleError,
-                            value = budgetTitle,
-                            onValueChange = {
-                                if (titleError) titleError = false
-                                budgetTitle = it },
-                            label = { Text(stringResource(Res.string.title)) },
-                            colors = TextFieldDefaults.colors(
-                                unfocusedIndicatorColor = MaterialTheme.colorScheme.primary
-                            ),
-                            maxLines = 1,
-                            singleLine = true,
-                            shape = RoundedCornerShape(16.dp)
-                        )
-                        Spacer(Modifier.height(8.dp))
-                        Text(stringResource(Res.string.labels),
-                            modifier = Modifier.padding(start = 64.dp, top = 8.dp).fillMaxWidth(),
-                            fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.primary
-                        )
-                        LazyVerticalGrid(
-                            GridCells.Adaptive(minSize = 128.dp),
-                            contentPadding = PaddingValues(4.dp)
-                        ) {
-                            items(labels) { label ->
-                                LabelEntry(label,
-                                    selectedLabels = budgetLabels,
-                                    onClick = {
-                                        if (budgetLabels.any { it == label.id }) budgetLabels.remove(label.id)
-                                        else budgetLabels.add(label.id)
-                                })
-                            }
-                        }
-                        Button(onClick = {
-                            if (budgetTitle.isBlank()) titleError = true
-                        },
-                            shape = CircleShape) {
-                            Icon(imageVector = Icons.Default.Save, contentDescription = stringResource(Res.string.save))
-                            Text(stringResource(Res.string.save),
-                                modifier = Modifier.padding(horizontal = 8.dp),
-                                fontWeight = FontWeight.SemiBold)
+                        items(labels) { label ->
+                            LabelEntry(label,
+                                selectedLabels = budgetLabels,
+                                onClick = {
+                                    if (budgetLabels.any { it == label.id }) budgetLabels.remove(label.id)
+                                    else budgetLabels.add(label.id)
+                            })
                         }
                     }
+                    Spacer(Modifier.height(4.dp))
+                    Button(onClick = {
+                        if (budgetTitle.isBlank()) titleError = true
+                    },
+                        shape = CircleShape) {
+                        Icon(imageVector = Icons.Default.Save, contentDescription = stringResource(Res.string.save))
+                        Text(stringResource(Res.string.save),
+                            modifier = Modifier.padding(horizontal = 8.dp),
+                            fontWeight = FontWeight.SemiBold)
+                    }
+                    Spacer(Modifier.height(4.dp))
                 }
             }
         }
