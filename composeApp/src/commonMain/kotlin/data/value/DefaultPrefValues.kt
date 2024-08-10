@@ -57,9 +57,9 @@ enum class Language(val key: String, val title: String, val flag: DrawableResour
     }
 }
 
-enum class Currency(val key: String, val sign: String, val decimalMode: Boolean) {
+enum class Currency(val key: String, val sign: String, val position: CurrencyPosition = CurrencyPosition.End, val decimalMode: Boolean) {
     Euro(key = "eur", sign = "€", decimalMode = true),
-    Dollar(key = "usd", sign = "$", decimalMode = true),
+    Dollar(key = "usd", sign = "$", position = CurrencyPosition.Start, decimalMode = true),
     Ruble(key = "rub", sign = "₽", decimalMode = true),
     YenYuan(key = "yen/yuan", sign = "¥", decimalMode = true),
     Pound(key = "pound", sign = "£", decimalMode = true),
@@ -68,3 +68,5 @@ enum class Currency(val key: String, val sign: String, val decimalMode: Boolean)
         val list = listOf(Euro, Dollar, Ruble, YenYuan, Pound, Lira)
     }
 }
+
+enum class CurrencyPosition { Start, End }

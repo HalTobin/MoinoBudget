@@ -19,7 +19,9 @@
     <string name="month">Month</string>
 
     <!-- Dashboard -->
-    <string name="add_operation">Register an operation</string>
+    <string name="budget">New budget</string>
+    <string name="operation">Operation</string>
+
     <string name="incomes">Incomes</string>
     <string name="outcomes">Outcomes</string>
     <string name="payments">Payments</string>
@@ -30,8 +32,8 @@
     <string name="upcoming_payments">Upcoming Payments</string>
     <string name="my_incomes">My Incomes</string>
     <plurals name="due_in">
-        <item quantity="one">Due in %1$d day</item>
-        <item quantity="other">Due in %1$d days</item>
+        <item quantity="one">due in %1$d day</item>
+        <item quantity="other">due in %1$d days</item>
     </plurals>
     <plurals name="available_in">
         <item quantity="one">Available in %1$d day</item>

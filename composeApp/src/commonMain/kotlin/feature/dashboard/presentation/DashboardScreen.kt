@@ -1,7 +1,6 @@
 package feature.dashboard.presentation
 
 import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.core.animateIntOffsetAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -9,7 +8,6 @@ import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -17,7 +15,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -30,7 +27,10 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Savings
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.SyncAlt
+import androidx.compose.material.icons.filled.Wallet
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -52,42 +52,40 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
-import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import data.repository.AppPreferences
 import feature.dashboard.data.annual
 import feature.dashboard.data.monthly
+import feature.dashboard.presentation.component.TextSwitch
 import kotlinx.coroutines.launch
 import moinobudget.composeapp.generated.resources.Res
-import moinobudget.composeapp.generated.resources.add_operation
-import moinobudget.composeapp.generated.resources.app_name
+import moinobudget.composeapp.generated.resources.operation
 import moinobudget.composeapp.generated.resources.available_in
+import moinobudget.composeapp.generated.resources.budget
 import moinobudget.composeapp.generated.resources.disposable_dd
 import moinobudget.composeapp.generated.resources.due_in
 import moinobudget.composeapp.generated.resources.go_to_settings_help
-import moinobudget.composeapp.generated.resources.month
 import moinobudget.composeapp.generated.resources.my_incomes
 import moinobudget.composeapp.generated.resources.payments_dd
 import moinobudget.composeapp.generated.resources.to_put_aside_dd
 import moinobudget.composeapp.generated.resources.upcoming_payments
-import moinobudget.composeapp.generated.resources.year
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 import presentation.LabelBackground
+import presentation.data.BudgetUI
 import presentation.data.ExpenseUI
 import presentation.data.IncomeOrOutcome
-import presentation.data.LabelUI
+import presentation.formatCurrency
 import ui.Screen
 import ui.theme.Orange80
-import kotlin.math.roundToInt
 
 @Composable
 fun DashboardScreen(
@@ -97,36 +95,49 @@ fun DashboardScreen(
     goTo: (Screen) -> Unit
 ) = Box {
     val scope = rememberCoroutineScope()
-    IconButton(modifier = Modifier.align(Alignment.TopEnd).padding(8.dp),
-        onClick = { goTo(Screen.Settings) }) {
-        Icon(modifier = Modifier.size(32.dp),
-            imageVector = Icons.Default.Settings, contentDescription = stringResource(Res.string.go_to_settings_help))
-    }
+    var year by remember { mutableStateOf(false) }
+
+
     Column {
-        Column(modifier = Modifier.padding(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally) {
-            Text(stringResource(Res.string.app_name).uppercase(),
-                fontWeight = FontWeight.SemiBold,
-                style = MaterialTheme.typography.headlineLarge)
-            Spacer(modifier = Modifier.height(16.dp))
-            FinancialSummary(
-                preferences = preferences,
-                labels = state.budgets.first().labels,
-                monthPayments = state.budgets.first().monthPayments,
-                toPutAside = state.budgets.first().toPutAside,
-                disposableIncomes = state.budgets.first().disposableIncomes
-            )
-            Spacer(modifier = Modifier.height(16.dp))
-            RegisterOperation(onClick = {})
+        Row(modifier = Modifier.fillMaxWidth().padding(8.dp),
+            verticalAlignment = Alignment.CenterVertically) {
+            IconButton(modifier = Modifier
+                .clip(CircleShape)
+                .background(MaterialTheme.colorScheme.surface),
+                onClick = { goTo(Screen.Settings) }) {
+                Icon(modifier = Modifier.size(32.dp),
+                    imageVector = Icons.Default.Savings, contentDescription = stringResource(Res.string.go_to_settings_help))
+            }
+            Spacer(Modifier.weight(1f))
+            YearMonthSwitch(year, onChange = { year = it })
+            Spacer(Modifier.weight(1f))
+            IconButton(modifier = Modifier
+                .clip(CircleShape)
+                .background(MaterialTheme.colorScheme.surface),
+                onClick = { goTo(Screen.Settings) }) {
+                Icon(modifier = Modifier.size(32.dp),
+                    imageVector = Icons.Default.Settings, contentDescription = stringResource(Res.string.go_to_settings_help))
+            }
         }
+        Column(modifier = Modifier.padding(horizontal = 16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally) {
+            Spacer(modifier = Modifier.height(8.dp))
+            FinancialSummary(preferences = preferences,
+                year = year,
+                budget = state.budgets.first())
+            Spacer(modifier = Modifier.height(16.dp))
+            //RegisterOperation(onClick = {})
+            QuickActions({}, {})
+        }
+        Spacer(Modifier.height(8.dp))
         Column {
             val pagerState = rememberPagerState(pageCount = { 2 })
             DashboardTab(pagerState, onSelect = { scope.launch {
                 pagerState.animateScrollToPage(it) }})
             Spacer(Modifier.height(8.dp))
             HorizontalPager(state = pagerState) { page ->
-                if (page == IncomeOrOutcome.Outcome.tabId) PaymentsSection(IncomeOrOutcome.Outcome, state.budgets.first().upcomingPayments.first, state.budgets.first().expenses)
-                else PaymentsSection(IncomeOrOutcome.Income, state.budgets.first().rawIncomes.first, state.budgets.first().expenses)
+                if (page == IncomeOrOutcome.Outcome.tabId) PaymentsSection(preferences, IncomeOrOutcome.Outcome, state.budgets.first().upcomingPayments.first, state.budgets.first().expenses)
+                else PaymentsSection(preferences, IncomeOrOutcome.Income, state.budgets.first().rawIncomes.first, state.budgets.first().expenses)
             }
         }
     }
@@ -165,42 +176,85 @@ fun RegisterOperation(onClick: () -> Unit) = Button(onClick = onClick,
         contentColor = MaterialTheme.colorScheme.onPrimary
     )
 ) {
-    Icon(imageVector = Icons.Default.Add, contentDescription = stringResource(Res.string.add_operation))
-    Text(stringResource(Res.string.add_operation),
+    Icon(imageVector = Icons.Default.Add, contentDescription = stringResource(Res.string.operation))
+    Text(stringResource(Res.string.operation),
         modifier = Modifier.padding(horizontal = 8.dp),
         fontWeight = FontWeight.SemiBold
     )
 }
 
 @Composable
-fun FinancialSummary(
-    preferences: AppPreferences,
-    labels: List<LabelUI>,
-    disposableIncomes: Pair<Float, Float>,
-    monthPayments: Pair<Float, Float>,
-    toPutAside: Pair<Float, Float>
+fun QuickActions(
+    createBudget: () -> Unit,
+    addOperation: () -> Unit
+) = Row {
+    QuickActionButton(
+        modifier = Modifier.weight(1f).padding(horizontal = 8.dp),
+        title = stringResource(Res.string.budget),
+        icon = Icons.Default.Wallet,
+        onClick = createBudget)
+    QuickActionButton(
+        modifier = Modifier.weight(1f).padding(horizontal = 8.dp),
+        title = stringResource(Res.string.operation),
+        icon = Icons.Default.SyncAlt,
+        onClick = addOperation)
+}
+
+@Composable
+fun QuickActionButton(
+    modifier: Modifier,
+    title: String,
+    icon: ImageVector,
+    onClick: () -> Unit
+) = Button(modifier = modifier,
+    onClick = onClick,
+    shape = CircleShape
 ) {
-    var year by remember { mutableStateOf(false) }
+    Icon(imageVector = icon, contentDescription = title)
+    Text(title,
+        modifier = Modifier.padding(horizontal = 8.dp),
+        fontWeight = FontWeight.SemiBold
+    )
+}
+
+@Composable
+fun YearMonthSwitch(
+    year: Boolean,
+    onChange: (Boolean) -> Unit
+) = TextSwitch(
+    modifier = Modifier.width(256.dp),
+    selectedIndex = if (year) 1 else 0,
+    onSelectionChange = { onChange(!year) }
+)
+
+@Composable
+fun FinancialSummary(
+    year: Boolean,
+    preferences: AppPreferences,
+    budget: BudgetUI,
+) {
     Row(verticalAlignment = Alignment.CenterVertically) {
         Card(modifier = Modifier
-            .padding(start = 8.dp, end = 32.dp)
+            .padding(horizontal = 32.dp)
             .weight(1f)
-            .height(152.dp),
+            .height(164.dp),
             shape = RoundedCornerShape(24.dp),
             elevation = CardDefaults.cardElevation(32.dp)
         ) {
             Box {
-                LabelBackground(modifier = Modifier.fillMaxSize(), background = preferences.cardStyle.background)
+                LabelBackground(modifier = Modifier.fillMaxSize(), background = budget.style.background)
                 Column(Modifier.fillMaxSize().padding(horizontal = 16.dp, vertical = 8.dp)) {
                     Text("My budget".uppercase(),
+                        style = MaterialTheme.typography.titleLarge,
                         textAlign = TextAlign.Center,
                         fontWeight = FontWeight.SemiBold,
                         modifier = Modifier.fillMaxWidth())
                     Spacer(Modifier.height(8.dp))
                     Text(stringResource(Res.string.disposable_dd))
                     MonthYearText(
+                        preferences = preferences,
                         isYear = year,
-                        values = disposableIncomes,
+                        values = budget.disposableIncomes,
                         textStyle = MaterialTheme.typography.titleLarge,
                         incomeOrOutcome = IncomeOrOutcome.Income)
                     Spacer(Modifier.height(8.dp))
@@ -209,8 +263,9 @@ fun FinancialSummary(
                             Text(stringResource(Res.string.payments_dd),
                                 style = MaterialTheme.typography.titleSmall)
                             MonthYearText(
+                                preferences = preferences,
                                 isYear = year,
-                                values = monthPayments,
+                                values = budget.monthPayments,
                                 textStyle = MaterialTheme.typography.titleSmall,
                                 incomeOrOutcome = IncomeOrOutcome.Outcome)
                         }
@@ -219,8 +274,9 @@ fun FinancialSummary(
                             Text(stringResource(Res.string.to_put_aside_dd),
                                 style = MaterialTheme.typography.titleSmall)
                             MonthYearText(
+                                preferences = preferences,
                                 isYear = year,
-                                values = toPutAside,
+                                values = budget.toPutAside,
                                 textStyle = MaterialTheme.typography.titleSmall,
                                 incomeOrOutcome = IncomeOrOutcome.Outcome)
                         }
@@ -233,53 +289,19 @@ fun FinancialSummary(
                     .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.6f))
                     .padding(4.dp)
                 ) {
-                    labels.forEach { label ->
+                    budget.labels.forEach { label ->
                         Box(Modifier.padding(vertical = 2.dp)
                             .size(20.dp).clip(CircleShape).background(label.color))
                     }
                 }
             }
         }
-        Box(Modifier
-            .padding(end = 8.dp)
-            .width(40.dp)
-            .height(80.dp)
-            .clip(RoundedCornerShape(16.dp))
-            .background(MaterialTheme.colorScheme.surface)
-            .clickable { year = !year },
-        ) {
-            val pxToMove = with(LocalDensity.current) { 41.dp.toPx().roundToInt() }
-            val offset by animateIntOffsetAsState(
-                targetValue = if (!year) {
-                    IntOffset(0, pxToMove)
-                } else {
-                    IntOffset.Zero
-                },
-                label = "offset"
-            )
-            Box(
-                modifier = Modifier
-                    .padding(top = 3.dp)
-                    .offset { offset }
-                    .size(32.dp)
-                    .align(Alignment.TopCenter)
-                    .clip(RoundedCornerShape(12.dp))
-                    .background(MaterialTheme.colorScheme.primary)
-            )
-            Text(stringResource(Res.string.year).first().uppercase(),
-                modifier = Modifier.padding(8.dp).align(Alignment.TopCenter),
-                color = if (year) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onBackground,
-                fontWeight = FontWeight.SemiBold)
-            Text(stringResource(Res.string.month).first().uppercase(),
-                modifier = Modifier.padding(8.dp).align(Alignment.BottomCenter),
-                color = if (!year) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onBackground,
-                fontWeight = FontWeight.SemiBold)
-        }
     }
 }
 
 @Composable
 fun MonthYearText(
+    preferences: AppPreferences,
     modifier: Modifier = Modifier,
     isYear: Boolean,
     values: Pair<Float, Float>,
@@ -298,7 +320,7 @@ fun MonthYearText(
                         slideOutVertically(targetOffsetY = { -it }, animationSpec = tween(300)) + fadeOut()
             }
         }) { state ->
-        Text("$${ if (!state.first) state.second.monthly else state.second.annual}",
+        Text(formatCurrency(if (!state.first) state.second.monthly else state.second.annual, preferences),
             color = incomeOrOutcome.color,
             textAlign = TextAlign.Center,
             fontWeight = FontWeight.Bold,
@@ -307,7 +329,9 @@ fun MonthYearText(
 }
 
 @Composable
-fun PaymentsSection(incomeOrOutcome: IncomeOrOutcome,
+fun PaymentsSection(
+    preferences: AppPreferences,
+    incomeOrOutcome: IncomeOrOutcome,
     amount: Float,
     dueExpenses: List<ExpenseUI>
 ) = Column(modifier = Modifier.fillMaxWidth(),
@@ -317,7 +341,8 @@ fun PaymentsSection(incomeOrOutcome: IncomeOrOutcome,
         Text(stringResource(if (incomeOrOutcome == IncomeOrOutcome.Outcome) Res.string.upcoming_payments else Res.string.my_incomes),
             modifier = Modifier.weight(1f),
             fontSize = 20.sp, fontWeight = FontWeight.Bold)
-        Text("$${amount}",
+        Text(
+            formatCurrency(amount, preferences),
             style = MaterialTheme.typography.titleLarge,
             fontWeight = FontWeight.SemiBold,
             color = incomeOrOutcome.color)
@@ -325,14 +350,19 @@ fun PaymentsSection(incomeOrOutcome: IncomeOrOutcome,
     Spacer(modifier = Modifier.height(8.dp))
     LazyColumn(Modifier.weight(1f)) {
         items(dueExpenses.filter { it.type == incomeOrOutcome }.sortedBy { it.dueIn }) { dueExpense ->
-            DueExpenseItem(dueExpense)
+            DueExpenseItem(modifier = Modifier.animateItem(),
+                preferences = preferences,
+                dueExpense = dueExpense)
         }
     }
 }
 
 @Composable
-fun DueExpenseItem(dueExpense: ExpenseUI) = Row(
-    modifier = Modifier
+fun DueExpenseItem(
+    modifier: Modifier,
+    preferences: AppPreferences,
+    dueExpense: ExpenseUI) = Row(
+    modifier = modifier
         .fillMaxWidth()
         .padding(horizontal = 16.dp, vertical = 8.dp)
         .clip(RoundedCornerShape(8.dp))
@@ -346,7 +376,7 @@ fun DueExpenseItem(dueExpense: ExpenseUI) = Row(
     Column(Modifier.padding(start = 4.dp)) {
         Row {
             Text(dueExpense.title, modifier = Modifier.weight(1f), fontSize = 16.sp, fontWeight = FontWeight.Bold)
-            Text("${if (dueExpense.type == IncomeOrOutcome.Outcome) "-" else "+"}${dueExpense.amount}$",
+            Text("${if (dueExpense.type == IncomeOrOutcome.Outcome) "-" else "+"}${formatCurrency(dueExpense.amount, preferences)}",
                 textAlign = TextAlign.End,
                 color = dueExpense.type.color,
                 fontSize = 16.sp,
@@ -356,7 +386,7 @@ fun DueExpenseItem(dueExpense: ExpenseUI) = Row(
             fun getColorFromDueInDays(dueIn: Int): Color = if (dueIn < 7) {
                 if (dueExpense.type == IncomeOrOutcome.Outcome) Color.Red else Color.Green
             } else if (dueIn < 30) Orange80 else Color.Green
-            val dueInText = pluralStringResource(
+            val dueInText = stringResource(dueExpense.frequency.title) + ", " + pluralStringResource(
                 if (dueExpense.type == IncomeOrOutcome.Outcome) Res.plurals.due_in else Res.plurals.available_in,
                 dueExpense.dueIn, dueExpense.dueIn)
             val numberText = dueExpense.dueIn.toString()

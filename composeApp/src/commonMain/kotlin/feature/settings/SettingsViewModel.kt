@@ -19,9 +19,6 @@ class SettingsViewModel(
             is SettingsEvent.ChangeDecimalMode -> viewModelScope.launch(Dispatchers.IO) {
 
             }
-            is SettingsEvent.ChangeCardStyle -> viewModelScope.launch(Dispatchers.IO) {
-                preferenceRepository.setCardStyle(event.value)
-            }
             is SettingsEvent.ChangeLanguage -> viewModelScope.launch(Dispatchers.IO) {
                 preferenceRepository.setLanguage(event.value)
             }
