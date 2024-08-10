@@ -40,6 +40,7 @@ import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -76,7 +77,7 @@ fun NewEditBudgetDialog(
     val pagerState = rememberPagerState(initialPage = 0, pageCount = { styles.size })
 
     var budgetTitle by remember { mutableStateOf("") }
-    val budgetLabels = mutableListOf<Int>()
+    val budgetLabels = mutableStateListOf<Int>()
 
     var styleState by remember { mutableStateOf(style) }
 
