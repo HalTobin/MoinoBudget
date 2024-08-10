@@ -28,13 +28,11 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Savings
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.SyncAlt
 import androidx.compose.material.icons.filled.Wallet
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
@@ -69,21 +67,22 @@ import data.repository.AppPreferences
 import feature.dashboard.data.annual
 import feature.dashboard.data.monthly
 import feature.dashboard.presentation.component.TextSwitch
+import feature.dashboard.presentation.dialog.NewEditBudgetDialog
 import kotlinx.coroutines.launch
 import moinobudget.composeapp.generated.resources.Res
-import moinobudget.composeapp.generated.resources.operation
 import moinobudget.composeapp.generated.resources.available_in
-import moinobudget.composeapp.generated.resources.budget
 import moinobudget.composeapp.generated.resources.disposable_dd
 import moinobudget.composeapp.generated.resources.due_in
 import moinobudget.composeapp.generated.resources.go_to_settings_help
 import moinobudget.composeapp.generated.resources.my_incomes
+import moinobudget.composeapp.generated.resources.new_budget
+import moinobudget.composeapp.generated.resources.operation
 import moinobudget.composeapp.generated.resources.payments_dd
 import moinobudget.composeapp.generated.resources.to_put_aside_dd
 import moinobudget.composeapp.generated.resources.upcoming_payments
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
-import presentation.LabelBackground
+import presentation.BudgetBackground
 import presentation.data.BudgetUI
 import presentation.data.ExpenseUI
 import presentation.data.IncomeOrOutcome
@@ -101,6 +100,10 @@ fun DashboardScreen(
 ) = Box {
     val scope = rememberCoroutineScope()
     var year by remember { mutableStateOf(false) }
+
+    var addBudgetDialog by remember { mutableStateOf(false) }
+
+    if (addBudgetDialog) NewEditBudgetDialog(onDismiss = { addBudgetDialog = false})
 
     Column {
         Row(modifier = Modifier.fillMaxWidth().padding(8.dp),
@@ -155,7 +158,7 @@ fun DashboardScreen(
         }
 
         Spacer(modifier = Modifier.height(16.dp))
-        QuickActions({}, {})
+        QuickActions(createBudget = { addBudgetDialog = true }, {})
         Spacer(Modifier.height(8.dp))
         val dashboardState = rememberPagerState(pageCount = { 2 })
         DashboardTab(dashboardState, onSelect = { scope.launch {
@@ -207,7 +210,7 @@ fun QuickActions(
 ) = Row(Modifier.padding(horizontal = 8.dp)) {
     QuickActionButton(
         modifier = Modifier.weight(1f).padding(horizontal = 8.dp),
-        title = stringResource(Res.string.budget),
+        title = stringResource(Res.string.new_budget),
         icon = Icons.Default.Wallet,
         onClick = createBudget)
     QuickActionButton(
@@ -257,7 +260,7 @@ fun FinancialSummary(
     elevation = CardDefaults.cardElevation(32.dp)
 ) {
     Box {
-        LabelBackground(modifier = Modifier.fillMaxSize(), background = budget.style.background)
+        BudgetBackground(modifier = Modifier.fillMaxSize(), background = budget.style.background)
         Column(Modifier.fillMaxSize().padding(horizontal = 16.dp, vertical = 8.dp)) {
             Text("My budget".uppercase(),
                 style = MaterialTheme.typography.titleLarge,

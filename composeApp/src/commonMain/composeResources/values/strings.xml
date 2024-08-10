@@ -19,7 +19,7 @@
     <string name="month">Month</string>
 
     <!-- Dashboard -->
-    <string name="budget">New budget</string>
+    <string name="new_budget">New budget</string>
     <string name="operation">Operation</string>
 
     <string name="incomes">Incomes</string>
@@ -55,10 +55,15 @@
     <string name="about_version">Version</string>
     <string name="about_credits">Credits, Dev</string>
 
-    <!-- Labels -->
-    <string name="label_waves">Waves</string>
-    <string name="label_winter">Winter</string>
-    <string name="label_citrus">Citrus Juice</string>
+    <!-- NewEdit Budget -->
+    <string name="edit_budget">Edit budget</string>
+    <string name="save">Save</string>
+
+    <!-- Budget Style -->
+    <string name="style_waves">Waves</string>
+    <string name="style_winter">Winter</string>
+    <string name="style_citrus">Citrus Juice</string>
+    <string name="style_grass_sea">Grass &amp; Sea</string>
 
     <!-- General purpose -->
     <string name="back_home_description">Navigate back to home screen</string>

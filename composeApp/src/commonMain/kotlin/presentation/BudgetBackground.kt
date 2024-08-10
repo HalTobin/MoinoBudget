@@ -11,7 +11,7 @@ import org.jetbrains.compose.resources.painterResource
 import presentation.data.Background
 
 @Composable
-fun LabelBackground(modifier: Modifier = Modifier,
+fun BudgetBackground(modifier: Modifier = Modifier,
                     background: Background) = when (background) {
     is Background.Gradient -> Box(modifier = modifier.background(Brush.linearGradient(background.colors)))
     is Background.Image -> Image(

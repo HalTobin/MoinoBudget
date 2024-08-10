@@ -34,7 +34,6 @@ import moinobudget.composeapp.generated.resources.about
 import moinobudget.composeapp.generated.resources.about_credits
 import moinobudget.composeapp.generated.resources.about_version
 import moinobudget.composeapp.generated.resources.back_home_description
-import moinobudget.composeapp.generated.resources.card_style
 import moinobudget.composeapp.generated.resources.currency
 import moinobudget.composeapp.generated.resources.decimal_mode
 import moinobudget.composeapp.generated.resources.language
@@ -43,7 +42,6 @@ import moinobudget.composeapp.generated.resources.settings
 import moinobudget.composeapp.generated.resources.theme
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
-import presentation.LabelBackground
 
 @Composable
 fun SettingsScreen(
