@@ -57,6 +57,8 @@
 
     <!-- NewEdit Budget -->
     <string name="edit_budget">Edit budget</string>
+    <string name="title">Title</string>
+    <string name="labels">Labels</string>
     <string name="save">Save</string>
 
     <!-- Budget Style -->

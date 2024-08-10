@@ -103,7 +103,8 @@ fun DashboardScreen(
 
     var addBudgetDialog by remember { mutableStateOf(false) }
 
-    if (addBudgetDialog) NewEditBudgetDialog(onDismiss = { addBudgetDialog = false})
+    if (addBudgetDialog) NewEditBudgetDialog(onDismiss = { addBudgetDialog = false},
+        labels = state.labels)
 
     Column {
         Row(modifier = Modifier.fillMaxWidth().padding(8.dp),
