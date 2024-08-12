@@ -3,6 +3,7 @@ package feature.dashboard.presentation
 import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.compose.viewModel
 import data.repository.LabelRepository
 import feature.dashboard.data.MonthYearPair
 import kotlinx.coroutines.Dispatchers
@@ -88,7 +89,9 @@ class DashboardViewModel(
 
     fun onEvent(event: DashboardEvent) {
         when (event) {
-            else -> {}
+            is DashboardEvent.UpsertLabel -> viewModelScope.launch(Dispatchers.IO) {
+                labelRepository.upsertLabel(event.label)
+            }
         }
     }
 

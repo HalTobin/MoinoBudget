@@ -11,10 +11,10 @@ class LabelRepositoryImpl(
     private val labelDao: LabelDao
 ): LabelRepository {
 
-    override suspend fun addLabel(label: LabelUI) =
+    override suspend fun upsertLabel(label: LabelUI) =
         labelDao.upsert(label.toLabelEntity())
 
-    override suspend fun addLabels(labels: List<LabelUI>) =
+    override suspend fun upsertLabels(labels: List<LabelUI>) =
         labelDao.upsertAll(labels.map { it.toLabelEntity() })
 
     override suspend fun getLabels(): List<LabelUI> =
@@ -26,8 +26,8 @@ class LabelRepositoryImpl(
 }
 
 interface LabelRepository {
-    suspend fun addLabel(label: LabelUI)
-    suspend fun addLabels(labels: List<LabelUI>)
+    suspend fun upsertLabel(label: LabelUI)
+    suspend fun upsertLabels(labels: List<LabelUI>)
     suspend fun getLabels(): List<LabelUI>
     fun getLabelsFlow(): Flow<List<LabelUI>>
 }

@@ -1,6 +1,7 @@
 package feature.dashboard.presentation.dialog
 
 import androidx.compose.animation.Animatable
+import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -16,16 +17,18 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Done
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Save
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
@@ -47,7 +50,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -56,9 +62,11 @@ import data.repository.AppPreferences
 import moinobudget.composeapp.generated.resources.Res
 import moinobudget.composeapp.generated.resources.close_dialog_description
 import moinobudget.composeapp.generated.resources.edit_budget
+import moinobudget.composeapp.generated.resources.edit_label_description
 import moinobudget.composeapp.generated.resources.labels
 import moinobudget.composeapp.generated.resources.new_budget
 import moinobudget.composeapp.generated.resources.save
+import moinobudget.composeapp.generated.resources.save_new_label_name_description
 import moinobudget.composeapp.generated.resources.title
 import org.jetbrains.compose.resources.stringResource
 import presentation.BudgetBackground
@@ -71,6 +79,7 @@ fun NewEditBudgetDialog(
     labels: List<LabelUI>,
     onDismiss: () -> Unit,
     isEdition: Boolean = false,
+    editLabel: (LabelUI) -> Unit,
     style: BudgetStyle = BudgetStyle.GrassAndSea
 ) = Dialog(onDismissRequest = onDismiss) {
     val styles = BudgetStyle.list
@@ -151,8 +160,8 @@ fun NewEditBudgetDialog(
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.primary
                     )
-                    LazyVerticalGrid(
-                        GridCells.Adaptive(minSize = 128.dp),
+                    LazyColumn(
+                        modifier = Modifier.padding(horizontal = 16.dp),
                         contentPadding = PaddingValues(4.dp)
                     ) {
                         items(labels) { label ->
@@ -161,7 +170,9 @@ fun NewEditBudgetDialog(
                                 onClick = {
                                     if (budgetLabels.any { it == label.id }) budgetLabels.remove(label.id)
                                     else budgetLabels.add(label.id)
-                            })
+                                },
+                                editLabel = { editLabel(label.copy(name = it)) }
+                            )
                         }
                     }
                     Spacer(Modifier.height(4.dp))
@@ -185,11 +196,17 @@ fun NewEditBudgetDialog(
 fun LabelEntry(
     label: LabelUI,
     selectedLabels: List<Int>,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    editLabel: (name: String) -> Unit
 ) {
+    val keyboardController = LocalSoftwareKeyboardController.current
+
+    var editLabelMode by remember { mutableStateOf(false) }
+    var labelEditedName by remember { mutableStateOf(label.name) }
+
     val selected = selectedLabels.any { it == label.id }
     Row(modifier = Modifier
-        .padding(4.dp)
+        .padding(horizontal = 4.dp, vertical = 6.dp)
         .clip(RoundedCornerShape(8.dp))
         .background(
             if (selected) MaterialTheme.colorScheme.primary
@@ -198,15 +215,55 @@ fun LabelEntry(
         verticalAlignment = Alignment.CenterVertically) {
         Spacer(Modifier.width(8.dp))
         Box(Modifier
-            .size(28.dp)
+            .size(30.dp)
             .clip(CircleShape)
             .border(2.dp, Color.Black, CircleShape)
             .background(label.color)
         )
-        Text(label.name,
-            color = if (selected) MaterialTheme.colorScheme.onPrimary
-                else MaterialTheme.colorScheme.onBackground,
-            fontWeight = FontWeight.SemiBold,
-            modifier = Modifier.padding(8.dp))
+        Crossfade(modifier = Modifier.weight(1f).height(48.dp),
+            targetState = editLabelMode) { editionMode ->
+            if (!editionMode) Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(label.name,
+                    modifier = Modifier.weight(1f).padding(8.dp),
+                    color = if (selected) MaterialTheme.colorScheme.onPrimary
+                    else MaterialTheme.colorScheme.onBackground,
+                    fontWeight = FontWeight.SemiBold)
+                IconButton(onClick = {
+                    editLabelMode = true
+                    keyboardController?.show()
+                }) {
+                    Icon(imageVector = Icons.Default.Edit,
+                        tint = if (selected) MaterialTheme.colorScheme.onPrimary
+                        else MaterialTheme.colorScheme.onBackground,
+                        contentDescription = stringResource(Res.string.edit_label_description))
+                }
+            }
+            else TextField(
+                modifier = Modifier.focusRequester(FocusRequester()),
+                value = labelEditedName,
+                onValueChange = { labelEditedName = it },
+                colors = TextFieldDefaults.colors(
+                    focusedTextColor = if (selected) MaterialTheme.colorScheme.onPrimary
+                        else MaterialTheme.colorScheme.onBackground,
+                    unfocusedTextColor = if (selected) MaterialTheme.colorScheme.onPrimary
+                        else MaterialTheme.colorScheme.onBackground,
+                    focusedTrailingIconColor = if (selected) MaterialTheme.colorScheme.onPrimary
+                        else MaterialTheme.colorScheme.onBackground,
+                    unfocusedTrailingIconColor = if (selected) MaterialTheme.colorScheme.onPrimary
+                        else MaterialTheme.colorScheme.onBackground,
+                    focusedIndicatorColor = Color.Transparent,
+                    unfocusedIndicatorColor = Color.Transparent,
+                    focusedContainerColor = Color.Transparent,
+                    unfocusedContainerColor = Color.Transparent
+                ),
+                trailingIcon = { IconButton(onClick = {
+                    editLabel(labelEditedName)
+                    editLabelMode = false
+                    keyboardController?.hide()
+                }) {
+                    Icon(Icons.Default.Done, contentDescription = stringResource(Res.string.save_new_label_name_description))
+                } }
+            )
+        }
     }
 }

@@ -35,7 +35,7 @@ class MainViewModel(
         viewModelScope.launch(Dispatchers.IO) {
             val labels = labelRepository.getLabels()
             if (labels.isEmpty()) {
-                labelRepository.addLabels(LabelUI.defaults)
+                labelRepository.upsertLabels(LabelUI.defaults)
             }
         }
     }
