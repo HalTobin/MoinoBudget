@@ -70,7 +70,7 @@ kotlin {
 }
 
 android {
-    namespace = "org.moineaufactory.blockinvasion"
+    namespace = "org.moineaufactory.moinobudget"
     compileSdk = libs.versions.android.compileSdk.get().toInt()
 
     sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
@@ -78,7 +78,7 @@ android {
     sourceSets["main"].resources.srcDirs("src/commonMain/resources")
 
     defaultConfig {
-        applicationId = "org.moineaufactory.blockinvasion"
+        applicationId = "org.moineaufactory.moinobudget"
         minSdk = libs.versions.android.minSdk.get().toInt()
         targetSdk = libs.versions.android.targetSdk.get().toInt()
         versionCode = 1
@@ -113,5 +113,6 @@ room {
 dependencies {
     implementation(libs.core.ktx)
     // Room
+    add("kspAndroid", libs.room.compiler)
     add("kspCommonMainMetadata", libs.room.compiler)
 }

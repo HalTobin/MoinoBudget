@@ -38,10 +38,10 @@ object PrefDefault {
     const val LANGUAGE = LANGUAGE_EN
 }
 
-enum class Theme(val color: Color, val key: String, val title: StringResource) {
-    Dark(color = Color.DarkGray, key = PrefDefault.THEME_DARK, title = Res.string.theme_dark),
-    DarkOled(color = Color.Black, key = PrefDefault.THEME_DARK_OLED, title = Res.string.theme_dark_oled),
-    Light(color = Color.White, key = PrefDefault.THEME_LIGHT, title = Res.string.theme_light);
+enum class Theme(val color: Color, val key: String, val title: StringResource, val isDark: Boolean) {
+    Dark(color = Color.DarkGray, key = PrefDefault.THEME_DARK, title = Res.string.theme_dark, isDark = true),
+    DarkOled(color = Color.Black, key = PrefDefault.THEME_DARK_OLED, title = Res.string.theme_dark_oled, isDark = true),
+    Light(color = Color.White, key = PrefDefault.THEME_LIGHT, title = Res.string.theme_light, isDark = false);
     companion object {
         val list = listOf(Light, Dark, DarkOled)
     }

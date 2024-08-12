@@ -20,13 +20,13 @@ interface BudgetDao {
     @Query("SELECT * FROM budgets WHERE id = :id")
     suspend fun getById(id: Int): Budget
 
-    @Query("SELECT * FROM budgets WHERE id = :id")
-    suspend fun getFullById(id: Int): FullBudget
+    //@Query("SELECT * FROM budgets WHERE id = :id")
+    //suspend fun getFullById(id: Int): FullBudget
 
     @Query("SELECT * FROM budgets")
-    fun getAll(): Flow<Budget>
+    fun getAll(): Flow<List<Budget>>
 
-    @Query("SELECT * FROM budgets")
-    fun getAllFull(): Flow<FullBudget>
+    //@Query("SELECT * FROM budgets")
+    //fun getAllFull(): Flow<List<FullBudget>>
 
 }

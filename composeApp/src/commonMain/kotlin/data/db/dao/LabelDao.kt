@@ -13,6 +13,9 @@ interface LabelDao {
     @Upsert
     suspend fun upsert(label: Label)
 
+    @Upsert
+    suspend fun upsertAll(labels: List<Label>)
+
     @Delete
     suspend fun delete(label: Label)
 
@@ -20,6 +23,9 @@ interface LabelDao {
     suspend fun getById(id: Int): Label
 
     @Query("SELECT * FROM labels")
-    fun getAll(): Flow<Label>
+    suspend fun getAll(): List<Label>
+
+    @Query("SELECT * FROM labels")
+    fun getAllFlow(): Flow<List<Label>>
 
 }

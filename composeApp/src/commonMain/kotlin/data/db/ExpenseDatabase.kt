@@ -1,8 +1,13 @@
 package data.db
 
+import androidx.room.ConstructedBy
 import androidx.room.Database
+import androidx.room.Room
 import androidx.room.RoomDatabase
+import androidx.room.RoomDatabaseConstructor
 import androidx.sqlite.driver.bundled.BundledSQLiteDriver
+import data.db.dao.BudgetDao
+import data.db.dao.BudgetLabelDao
 import data.db.dao.ExpenseDao
 import data.db.dao.ExpenseLabelDao
 import data.db.dao.LabelDao
@@ -17,25 +22,21 @@ import kotlinx.coroutines.IO
 @Database(
     entities = [Expense::class,
         Label::class,
-        ExpenseLabelCrossRef::class,
+        //ExpenseLabelCrossRef::class,
         Budget::class,
-        BudgetLabelCrossRef::class],
+        //BudgetLabelCrossRef::class
+    ],
     version = 1
 )
-abstract class ExpenseDatabase: RoomDatabase(), DB {
+@ConstructedBy(ExpenseDbCtor::class) // NEW
+abstract class ExpenseDatabase: RoomDatabase() {
 
     abstract fun expenseDao(): ExpenseDao
     abstract fun labelDao(): LabelDao
-    abstract fun expenseLabelDao(): ExpenseLabelDao
+    //abstract fun expenseLabelDao(): ExpenseLabelDao
+    abstract fun budgetDao(): BudgetDao
+    //abstract fun budgetLabelDao(): BudgetLabelDao
 
-    override fun clearAllTables() {
-        super.clearAllTables()
-    }
-
-}
-
-interface DB {
-    fun clearAllTables() {}
 }
 
 fun getExpenseDatabase(
@@ -43,3 +44,5 @@ fun getExpenseDatabase(
 ): ExpenseDatabase = builder.setDriver(BundledSQLiteDriver())
     .setQueryCoroutineContext(Dispatchers.IO)
     .build()
+
+expect object ExpenseDbCtor : RoomDatabaseConstructor<ExpenseDatabase>

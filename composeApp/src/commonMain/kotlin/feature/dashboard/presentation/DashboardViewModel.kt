@@ -2,10 +2,16 @@ package feature.dashboard.presentation
 
 import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import data.repository.LabelRepository
 import feature.dashboard.data.MonthYearPair
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
 import kotlinx.datetime.DatePeriod
 import kotlinx.datetime.LocalDate
@@ -21,29 +27,37 @@ import presentation.data.ExpenseUI
 import presentation.data.IncomeOrOutcome
 import presentation.data.LabelUI
 
-class DashboardViewModel(): ViewModel() {
+class DashboardViewModel(
+    private val labelRepository: LabelRepository
+): ViewModel() {
 
     private val _state = MutableStateFlow(DashboardState())
     val state = _state.asStateFlow()
 
+    private var labelJob: Job? = null
+
     init {
         // Load expenses and payments...
-        val expenses = getExpenses()
-        val labels = getLabels()
-        val yearIncomes = expenses
-            .filter { it.type == IncomeOrOutcome.Income }
-            .sumOf { it.amount * it.frequency.multiplier.toDouble() }
-        val yearOutcomes = expenses
-            .filter { it.type == IncomeOrOutcome.Outcome }
-            .sumOf { it.amount * it.frequency.multiplier.toDouble() }
-        val monthPayments = expenses
-            .filter { it.frequency == ExpenseFrequency.Monthly }
-            .sumOf { it.amount.toDouble() }
-        val toPutAside = expenses
-            .filter { it.frequency != ExpenseFrequency.Monthly }
-            .sumOf { it.amount * it.frequency.multiplier.toDouble() }
+        setUpLabelJob()
 
-        val dummyBudget = listOf(BudgetUI(
+        viewModelScope.launch(Dispatchers.IO) {
+            val labels = labelRepository.getLabels()
+            val expenses = getExpenses(labels)
+
+            val yearIncomes = expenses
+                .filter { it.type == IncomeOrOutcome.Income }
+                .sumOf { it.amount * it.frequency.multiplier.toDouble() }
+            val yearOutcomes = expenses
+                .filter { it.type == IncomeOrOutcome.Outcome }
+                .sumOf { it.amount * it.frequency.multiplier.toDouble() }
+            val monthPayments = expenses
+                .filter { it.frequency == ExpenseFrequency.Monthly }
+                .sumOf { it.amount.toDouble() }
+            val toPutAside = expenses
+                .filter { it.frequency != ExpenseFrequency.Monthly }
+                .sumOf { it.amount * it.frequency.multiplier.toDouble() }
+
+            val dummyBudget = listOf(BudgetUI(
                 id = 0,
                 name = "My budget",
                 labels = labels,
@@ -57,7 +71,7 @@ class DashboardViewModel(): ViewModel() {
             ), BudgetUI(
                 id = 0,
                 name = "My secondary budget",
-                labels = labels.subList(1, labels.size),
+                labels = emptyList(),//labels.subList(1, labels.size),
                 expenses = expenses,
                 style = BudgetStyle.Winter,
                 rawIncomes = MonthYearPair(annual = yearIncomes / 2),
@@ -66,9 +80,10 @@ class DashboardViewModel(): ViewModel() {
                 disposableIncomes = MonthYearPair(annual = (yearIncomes - yearOutcomes) / 2),
                 upcomingPayments = MonthYearPair(annual = yearOutcomes / 2),
             )
-        )
+            )
 
-        _state.update { it.copy(budgets = dummyBudget, labels = labels) }
+            _state.update { it.copy(budgets = dummyBudget, labels = labels) }
+        }
     }
 
     fun onEvent(event: DashboardEvent) {
@@ -77,32 +92,29 @@ class DashboardViewModel(): ViewModel() {
         }
     }
 
-    private fun getExpenses(): List<ExpenseUI> {
+    private fun getExpenses(labels: List<LabelUI>): List<ExpenseUI> {
         val now = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date
-        return listOf(
-            ExpenseUI(1, 15f, IncomeOrOutcome.Outcome,"Netflix", ExpenseIcon.Film, ExpenseFrequency.Monthly, false, 6, now, now.minusMonthsCompat(1), getLabels().subList(0, 2)),
-            ExpenseUI(2, 235f, IncomeOrOutcome.Outcome,"Electricity", ExpenseIcon.Electricity, ExpenseFrequency.Monthly, true, 2, now.plusDaysCompat(5), now.minusMonthsCompat(1), listOf(getLabels()[1])),
-            ExpenseUI(3, 700f, IncomeOrOutcome.Outcome, "Rent", ExpenseIcon.Housing, ExpenseFrequency.Monthly, false, 17, now.plusDaysCompat(10), now.minusMonthsCompat(1), getLabels().subList(0, 2)),
-            ExpenseUI(4, 20f, IncomeOrOutcome.Outcome, "Internet", ExpenseIcon.Internet, ExpenseFrequency.Monthly, true, 2, now.plusDaysCompat(2), now.minusMonthsCompat(1), listOf(getLabels()[0], getLabels()[2])),
-            ExpenseUI(5, 150f, IncomeOrOutcome.Outcome, "Water", ExpenseIcon.Water, ExpenseFrequency.Monthly, false, 1, now.plusDaysCompat(7), now.minusMonthsCompat(1), getLabels().subList(0, 2)),
-            ExpenseUI(6, 1656f, IncomeOrOutcome.Income, "Salary", ExpenseIcon.Incomes, ExpenseFrequency.Monthly, false, 17, now.plusDaysCompat(10), now.minusMonthsCompat(1), getLabels().subList(3, 5)),
-            ExpenseUI(7, 185f, IncomeOrOutcome.Income, "CAF", ExpenseIcon.Help, ExpenseFrequency.Monthly, true, 2, now.plusDaysCompat(2), now.minusMonthsCompat(1), listOf(getLabels()[2])),
-            ExpenseUI(8, 45f, IncomeOrOutcome.Income, "TR", ExpenseIcon.Store, ExpenseFrequency.Monthly, false, 1, now.plusDaysCompat(7), now.minusMonthsCompat(1), listOf(getLabels()[0])),
-            ExpenseUI(9, 100f, IncomeOrOutcome.Outcome, "TR", ExpenseIcon.Cloud, ExpenseFrequency.Annually, false, 1, now.plusDaysCompat(7), now.minusMonthsCompat(1), listOf(getLabels()[0]))
-        )
+        /*return listOf(
+            ExpenseUI(1, 15f, IncomeOrOutcome.Outcome,"Netflix", ExpenseIcon.Film, ExpenseFrequency.Monthly, false, 6, now, now.minusMonthsCompat(1), labels.subList(0, 2)),
+            ExpenseUI(2, 235f, IncomeOrOutcome.Outcome,"Electricity", ExpenseIcon.Electricity, ExpenseFrequency.Monthly, true, 2, now.plusDaysCompat(5), now.minusMonthsCompat(1), listOf(labels[1])),
+            ExpenseUI(3, 700f, IncomeOrOutcome.Outcome, "Rent", ExpenseIcon.Housing, ExpenseFrequency.Monthly, false, 17, now.plusDaysCompat(10), now.minusMonthsCompat(1), labels.subList(0, 2)),
+            ExpenseUI(4, 20f, IncomeOrOutcome.Outcome, "Internet", ExpenseIcon.Internet, ExpenseFrequency.Monthly, true, 2, now.plusDaysCompat(2), now.minusMonthsCompat(1), listOf(labels[0], labels[2])),
+            ExpenseUI(5, 150f, IncomeOrOutcome.Outcome, "Water", ExpenseIcon.Water, ExpenseFrequency.Monthly, false, 1, now.plusDaysCompat(7), now.minusMonthsCompat(1), labels.subList(0, 2)),
+            ExpenseUI(6, 1656f, IncomeOrOutcome.Income, "Salary", ExpenseIcon.Incomes, ExpenseFrequency.Monthly, false, 17, now.plusDaysCompat(10), now.minusMonthsCompat(1), labels.subList(3, 5)),
+            ExpenseUI(7, 185f, IncomeOrOutcome.Income, "CAF", ExpenseIcon.Help, ExpenseFrequency.Monthly, true, 2, now.plusDaysCompat(2), now.minusMonthsCompat(1), listOf(labels[2])),
+            ExpenseUI(8, 45f, IncomeOrOutcome.Income, "TR", ExpenseIcon.Store, ExpenseFrequency.Monthly, false, 1, now.plusDaysCompat(7), now.minusMonthsCompat(1), listOf(labels[0])),
+            ExpenseUI(9, 100f, IncomeOrOutcome.Outcome, "TR", ExpenseIcon.Cloud, ExpenseFrequency.Annually, false, 1, now.plusDaysCompat(7), now.minusMonthsCompat(1), listOf(labels[0]))
+        )*/
+        return emptyList()
     }
 
-    private fun getLabels(): List<LabelUI> {
-        return listOf(
-            LabelUI(1, "Famille", Color.Red),
-            LabelUI(2, "Perso", Color.Green),
-            LabelUI(3, "Entreprise", Color.Yellow),
-            LabelUI(4, "Prévisions", Color.White),
-            LabelUI(5, "", Color.Cyan),
-            LabelUI(6, "", Color.Blue),
-            //LabelUI(7, "", Color.Magenta),
-            //LabelUI(8, "", Color.Black),
-        )
+    private fun setUpLabelJob() {
+        labelJob?.cancel()
+        labelJob = viewModelScope.launch(Dispatchers.IO) {
+            labelRepository.getLabelsFlow().collect { labels ->
+                _state.update { it.copy(labels = labels) }
+            }
+        }
     }
 
     // Extension functions to handle date operations

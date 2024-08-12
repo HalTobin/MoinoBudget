@@ -1,5 +1,6 @@
 package feature.dashboard.presentation
 
+import androidx.compose.animation.Animatable
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
@@ -43,6 +44,7 @@ import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -103,79 +105,100 @@ fun DashboardScreen(
 
     var addBudgetDialog by remember { mutableStateOf(false) }
 
-    if (addBudgetDialog) NewEditBudgetDialog(onDismiss = { addBudgetDialog = false},
+    if (addBudgetDialog) NewEditBudgetDialog(
+        preferences = preferences,
+        onDismiss = { addBudgetDialog = false},
         labels = state.labels)
 
-    Column {
-        Row(modifier = Modifier.fillMaxWidth().padding(8.dp),
-            verticalAlignment = Alignment.CenterVertically) {
-            IconButton(modifier = Modifier
-                .clip(CircleShape)
-                .background(MaterialTheme.colorScheme.surface),
-                onClick = { goTo(Screen.Settings) }) {
-                Icon(modifier = Modifier.size(32.dp),
-                    imageVector = Icons.Default.Savings, contentDescription = stringResource(Res.string.go_to_settings_help))
-            }
-            Spacer(Modifier.weight(1f))
-            YearMonthSwitch(year, onChange = { year = it })
-            Spacer(Modifier.weight(1f))
-            IconButton(modifier = Modifier
-                .clip(CircleShape)
-                .background(MaterialTheme.colorScheme.surface),
-                onClick = { goTo(Screen.Settings) }) {
-                Icon(modifier = Modifier.size(32.dp),
-                    imageVector = Icons.Default.Settings, contentDescription = stringResource(Res.string.go_to_settings_help))
-            }
-        }
-        Spacer(modifier = Modifier.height(8.dp))
-        val budgetState = rememberPagerState(initialPage = 0, pageCount = { state.budgets.size })
-        HorizontalPager(
-            modifier = Modifier.fillMaxWidth(),
-            state = budgetState,
-            contentPadding = PaddingValues(horizontal = 32.dp),
-            ) { page ->
-            FinancialSummary(
-                modifier = Modifier.graphicsLayer {
-                    // Calculate the absolute offset for the current page from the
-                    // scroll position. We use the absolute value which allows us to mirror
-                    // any effects for both directions
-                    val pageOffset = (
-                            (budgetState.currentPage - page) + budgetState
-                                .currentPageOffsetFraction
-                            ).absoluteValue
+    val themePrimary = MaterialTheme.colorScheme.primary
+    val themeOnPrimary = MaterialTheme.colorScheme.onPrimary
+    val primary = remember { Animatable(themePrimary) }
+    val onPrimary = remember { Animatable(themeOnPrimary) }
 
-                    // We animate the alpha, between 50% and 100%
-                    alpha = lerp(
-                        start = 0.5f,
-                        stop = 1f,
-                        fraction = 1f - pageOffset.coerceIn(0f, 1f)
-                    )
+    MaterialTheme(
+        colorScheme = MaterialTheme.colorScheme.copy(
+            primary = primary.value,
+            onPrimary = onPrimary.value
+        )
+    ) {
+        Column {
+            Row(modifier = Modifier.fillMaxWidth().padding(8.dp),
+                verticalAlignment = Alignment.CenterVertically) {
+                IconButton(modifier = Modifier
+                    .clip(CircleShape)
+                    .background(MaterialTheme.colorScheme.surface),
+                    onClick = { goTo(Screen.Settings) }) {
+                    Icon(modifier = Modifier.size(32.dp),
+                        imageVector = Icons.Default.Savings, contentDescription = stringResource(Res.string.go_to_settings_help))
                 }
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp),
-                preferences = preferences,
-                year = year,
-                budget = state.budgets[page])
-        }
+                Spacer(Modifier.weight(1f))
+                YearMonthSwitch(year, onChange = { year = it })
+                Spacer(Modifier.weight(1f))
+                IconButton(modifier = Modifier
+                    .clip(CircleShape)
+                    .background(MaterialTheme.colorScheme.surface),
+                    onClick = { goTo(Screen.Settings) }) {
+                    Icon(modifier = Modifier.size(32.dp),
+                        imageVector = Icons.Default.Settings, contentDescription = stringResource(Res.string.go_to_settings_help))
+                }
+            }
+            Spacer(modifier = Modifier.height(8.dp))
+            val budgetState = rememberPagerState(initialPage = 0, pageCount = { state.budgets.size })
+            LaunchedEffect(key1 = budgetState.currentPage) {
+                if (state.budgets.isNotEmpty()) {
+                    val style = state.budgets[budgetState.currentPage].style
+                    primary.animateTo(if (preferences.theme.isDark) style.primary.second else style.primary.first)
+                    onPrimary.animateTo(if (preferences.theme.isDark) style.onPrimary.second else style.onPrimary.first)
+                }
+            }
+            HorizontalPager(
+                modifier = Modifier.fillMaxWidth(),
+                state = budgetState,
+                contentPadding = PaddingValues(horizontal = 32.dp),
+            ) { page ->
+                FinancialSummary(
+                    modifier = Modifier.graphicsLayer {
+                        // Calculate the absolute offset for the current page from the
+                        // scroll position. We use the absolute value which allows us to mirror
+                        // any effects for both directions
+                        val pageOffset = (
+                                (budgetState.currentPage - page) + budgetState
+                                    .currentPageOffsetFraction
+                                ).absoluteValue
 
-        Spacer(modifier = Modifier.height(16.dp))
-        QuickActions(createBudget = { addBudgetDialog = true }, {})
-        Spacer(Modifier.height(8.dp))
-        val dashboardState = rememberPagerState(pageCount = { 2 })
-        DashboardTab(dashboardState, onSelect = { scope.launch {
-            dashboardState.animateScrollToPage(it) }})
-        Spacer(Modifier.height(8.dp))
-        HorizontalPager(state = dashboardState) { page ->
-            if (page == IncomeOrOutcome.Outcome.tabId) PaymentsSection(preferences = preferences,
-                budget = state.budgets[budgetState.currentPage],
-                incomeOrOutcome = IncomeOrOutcome.Outcome,
-                amount = state.budgets[budgetState.currentPage].upcomingPayments.first,
-                dueExpenses = state.budgets.first().expenses)
-            else PaymentsSection(preferences = preferences,
-                budget = state.budgets[budgetState.currentPage],
-                incomeOrOutcome = IncomeOrOutcome.Income,
-                amount = state.budgets.first().rawIncomes.first,
-                dueExpenses = state.budgets[budgetState.currentPage].expenses)
+                        // We animate the alpha, between 50% and 100%
+                        alpha = lerp(
+                            start = 0.5f,
+                            stop = 1f,
+                            fraction = 1f - pageOffset.coerceIn(0f, 1f)
+                        )
+                    }
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp),
+                    preferences = preferences,
+                    year = year,
+                    budget = state.budgets[page])
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+            QuickActions(createBudget = { addBudgetDialog = true }, {})
+            Spacer(Modifier.height(8.dp))
+            val dashboardState = rememberPagerState(pageCount = { state.budgets.size })
+            DashboardTab(dashboardState, onSelect = { scope.launch {
+                dashboardState.animateScrollToPage(it) }})
+            Spacer(Modifier.height(8.dp))
+            if (state.budgets.isNotEmpty()) HorizontalPager(state = dashboardState) { page ->
+                if (page == IncomeOrOutcome.Outcome.tabId) PaymentsSection(preferences = preferences,
+                    budget = state.budgets[budgetState.currentPage],
+                    incomeOrOutcome = IncomeOrOutcome.Outcome,
+                    amount = state.budgets[budgetState.currentPage].upcomingPayments.first,
+                    dueExpenses = state.budgets.first().expenses)
+                else PaymentsSection(preferences = preferences,
+                    budget = state.budgets[budgetState.currentPage],
+                    incomeOrOutcome = IncomeOrOutcome.Income,
+                    amount = state.budgets.first().rawIncomes.first,
+                    dueExpenses = state.budgets[budgetState.currentPage].expenses)
+            }
         }
     }
 }

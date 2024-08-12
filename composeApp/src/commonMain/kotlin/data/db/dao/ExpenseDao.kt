@@ -20,6 +20,6 @@ interface ExpenseDao {
     suspend fun getById(id: Int): Expense
 
     @Query("SELECT * FROM expenses")
-    fun getAll(): Flow<Expense>
+    fun getAll(): Flow<List<Expense>>
 
 }

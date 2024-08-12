@@ -2,6 +2,7 @@ package data.db.table
 
 import androidx.room.Entity
 import androidx.room.ForeignKey
+import androidx.room.PrimaryKey
 
 @Entity(
     primaryKeys = ["expenseId", "labelId"],
@@ -21,6 +22,6 @@ import androidx.room.ForeignKey
     ]
 )
 data class ExpenseLabelCrossRef(
-    val expenseId: Int,
-    val labelId: Int
+    @PrimaryKey val expenseId: Int,
+    @PrimaryKey val labelId: Int
 )

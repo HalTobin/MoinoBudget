@@ -52,6 +52,7 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import data.repository.AppPreferences
 import moinobudget.composeapp.generated.resources.Res
 import moinobudget.composeapp.generated.resources.close_dialog_description
 import moinobudget.composeapp.generated.resources.edit_budget
@@ -66,25 +67,26 @@ import presentation.data.LabelUI
 
 @Composable
 fun NewEditBudgetDialog(
+    preferences: AppPreferences,
     labels: List<LabelUI>,
     onDismiss: () -> Unit,
     isEdition: Boolean = false,
     style: BudgetStyle = BudgetStyle.GrassAndSea
 ) = Dialog(onDismissRequest = onDismiss) {
     val styles = BudgetStyle.list
-    val primary = remember { Animatable(style.primary.second) }
-    val onPrimary = remember { Animatable(style.onPrimary.second) }
+    val primary = remember { Animatable(if (preferences.theme.isDark) style.primary.second else style.primary.first) }
+    val onPrimary = remember { Animatable(if (preferences.theme.isDark) style.onPrimary.second else style.onPrimary.first) }
     val pagerState = rememberPagerState(initialPage = 0, pageCount = { styles.size })
 
     var budgetTitle by remember { mutableStateOf("") }
-    val budgetLabels = mutableStateListOf<Int>()
+    val budgetLabels = remember { mutableStateListOf<Int>() }
 
     var styleState by remember { mutableStateOf(style) }
 
     LaunchedEffect(key1 = pagerState.settledPage) {
         styleState = styles[pagerState.settledPage]
-        primary.animateTo(styleState.primary.second)
-        onPrimary.animateTo(styleState.onPrimary.second)
+        primary.animateTo(if (preferences.theme.isDark) styleState.primary.second else styleState.primary.first)
+        onPrimary.animateTo(if (preferences.theme.isDark) styleState.onPrimary.second else styleState.onPrimary.first)
     }
 
     Surface(
