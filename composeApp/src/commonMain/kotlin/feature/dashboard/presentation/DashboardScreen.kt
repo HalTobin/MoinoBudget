@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -32,6 +33,7 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Savings
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.SyncAlt
@@ -78,6 +80,7 @@ import moinobudget.composeapp.generated.resources.Res
 import moinobudget.composeapp.generated.resources.available_in
 import moinobudget.composeapp.generated.resources.disposable_dd
 import moinobudget.composeapp.generated.resources.due_in
+import moinobudget.composeapp.generated.resources.edit_label_description
 import moinobudget.composeapp.generated.resources.go_to_settings_help
 import moinobudget.composeapp.generated.resources.my_incomes
 import moinobudget.composeapp.generated.resources.new_budget
@@ -108,15 +111,15 @@ fun DashboardScreen(
     var year by remember { mutableStateOf(false) }
 
     var addEditBudgetDialog by remember { mutableStateOf(false) }
-    var budgetIdDialog by remember { mutableStateOf<Int?>(null) }
+    var budgetForDialog by remember { mutableStateOf<BudgetUI?>(null) }
 
     if (addEditBudgetDialog) NewEditBudgetDialog(
-        budgetId = budgetIdDialog,
+        budget = budgetForDialog,
         preferences = preferences,
-        onDismiss = { addEditBudgetDialog = false},
+        onDismiss = { addEditBudgetDialog = false
+                    budgetForDialog = null },
         saveBudget = { onEvent(DashboardEvent.UpsertBudget(it)) },
         labels = state.labels,
-        style = BudgetStyle.CitrusJuice
     )
 
     val themePrimary = MaterialTheme.colorScheme.primary
@@ -165,6 +168,7 @@ fun DashboardScreen(
                 state = budgetState,
                 contentPadding = PaddingValues(horizontal = 32.dp),
             ) { page ->
+                val budget = state.budgets[page]
                 FinancialSummary(
                     modifier = Modifier.graphicsLayer {
                         // Calculate the absolute offset for the current page from the
@@ -185,8 +189,10 @@ fun DashboardScreen(
                         .fillMaxWidth()
                         .padding(horizontal = 16.dp),
                     preferences = preferences,
+                    edit = { budgetForDialog = budget
+                           addEditBudgetDialog = true},
                     year = year,
-                    budget = state.budgets[page])
+                    budget = budget)
             }
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -283,6 +289,7 @@ fun YearMonthSwitch(
 @Composable
 fun FinancialSummary(
     modifier: Modifier,
+    edit: () -> Unit,
     year: Boolean,
     preferences: AppPreferences,
     budget: BudgetUI,
@@ -294,42 +301,51 @@ fun FinancialSummary(
 ) {
     Box {
         BudgetBackground(modifier = Modifier.fillMaxSize(), background = budget.style.background)
-        Column(Modifier.fillMaxSize().padding(horizontal = 16.dp, vertical = 8.dp)) {
-            Text(budget.name.uppercase(),
-                style = MaterialTheme.typography.titleLarge,
-                textAlign = TextAlign.Center,
-                fontWeight = FontWeight.SemiBold,
-                modifier = Modifier.fillMaxWidth())
-            Spacer(Modifier.height(8.dp))
-            Text(stringResource(Res.string.disposable_dd))
-            MonthYearText(
-                preferences = preferences,
-                isYear = year,
-                values = budget.disposableIncomes,
-                textStyle = MaterialTheme.typography.titleLarge,
-                incomeOrOutcome = IncomeOrOutcome.Income)
-            Spacer(Modifier.height(8.dp))
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Column {
-                    Text(stringResource(Res.string.payments_dd),
-                        style = MaterialTheme.typography.titleSmall)
-                    MonthYearText(
-                        preferences = preferences,
-                        isYear = year,
-                        values = budget.monthPayments,
-                        textStyle = MaterialTheme.typography.titleSmall,
-                        incomeOrOutcome = IncomeOrOutcome.Outcome)
+        Column(Modifier.fillMaxSize().padding(8.dp)) {
+            Box(modifier
+                .fillMaxWidth()
+                .offset(y = (-8).dp)) {
+                Text(budget.name.uppercase(),
+                    style = MaterialTheme.typography.titleLarge,
+                    textAlign = TextAlign.Center,
+                    fontWeight = FontWeight.SemiBold,
+                    modifier = Modifier.fillMaxWidth().align(Alignment.Center))
+                IconButton(onClick = edit,
+                    modifier = Modifier.offset(x = -(24).dp).align(Alignment.CenterStart)) {
+                    Icon(Icons.Default.Edit, contentDescription = stringResource(Res.string.edit_label_description))
                 }
-                Spacer(Modifier.width(16.dp))
-                Column {
-                    Text(stringResource(Res.string.to_put_aside_dd),
-                        style = MaterialTheme.typography.titleSmall)
-                    MonthYearText(
-                        preferences = preferences,
-                        isYear = year,
-                        values = budget.toPutAside,
-                        textStyle = MaterialTheme.typography.titleSmall,
-                        incomeOrOutcome = IncomeOrOutcome.Outcome)
+            }
+            Column(Modifier.fillMaxSize().padding(horizontal = 16.dp)) {
+                Text(stringResource(Res.string.disposable_dd))
+                MonthYearText(
+                    preferences = preferences,
+                    isYear = year,
+                    values = budget.disposableIncomes,
+                    textStyle = MaterialTheme.typography.titleLarge,
+                    incomeOrOutcome = IncomeOrOutcome.Income)
+                Spacer(Modifier.height(8.dp))
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Column {
+                        Text(stringResource(Res.string.payments_dd),
+                            style = MaterialTheme.typography.titleSmall)
+                        MonthYearText(
+                            preferences = preferences,
+                            isYear = year,
+                            values = budget.monthPayments,
+                            textStyle = MaterialTheme.typography.titleSmall,
+                            incomeOrOutcome = IncomeOrOutcome.Outcome)
+                    }
+                    Spacer(Modifier.width(16.dp))
+                    Column {
+                        Text(stringResource(Res.string.to_put_aside_dd),
+                            style = MaterialTheme.typography.titleSmall)
+                        MonthYearText(
+                            preferences = preferences,
+                            isYear = year,
+                            values = budget.toPutAside,
+                            textStyle = MaterialTheme.typography.titleSmall,
+                            incomeOrOutcome = IncomeOrOutcome.Outcome)
+                    }
                 }
             }
         }

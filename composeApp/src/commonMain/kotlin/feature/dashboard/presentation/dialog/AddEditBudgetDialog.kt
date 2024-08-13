@@ -62,31 +62,40 @@ import moinobudget.composeapp.generated.resources.title
 import org.jetbrains.compose.resources.stringResource
 import presentation.BudgetBackground
 import presentation.data.BudgetStyle
+import presentation.data.BudgetUI
 import presentation.data.LabelUI
 
 @Composable
 fun NewEditBudgetDialog(
     preferences: AppPreferences,
-    budgetId: Int?,
+    budget: BudgetUI?,
     labels: List<LabelUI>,
     onDismiss: () -> Unit,
     saveBudget: (AddEditBudget) -> Unit,
-    style: BudgetStyle
 ) = Dialog(onDismissRequest = onDismiss) {
     val styles = BudgetStyle.list
+
+    var style by remember { mutableStateOf(budget?.style ?: BudgetStyle.RedWaves) }
+
     val primary = remember { Animatable(if (preferences.theme.isDark) style.primary.second else style.primary.first) }
     val onPrimary = remember { Animatable(if (preferences.theme.isDark) style.onPrimary.second else style.onPrimary.first) }
     val pagerState = rememberPagerState(initialPage = 0, pageCount = { styles.size })
 
-    var budgetTitle by remember { mutableStateOf("") }
+    var budgetTitle by remember { mutableStateOf(budget?.name ?: "") }
     val budgetLabels = remember { mutableStateListOf<Int>() }
 
-    var styleState by remember { mutableStateOf(style) }
+
+    LaunchedEffect(key1 = true) {
+        budget?.let { budget ->
+            budgetLabels.addAll(budget.labels.map { it.id })
+            pagerState.scrollToPage(styles.indexOf(budget.style))
+        }
+    }
 
     LaunchedEffect(key1 = pagerState.settledPage) {
-        styleState = styles[pagerState.settledPage]
-        primary.animateTo(if (preferences.theme.isDark) styleState.primary.second else styleState.primary.first)
-        onPrimary.animateTo(if (preferences.theme.isDark) styleState.onPrimary.second else styleState.onPrimary.first)
+        style = styles[pagerState.settledPage]
+        primary.animateTo(if (preferences.theme.isDark) style.primary.second else style.primary.first)
+        onPrimary.animateTo(if (preferences.theme.isDark) style.onPrimary.second else style.onPrimary.first)
     }
 
     Surface(
@@ -97,7 +106,7 @@ fun NewEditBudgetDialog(
     ) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Box(Modifier.fillMaxWidth().padding(start = 8.dp, end = 8.dp, top = 8.dp)) {
-                Text(stringResource(budgetId?.let { Res.string.edit_budget } ?: Res.string.new_budget),
+                Text(stringResource(budget?.let { Res.string.edit_budget } ?: Res.string.new_budget),
                     modifier = Modifier.align(Alignment.Center),
                     style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.SemiBold)
@@ -136,7 +145,7 @@ fun NewEditBudgetDialog(
                         value = budgetTitle,
                         onValueChange = {
                             if (titleError) titleError = false
-                            budgetTitle = it },
+                            if (it.length < 19) budgetTitle = it },
                         label = { Text(stringResource(Res.string.title)) },
                         colors = TextFieldDefaults.colors(
                             unfocusedIndicatorColor = MaterialTheme.colorScheme.primary
@@ -170,11 +179,13 @@ fun NewEditBudgetDialog(
                     Spacer(Modifier.height(4.dp))
                     Button(onClick = {
                         if (budgetTitle.isBlank()) titleError = true
-                        else saveBudget(AddEditBudget(
-                            id = budgetId,
-                            name = budgetTitle,
-                            labels = budgetLabels
-                        ))
+                        else {
+                            saveBudget(
+                                AddEditBudget(id = budget?.id,
+                                    name = budgetTitle,
+                                    labels = budgetLabels))
+                            onDismiss()
+                        }
                     },
                         shape = CircleShape) {
                         Icon(imageVector = Icons.Default.Save, contentDescription = stringResource(Res.string.save))
