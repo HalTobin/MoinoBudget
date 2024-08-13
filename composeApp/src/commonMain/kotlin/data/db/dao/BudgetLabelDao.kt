@@ -15,19 +15,16 @@ import data.db.table.Label
 @Dao
 interface BudgetLabelDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun insertExpense(budget: Budget)
-
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun insertLabel(label: Label)
-
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertBudgetLabelCrossRef(crossRef: BudgetLabelCrossRef)
 
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun insertBudgetLabelCrossRefs(crossRefs: List<BudgetLabelCrossRef>)
+
     @Transaction
-    @Query("SELECT * FROM expenses WHERE id = :expenseId")
+    @Query("SELECT * FROM budgets WHERE budget_id = :budgetId")
     suspend fun getBudgetWithLabels(budgetId: Int): List<BudgetWithLabels>
 
     @Transaction
-    @Query("SELECT * FROM labels WHERE id = :labelId")
+    @Query("SELECT * FROM labels WHERE label_id = :labelId")
     suspend fun getLabelWithBudget(labelId: Int): List<LabelWithExpenses>
 }

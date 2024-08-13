@@ -2,15 +2,15 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "133268cc07b7240d991badaf12716469",
+    "identityHash": "a1ce902203834663920af5e79d1ef074",
     "entities": [
       {
         "tableName": "expenses",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `title` TEXT NOT NULL, `amount` REAL NOT NULL, `iconId` INTEGER NOT NULL, `isIncome` INTEGER NOT NULL, `frequency` INTEGER NOT NULL, `monthOffset` INTEGER, `day` INTEGER NOT NULL, `lastPayment` INTEGER NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`expense_id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `title` TEXT NOT NULL, `amount` REAL NOT NULL, `iconId` INTEGER NOT NULL, `isIncome` INTEGER NOT NULL, `frequency` INTEGER NOT NULL, `monthOffset` INTEGER, `day` INTEGER NOT NULL, `lastPayment` INTEGER NOT NULL)",
         "fields": [
           {
             "fieldPath": "id",
-            "columnName": "id",
+            "columnName": "expense_id",
             "affinity": "INTEGER",
             "notNull": true
           },
@@ -65,17 +65,17 @@
         "primaryKey": {
           "autoGenerate": true,
           "columnNames": [
-            "id"
+            "expense_id"
           ]
         }
       },
       {
         "tableName": "labels",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT NOT NULL, `color` INTEGER NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`label_id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT NOT NULL, `color` INTEGER NOT NULL)",
         "fields": [
           {
             "fieldPath": "id",
-            "columnName": "id",
+            "columnName": "label_id",
             "affinity": "INTEGER",
             "notNull": true
           },
@@ -95,17 +95,42 @@
         "primaryKey": {
           "autoGenerate": true,
           "columnNames": [
-            "id"
+            "label_id"
+          ]
+        }
+      },
+      {
+        "tableName": "expense_label_crossref",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`expense_id` INTEGER NOT NULL, `label_id` INTEGER NOT NULL, PRIMARY KEY(`expense_id`, `label_id`))",
+        "fields": [
+          {
+            "fieldPath": "expenseId",
+            "columnName": "expense_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "labelId",
+            "columnName": "label_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "expense_id",
+            "label_id"
           ]
         }
       },
       {
         "tableName": "budgets",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `title` TEXT NOT NULL, `bgId` INTEGER NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`budget_id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `title` TEXT NOT NULL, `bgId` INTEGER NOT NULL)",
         "fields": [
           {
             "fieldPath": "id",
-            "columnName": "id",
+            "columnName": "budget_id",
             "affinity": "INTEGER",
             "notNull": true
           },
@@ -125,14 +150,39 @@
         "primaryKey": {
           "autoGenerate": true,
           "columnNames": [
-            "id"
+            "budget_id"
+          ]
+        }
+      },
+      {
+        "tableName": "budget_label_crossref",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`budget_id` INTEGER NOT NULL, `label_id` INTEGER NOT NULL, PRIMARY KEY(`budget_id`, `label_id`))",
+        "fields": [
+          {
+            "fieldPath": "budgetId",
+            "columnName": "budget_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "labelId",
+            "columnName": "label_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "budget_id",
+            "label_id"
           ]
         }
       }
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '133268cc07b7240d991badaf12716469')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'a1ce902203834663920af5e79d1ef074')"
     ]
   }
 }

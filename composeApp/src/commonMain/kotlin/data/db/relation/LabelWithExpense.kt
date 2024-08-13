@@ -10,8 +10,8 @@ import data.db.table.Label
 data class LabelWithExpenses(
     @Embedded val label: Label,
     @Relation(
-        parentColumn = "labelId",
-        entityColumn = "expenseId",
+        parentColumn = "label_id",
+        entityColumn = "expense_id",
         associateBy = Junction(ExpenseLabelCrossRef::class)
     )
     val expenses: List<Expense>

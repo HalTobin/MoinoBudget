@@ -37,14 +37,14 @@ object ModuleDAO {
     val dao = module {
         single { provideLabelDao(get()) }
         single { provideExpenseDao(get()) }
-        //single { provideExpenseLabelDao(get()) }
+        single { provideExpenseLabelDao(get()) }
         single { provideBudgetDao(get()) }
-        //single { provideBudgetLabelDao(get()) }
+        single { provideBudgetLabelDao(get()) }
     }
 
     private fun provideLabelDao(db: ExpenseDatabase) = db.labelDao()
     private fun provideExpenseDao(db: ExpenseDatabase) = db.expenseDao()
-    //private fun provideExpenseLabelDao(db: ExpenseDatabase) = db.expenseLabelDao()
+    private fun provideExpenseLabelDao(db: ExpenseDatabase) = db.expenseLabelDao()
     private fun provideBudgetDao(db: ExpenseDatabase) = db.budgetDao()
-    //private fun provideBudgetLabelDao(db: ExpenseDatabase) = db.budgetLabelDao()
+    private fun provideBudgetLabelDao(db: ExpenseDatabase) = db.budgetLabelDao()
 }

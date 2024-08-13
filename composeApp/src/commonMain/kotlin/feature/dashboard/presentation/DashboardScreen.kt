@@ -305,7 +305,7 @@ fun FinancialSummary(
             Box(modifier
                 .fillMaxWidth()
                 .offset(y = (-8).dp)) {
-                Text(budget.name.uppercase(),
+                Text(budget.title.uppercase(),
                     style = MaterialTheme.typography.titleLarge,
                     textAlign = TextAlign.Center,
                     fontWeight = FontWeight.SemiBold,

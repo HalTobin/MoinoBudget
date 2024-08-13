@@ -3,8 +3,9 @@ package data.db.dao
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Query
+import androidx.room.Transaction
 import androidx.room.Upsert
-import data.db.relation.FullBudget
+import data.db.relation.BudgetWithLabels
 import data.db.table.Budget
 import kotlinx.coroutines.flow.Flow
 
@@ -12,21 +13,19 @@ import kotlinx.coroutines.flow.Flow
 interface BudgetDao {
 
     @Upsert
-    suspend fun upsert(budget: Budget)
+    suspend fun upsert(budget: Budget): Long
 
     @Delete
     suspend fun delete(budget: Budget)
 
-    @Query("SELECT * FROM budgets WHERE id = :id")
+    @Query("SELECT * FROM budgets WHERE budget_id = :id")
     suspend fun getById(id: Int): Budget
-
-    //@Query("SELECT * FROM budgets WHERE id = :id")
-    //suspend fun getFullById(id: Int): FullBudget
 
     @Query("SELECT * FROM budgets")
     fun getAll(): Flow<List<Budget>>
 
-    //@Query("SELECT * FROM budgets")
-    //fun getAllFull(): Flow<List<FullBudget>>
+    @Transaction
+    @Query("SELECT * FROM budgets")
+    fun getAllWithLabels(): Flow<List<BudgetWithLabels>>
 
 }

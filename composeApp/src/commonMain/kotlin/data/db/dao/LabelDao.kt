@@ -19,7 +19,7 @@ interface LabelDao {
     @Delete
     suspend fun delete(label: Label)
 
-    @Query("SELECT * FROM labels WHERE id = :id")
+    @Query("SELECT * FROM labels WHERE label_id = :id")
     suspend fun getById(id: Int): Label
 
     @Query("SELECT * FROM labels")

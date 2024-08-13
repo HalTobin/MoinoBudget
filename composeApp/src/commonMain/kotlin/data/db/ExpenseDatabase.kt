@@ -22,9 +22,9 @@ import kotlinx.coroutines.IO
 @Database(
     entities = [Expense::class,
         Label::class,
-        //ExpenseLabelCrossRef::class,
+        ExpenseLabelCrossRef::class,
         Budget::class,
-        //BudgetLabelCrossRef::class
+        BudgetLabelCrossRef::class
     ],
     version = 1
 )
@@ -33,9 +33,9 @@ abstract class ExpenseDatabase: RoomDatabase() {
 
     abstract fun expenseDao(): ExpenseDao
     abstract fun labelDao(): LabelDao
-    //abstract fun expenseLabelDao(): ExpenseLabelDao
+    abstract fun expenseLabelDao(): ExpenseLabelDao
     abstract fun budgetDao(): BudgetDao
-    //abstract fun budgetLabelDao(): BudgetLabelDao
+    abstract fun budgetLabelDao(): BudgetLabelDao
 
 }
 

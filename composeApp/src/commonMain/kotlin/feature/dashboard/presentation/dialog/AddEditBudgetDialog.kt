@@ -81,7 +81,7 @@ fun NewEditBudgetDialog(
     val onPrimary = remember { Animatable(if (preferences.theme.isDark) style.onPrimary.second else style.onPrimary.first) }
     val pagerState = rememberPagerState(initialPage = 0, pageCount = { styles.size })
 
-    var budgetTitle by remember { mutableStateOf(budget?.name ?: "") }
+    var budgetTitle by remember { mutableStateOf(budget?.title ?: "") }
     val budgetLabels = remember { mutableStateListOf<Int>() }
 
 
@@ -182,7 +182,8 @@ fun NewEditBudgetDialog(
                         else {
                             saveBudget(
                                 AddEditBudget(id = budget?.id,
-                                    name = budgetTitle,
+                                    title = budgetTitle,
+                                    style = style,
                                     labels = budgetLabels))
                             onDismiss()
                         }

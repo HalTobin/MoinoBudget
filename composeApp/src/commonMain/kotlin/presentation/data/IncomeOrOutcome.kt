@@ -18,5 +18,11 @@ enum class IncomeOrOutcome(
     val icon: ImageVector
 ) {
     Income(dbId = true, tabId = 1, text = Res.string.incomes, color = Color(0xFF1FC600), icon = Icons.Default.AccountBalanceWallet),
-    Outcome(dbId = false, tabId = 0, text = Res.string.outcomes, color = Color(0xFFF70A0A), icon = Icons.Default.CreditCard)
+    Outcome(dbId = false, tabId = 0, text = Res.string.outcomes, color = Color(0xFFF70A0A), icon = Icons.Default.CreditCard);
+
+    companion object {
+        fun getByDbId(dbId: Boolean): IncomeOrOutcome =
+            if (dbId == Income.dbId) Income
+            else Outcome
+    }
 }

@@ -1,27 +1,13 @@
 package data.db.table
 
+import androidx.room.ColumnInfo
 import androidx.room.Entity
-import androidx.room.ForeignKey
-import androidx.room.PrimaryKey
 
 @Entity(
-    primaryKeys = ["expenseId", "labelId"],
-    foreignKeys = [
-        ForeignKey(
-            entity = Expense::class,
-            parentColumns = ["id"],
-            childColumns = ["expenseId"],
-            onDelete = ForeignKey.CASCADE
-        ),
-        ForeignKey(
-            entity = Label::class,
-            parentColumns = ["id"],
-            childColumns = ["labelId"],
-            onDelete = ForeignKey.CASCADE
-        )
-    ]
+    tableName = "expense_label_crossref",
+    primaryKeys = ["expense_id", "label_id"]
 )
 data class ExpenseLabelCrossRef(
-    @PrimaryKey val expenseId: Int,
-    @PrimaryKey val labelId: Int
+    @ColumnInfo(name = "expense_id") val expenseId: Int,
+    @ColumnInfo(name = "label_id")  val labelId: Int
 )

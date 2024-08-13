@@ -39,5 +39,12 @@ enum class ExpenseIcon(val id: Int, val keywords: String, val icon: ImageVector)
     Health(14, "health", Icons.Default.Medication),
     Water(15, "water", Icons.Default.WaterDrop),
     Electricity(16, "electricity", Icons.Default.Bolt),
-    Cloud(17, "cloud", Icons.Default.Cloud)
+    Cloud(17, "cloud", Icons.Default.Cloud);
+
+    companion object {
+        val list = listOf(Transport, Housing, Grocery, Phone, Help, Savings, Bank, Incomes,
+            Store, Party, Film, Internet, Class, VideoGame, Health, Electricity, Cloud)
+
+        fun findById(id: Int): ExpenseIcon = list.find { it.id == id } ?: Transport
+    }
 }

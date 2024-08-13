@@ -2,7 +2,7 @@ package presentation.data
 
 data class BudgetUI(
     val id: Int,
-    val name: String,
+    val title: String,
     val style: BudgetStyle,
     val labels: List<LabelUI>,
     val expenses: List<ExpenseUI>,

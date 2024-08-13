@@ -60,7 +60,7 @@ class DashboardViewModel(
 
             val dummyBudget = listOf(BudgetUI(
                 id = 0,
-                name = "My budget",
+                title = "My budget",
                 labels = labels,
                 expenses = expenses,
                 style = BudgetStyle.CitrusJuice,
@@ -71,7 +71,7 @@ class DashboardViewModel(
                 upcomingPayments = MonthYearPair(annual = yearOutcomes),
             ), BudgetUI(
                 id = 0,
-                name = "My secondary budget",
+                title = "My secondary budget",
                 labels = emptyList(),//labels.subList(1, labels.size),
                 expenses = expenses,
                 style = BudgetStyle.Winter,
