@@ -9,12 +9,15 @@ data class LabelUI(
 ) {
     companion object {
         val defaults = listOf(
-            LabelUI(1, "Royal Blue", Color(0xFF4169E1)),
-            LabelUI(2, "Emerald Green", Color(0xFF50C878)),
-            LabelUI(3, "Golden Amber", Color(0xFFFFBF00)),
-            LabelUI(4, "Crimson Red", Color(0xFFDC143C)),
-            LabelUI(5, "Deep Purple", Color(0xFF800080)),
-            LabelUI(6, "Midnight Black", Color(0xFF191970))
+            LabelUI(1, "", Color(0xFF50C878)),
+            LabelUI(2, "", Color(0xFFFFBF00)),
+            LabelUI(3, "", Color(0xFFEE6A50)),
+            LabelUI(4, "", Color(0xFFDC143C)),
+
+            LabelUI(5, "", Color(0xFF800080)),
+            LabelUI(6, "", Color(0xFF191970)),
+            LabelUI(7, "", Color(0xFF0F52BA)),
+            LabelUI(8, "", Color(0xFF4169E1)),
         )
     }
 }

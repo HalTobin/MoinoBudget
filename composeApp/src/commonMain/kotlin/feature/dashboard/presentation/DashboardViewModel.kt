@@ -92,6 +92,9 @@ class DashboardViewModel(
             is DashboardEvent.UpsertLabel -> viewModelScope.launch(Dispatchers.IO) {
                 labelRepository.upsertLabel(event.label)
             }
+            is DashboardEvent.UpsertBudget -> viewModelScope.launch(Dispatchers.IO) {
+
+            }
         }
     }
 

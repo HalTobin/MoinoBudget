@@ -22,6 +22,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyHorizontalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
@@ -85,6 +88,7 @@ import moinobudget.composeapp.generated.resources.upcoming_payments
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 import presentation.BudgetBackground
+import presentation.data.BudgetStyle
 import presentation.data.BudgetUI
 import presentation.data.ExpenseUI
 import presentation.data.IncomeOrOutcome
@@ -103,13 +107,17 @@ fun DashboardScreen(
     val scope = rememberCoroutineScope()
     var year by remember { mutableStateOf(false) }
 
-    var addBudgetDialog by remember { mutableStateOf(false) }
+    var addEditBudgetDialog by remember { mutableStateOf(false) }
+    var budgetIdDialog by remember { mutableStateOf<Int?>(null) }
 
-    if (addBudgetDialog) NewEditBudgetDialog(
+    if (addEditBudgetDialog) NewEditBudgetDialog(
+        budgetId = budgetIdDialog,
         preferences = preferences,
-        onDismiss = { addBudgetDialog = false},
-        editLabel = { onEvent(DashboardEvent.UpsertLabel(it)) },
-        labels = state.labels)
+        onDismiss = { addEditBudgetDialog = false},
+        saveBudget = { onEvent(DashboardEvent.UpsertBudget(it)) },
+        labels = state.labels,
+        style = BudgetStyle.CitrusJuice
+    )
 
     val themePrimary = MaterialTheme.colorScheme.primary
     val themeOnPrimary = MaterialTheme.colorScheme.onPrimary
@@ -182,7 +190,7 @@ fun DashboardScreen(
             }
 
             Spacer(modifier = Modifier.height(16.dp))
-            QuickActions(createBudget = { addBudgetDialog = true }, {})
+            QuickActions(createBudget = { addEditBudgetDialog = true }, {})
             Spacer(Modifier.height(8.dp))
             val dashboardState = rememberPagerState(pageCount = { state.budgets.size })
             DashboardTab(dashboardState, onSelect = { scope.launch {
@@ -287,7 +295,7 @@ fun FinancialSummary(
     Box {
         BudgetBackground(modifier = Modifier.fillMaxSize(), background = budget.style.background)
         Column(Modifier.fillMaxSize().padding(horizontal = 16.dp, vertical = 8.dp)) {
-            Text("My budget".uppercase(),
+            Text(budget.name.uppercase(),
                 style = MaterialTheme.typography.titleLarge,
                 textAlign = TextAlign.Center,
                 fontWeight = FontWeight.SemiBold,
@@ -325,16 +333,19 @@ fun FinancialSummary(
                 }
             }
         }
-        Column(Modifier
-            .padding(end = 8.dp)
-            .align(Alignment.CenterEnd)
-            .clip(CircleShape)
-            .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.6f))
-            .padding(4.dp)
+        if (budget.labels.isNotEmpty()) LazyHorizontalGrid(
+            GridCells.Fixed(4),
+            modifier = Modifier
+                .padding(horizontal = 8.dp, vertical = 24.dp)
+                .align(Alignment.CenterEnd)
+                .clip(if (budget.labels.size < 4) CircleShape else RoundedCornerShape(16.dp))
+                .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.6f))
+                .padding(4.dp)
         ) {
-            budget.labels.forEach { label ->
-                Box(Modifier.padding(vertical = 2.dp)
-                    .size(20.dp).clip(CircleShape).background(label.color))
+            items(budget.labels) { label ->
+                Box(Modifier.padding(2.dp)
+                    .size(20.dp).aspectRatio(1f)
+                    .clip(CircleShape).background(label.color))
             }
         }
     }
