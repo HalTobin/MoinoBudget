@@ -58,22 +58,22 @@ class BudgetRepositoryImpl(
             .map { expenseLabelDao.getExpenseWithLabels(it.expenseId) }
             .map { expense ->
                 val frequency = ExpenseFrequency.findById(expense.expense.frequency)
-                val currentDate = kotlinx.datetime.Clock.System.now().epochSeconds.toLocalDate()
+                val currentDate = Clock.System.now().epochSeconds.toLocalDate()
                 val nextPayment = expense.expense.lastPayment.toLocalDate()
                 nextPayment.plus(
-                    kotlinx.datetime.DatePeriod(
+                    DatePeriod(
                         years = 0,
                         months = frequency.everyXMonth
                     )
                 )
                 val dueIn = nextPayment.compareTo(currentDate)
 
-                presentation.data.ExpenseUI(
+                ExpenseUI(
                     id = expense.expense.id,
                     amount = expense.expense.amount,
-                    type = presentation.data.IncomeOrOutcome.getByDbId(expense.expense.isIncome),
+                    type = IncomeOrOutcome.getByDbId(expense.expense.isIncome),
                     title = expense.expense.title,
-                    icon = presentation.data.ExpenseIcon.findById(expense.expense.iconId),
+                    icon = ExpenseIcon.findById(expense.expense.iconId),
                     frequency = frequency,
                     payed = false,
                     dueIn = dueIn,
@@ -84,10 +84,10 @@ class BudgetRepositoryImpl(
             }
 
         val yearIncomes = expenses
-            .filter { it.type == presentation.data.IncomeOrOutcome.Income }
+            .filter { it.type == IncomeOrOutcome.Income }
             .sumOf { it.amount * it.frequency.multiplier.toDouble() }
         val yearOutcomes = expenses
-            .filter { it.type == presentation.data.IncomeOrOutcome.Outcome }
+            .filter { it.type == IncomeOrOutcome.Outcome }
             .sumOf { it.amount * it.frequency.multiplier.toDouble() }
         val monthPayments = expenses
             .filter { it.frequency == ExpenseFrequency.Monthly }

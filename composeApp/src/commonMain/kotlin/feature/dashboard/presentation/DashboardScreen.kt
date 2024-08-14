@@ -2,6 +2,7 @@ package feature.dashboard.presentation
 
 import androidx.compose.animation.Animatable
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.Crossfade
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -9,6 +10,8 @@ import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -35,6 +38,7 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Savings
 import androidx.compose.material.icons.filled.Settings
@@ -80,6 +84,7 @@ import feature.dashboard.presentation.dialog.NewEditBudgetDialog
 import kotlinx.coroutines.launch
 import moinobudget.composeapp.generated.resources.Res
 import moinobudget.composeapp.generated.resources.available_in
+import moinobudget.composeapp.generated.resources.create_budget_description
 import moinobudget.composeapp.generated.resources.disposable_dd
 import moinobudget.composeapp.generated.resources.due_in
 import moinobudget.composeapp.generated.resources.edit_label_description
@@ -98,6 +103,7 @@ import presentation.data.BudgetUI
 import presentation.data.ExpenseUI
 import presentation.data.IncomeOrOutcome
 import presentation.formatCurrency
+import presentation.pager.pagerStateOpacity
 import ui.Screen
 import ui.theme.Orange80
 import kotlin.math.absoluteValue
@@ -157,44 +163,59 @@ fun DashboardScreen(
                 }
             }
             Spacer(modifier = Modifier.height(8.dp))
-            val budgetState = rememberPagerState(initialPage = 0, pageCount = { state.budgets.size })
+            val budgetState = rememberPagerState(initialPage = 1, pageCount = { state.budgets.size + 1 })
             LaunchedEffect(key1 = budgetState.currentPage) {
                 if (state.budgets.isNotEmpty()) {
-                    val style = state.budgets[budgetState.currentPage].style
+                    val style = if (budgetState.currentPage != 0) state.budgets[budgetState.currentPage - 1].style
+                        else BudgetStyle.CitrusJuice
                     primary.animateTo(if (preferences.theme.isDark) style.primary.second else style.primary.first)
                     onPrimary.animateTo(if (preferences.theme.isDark) style.onPrimary.second else style.onPrimary.first)
                 }
+            }
+            LaunchedEffect(key1 = state.budgets) {
+                if (budgetState.currentPage == 0 && budgetState.pageCount > 1) budgetState.scrollToPage(1)
             }
             HorizontalPager(
                 modifier = Modifier.fillMaxWidth(),
                 state = budgetState,
                 contentPadding = PaddingValues(horizontal = 32.dp),
             ) { page ->
-                val budget = state.budgets[page]
-                FinancialSummary(
-                    modifier = Modifier.graphicsLayer {
-                        // Calculate the absolute offset for the current page from the
-                        // scroll position. We use the absolute value which allows us to mirror
-                        // any effects for both directions
-                        val pageOffset = (
-                                (budgetState.currentPage - page) + budgetState
-                                    .currentPageOffsetFraction
-                                ).absoluteValue
-
-                        // We animate the alpha, between 50% and 100%
-                        alpha = lerp(
-                            start = 0.5f,
-                            stop = 1f,
-                            fraction = 1f - pageOffset.coerceIn(0f, 1f)
-                        )
+                if (page == 0) {
+                    Box(modifier = Modifier.fillMaxWidth()
+                        .padding(horizontal = 16.dp)
+                        .height(164.dp)
+                        .aspectRatio(1.9f)
+                        .clip(RoundedCornerShape(24.dp))
+                        .border(2.dp, MaterialTheme.colorScheme.primary, RoundedCornerShape(24.dp))
+                        .clickable(enabled = budgetState.currentPage == 0) { addEditBudgetDialog = true }
+                        .pagerStateOpacity(budgetState, page),
+                        contentAlignment = Alignment.Center) {
+                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                            Icon(modifier = Modifier.size(80.dp)
+                                .clip(CircleShape)
+                                .background(MaterialTheme.colorScheme.surface)
+                                .padding(16.dp),
+                                imageVector = Icons.Default.Add,
+                                contentDescription = stringResource(Res.string.create_budget_description))
+                            Text(stringResource(Res.string.create_budget_description).uppercase(),
+                                modifier = Modifier.padding(top = 16.dp),
+                                style = MaterialTheme.typography.titleMedium,
+                                fontWeight = FontWeight.SemiBold)
+                        }
                     }
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp),
-                    preferences = preferences,
-                    edit = { budgetForDialog = budget
-                           addEditBudgetDialog = true},
-                    year = year,
-                    budget = budget)
+                }
+                else {
+                    val budget = state.budgets[page-1]
+                    FinancialSummary(
+                        modifier = Modifier.pagerStateOpacity(budgetState, page)
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp),
+                        preferences = preferences,
+                        edit = { budgetForDialog = budget
+                               addEditBudgetDialog = true},
+                        year = year,
+                        budget = budget)
+                }
             }
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -205,16 +226,21 @@ fun DashboardScreen(
                 dashboardState.animateScrollToPage(it) }})
             Spacer(Modifier.height(8.dp))
             if (state.budgets.isNotEmpty()) HorizontalPager(state = dashboardState) { page ->
-                if (page == IncomeOrOutcome.Outcome.tabId) PaymentsSection(preferences = preferences,
-                    budget = state.budgets[budgetState.currentPage],
-                    incomeOrOutcome = IncomeOrOutcome.Outcome,
-                    amount = state.budgets[budgetState.currentPage].upcomingPayments.first,
-                    dueExpenses = state.budgets.first().expenses)
-                else PaymentsSection(preferences = preferences,
-                    budget = state.budgets[budgetState.currentPage],
-                    incomeOrOutcome = IncomeOrOutcome.Income,
-                    amount = state.budgets.first().rawIncomes.first,
-                    dueExpenses = state.budgets[budgetState.currentPage].expenses)
+                Crossfade(targetState = budgetState.currentPage) { budgetPage ->
+                    if (budgetPage > 0) {
+                        val budget = state.budgets[budgetPage-1]
+                        if (page == IncomeOrOutcome.Outcome.tabId) PaymentsSection(preferences = preferences,
+                            budget = budget,
+                            incomeOrOutcome = IncomeOrOutcome.Outcome,
+                            amount = budget.upcomingPayments.first,
+                            dueExpenses = budget.expenses)
+                        else PaymentsSection(preferences = preferences,
+                            budget = budget,
+                            incomeOrOutcome = IncomeOrOutcome.Income,
+                            amount = budget.rawIncomes.first,
+                            dueExpenses = budget.expenses)
+                    }
+                }
             }
         }
     }

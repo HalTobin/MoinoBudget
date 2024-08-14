@@ -102,22 +102,6 @@ class DashboardViewModel(
         }
     }
 
-    private fun getExpenses(labels: List<LabelUI>): List<ExpenseUI> {
-        val now = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date
-        /*return listOf(
-            ExpenseUI(1, 15f, IncomeOrOutcome.Outcome,"Netflix", ExpenseIcon.Film, ExpenseFrequency.Monthly, false, 6, now, now.minusMonthsCompat(1), labels.subList(0, 2)),
-            ExpenseUI(2, 235f, IncomeOrOutcome.Outcome,"Electricity", ExpenseIcon.Electricity, ExpenseFrequency.Monthly, true, 2, now.plusDaysCompat(5), now.minusMonthsCompat(1), listOf(labels[1])),
-            ExpenseUI(3, 700f, IncomeOrOutcome.Outcome, "Rent", ExpenseIcon.Housing, ExpenseFrequency.Monthly, false, 17, now.plusDaysCompat(10), now.minusMonthsCompat(1), labels.subList(0, 2)),
-            ExpenseUI(4, 20f, IncomeOrOutcome.Outcome, "Internet", ExpenseIcon.Internet, ExpenseFrequency.Monthly, true, 2, now.plusDaysCompat(2), now.minusMonthsCompat(1), listOf(labels[0], labels[2])),
-            ExpenseUI(5, 150f, IncomeOrOutcome.Outcome, "Water", ExpenseIcon.Water, ExpenseFrequency.Monthly, false, 1, now.plusDaysCompat(7), now.minusMonthsCompat(1), labels.subList(0, 2)),
-            ExpenseUI(6, 1656f, IncomeOrOutcome.Income, "Salary", ExpenseIcon.Incomes, ExpenseFrequency.Monthly, false, 17, now.plusDaysCompat(10), now.minusMonthsCompat(1), labels.subList(3, 5)),
-            ExpenseUI(7, 185f, IncomeOrOutcome.Income, "CAF", ExpenseIcon.Help, ExpenseFrequency.Monthly, true, 2, now.plusDaysCompat(2), now.minusMonthsCompat(1), listOf(labels[2])),
-            ExpenseUI(8, 45f, IncomeOrOutcome.Income, "TR", ExpenseIcon.Store, ExpenseFrequency.Monthly, false, 1, now.plusDaysCompat(7), now.minusMonthsCompat(1), listOf(labels[0])),
-            ExpenseUI(9, 100f, IncomeOrOutcome.Outcome, "TR", ExpenseIcon.Cloud, ExpenseFrequency.Annually, false, 1, now.plusDaysCompat(7), now.minusMonthsCompat(1), listOf(labels[0]))
-        )*/
-        return emptyList()
-    }
-
     private fun setUpBudgetJob() {
         budgetJob?.cancel()
         budgetJob = viewModelScope.launch(Dispatchers.IO) {
