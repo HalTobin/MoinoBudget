@@ -56,6 +56,7 @@
     <string name="about_credits">Credits, Dev</string>
 
     <!-- NewEdit Budget -->
+    <string name="default_budget">Main budget</string>
     <string name="edit_budget">Edit budget</string>
     <string name="title">Title</string>
     <string name="labels">Labels</string>

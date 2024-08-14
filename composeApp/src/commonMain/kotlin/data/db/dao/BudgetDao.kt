@@ -26,6 +26,10 @@ interface BudgetDao {
 
     @Transaction
     @Query("SELECT * FROM budgets")
-    fun getAllWithLabels(): Flow<List<BudgetWithLabels>>
+    suspend fun getAllWithLabels(): List<BudgetWithLabels>
+
+    @Transaction
+    @Query("SELECT * FROM budgets")
+    fun getAllWithLabelsFlow(): Flow<List<BudgetWithLabels>>
 
 }

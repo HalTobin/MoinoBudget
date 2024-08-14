@@ -4,6 +4,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
+import data.repository.BudgetRepository
 import data.repository.LabelRepository
 import feature.dashboard.data.MonthYearPair
 import kotlinx.coroutines.Dispatchers
@@ -29,22 +30,25 @@ import presentation.data.IncomeOrOutcome
 import presentation.data.LabelUI
 
 class DashboardViewModel(
-    private val labelRepository: LabelRepository
+    private val labelRepository: LabelRepository,
+    private val budgetRepository: BudgetRepository
 ): ViewModel() {
 
     private val _state = MutableStateFlow(DashboardState())
     val state = _state.asStateFlow()
 
+    private var budgetJob: Job? = null
     private var labelJob: Job? = null
 
     init {
         // Load expenses and payments...
         setUpLabelJob()
+        setUpBudgetJob()
 
         viewModelScope.launch(Dispatchers.IO) {
             val labels = labelRepository.getLabels()
-            val expenses = getExpenses(labels)
 
+            /*val expenses = getExpenses(labels)
             val yearIncomes = expenses
                 .filter { it.type == IncomeOrOutcome.Income }
                 .sumOf { it.amount * it.frequency.multiplier.toDouble() }
@@ -81,9 +85,9 @@ class DashboardViewModel(
                 disposableIncomes = MonthYearPair(annual = (yearIncomes - yearOutcomes) / 2),
                 upcomingPayments = MonthYearPair(annual = yearOutcomes / 2),
             )
-            )
+            )*/
 
-            _state.update { it.copy(budgets = dummyBudget, labels = labels) }
+            _state.update { it.copy(labels = labels) }
         }
     }
 
@@ -93,7 +97,7 @@ class DashboardViewModel(
                 labelRepository.upsertLabel(event.label)
             }
             is DashboardEvent.UpsertBudget -> viewModelScope.launch(Dispatchers.IO) {
-
+                budgetRepository.upsertBudget(event.budget)
             }
         }
     }
@@ -112,6 +116,15 @@ class DashboardViewModel(
             ExpenseUI(9, 100f, IncomeOrOutcome.Outcome, "TR", ExpenseIcon.Cloud, ExpenseFrequency.Annually, false, 1, now.plusDaysCompat(7), now.minusMonthsCompat(1), listOf(labels[0]))
         )*/
         return emptyList()
+    }
+
+    private fun setUpBudgetJob() {
+        budgetJob?.cancel()
+        budgetJob = viewModelScope.launch(Dispatchers.IO) {
+            budgetRepository.getBudgetsFlow().collect { budgets ->
+                _state.update { it.copy(budgets = budgets) }
+            }
+        }
     }
 
     private fun setUpLabelJob() {

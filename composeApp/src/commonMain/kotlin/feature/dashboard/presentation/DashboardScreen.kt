@@ -9,6 +9,7 @@ import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -25,6 +26,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyHorizontalGrid
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.HorizontalPager
@@ -349,12 +351,14 @@ fun FinancialSummary(
                 }
             }
         }
-        if (budget.labels.isNotEmpty()) LazyHorizontalGrid(
-            GridCells.Fixed(4),
+        if (budget.labels.isNotEmpty()) LazyVerticalGrid(
+            GridCells.Fixed(2),
+            horizontalArrangement = Arrangement.End,
             modifier = Modifier
+                .width(68.dp)
                 .padding(horizontal = 8.dp, vertical = 24.dp)
                 .align(Alignment.CenterEnd)
-                .clip(if (budget.labels.size < 4) CircleShape else RoundedCornerShape(16.dp))
+                .clip(RoundedCornerShape(16.dp))
                 .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.6f))
                 .padding(4.dp)
         ) {
