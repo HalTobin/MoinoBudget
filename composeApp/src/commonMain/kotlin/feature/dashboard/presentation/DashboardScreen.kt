@@ -39,6 +39,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Savings
 import androidx.compose.material.icons.filled.Settings
@@ -51,6 +52,9 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
@@ -81,10 +85,14 @@ import feature.dashboard.data.annual
 import feature.dashboard.data.monthly
 import feature.dashboard.presentation.component.TextSwitch
 import feature.dashboard.presentation.dialog.NewEditBudgetDialog
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import moinobudget.composeapp.generated.resources.Res
 import moinobudget.composeapp.generated.resources.available_in
+import moinobudget.composeapp.generated.resources.cant_delete
 import moinobudget.composeapp.generated.resources.create_budget_description
+import moinobudget.composeapp.generated.resources.dismiss_message
 import moinobudget.composeapp.generated.resources.disposable_dd
 import moinobudget.composeapp.generated.resources.due_in
 import moinobudget.composeapp.generated.resources.edit_label_description
@@ -95,9 +103,11 @@ import moinobudget.composeapp.generated.resources.operation
 import moinobudget.composeapp.generated.resources.payments_dd
 import moinobudget.composeapp.generated.resources.to_put_aside_dd
 import moinobudget.composeapp.generated.resources.upcoming_payments
+import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 import presentation.BudgetBackground
+import presentation.MoinoSnackBar
 import presentation.data.BudgetStyle
 import presentation.data.BudgetUI
 import presentation.data.ExpenseUI
@@ -113,9 +123,15 @@ fun DashboardScreen(
     preferences: AppPreferences,
     state: DashboardState,
     onEvent: (DashboardEvent) -> Unit,
+    uiEvent: SharedFlow<DashboardViewModel.UiEvent>,
     goTo: (Screen) -> Unit
 ) = Box {
     val scope = rememberCoroutineScope()
+    val snackBarHostState = remember { SnackbarHostState() }
+    val budgetState = rememberPagerState(initialPage = 1, pageCount = { state.budgets.size + 1 })
+
+    var started by remember { mutableStateOf(false) }
+
     var year by remember { mutableStateOf(false) }
 
     var addEditBudgetDialog by remember { mutableStateOf(false) }
@@ -135,108 +151,130 @@ fun DashboardScreen(
     val primary = remember { Animatable(themePrimary) }
     val onPrimary = remember { Animatable(themeOnPrimary) }
 
+    LaunchedEffect(true) {
+        uiEvent.collectLatest { event ->
+            when (event) {
+                is DashboardViewModel.UiEvent.OneBudgetIsNeeded -> snackBarHostState
+                    .showSnackbar(getString(Res.string.cant_delete), withDismissAction = true)
+            }
+
+        }
+    }
+
     MaterialTheme(
         colorScheme = MaterialTheme.colorScheme.copy(
             primary = primary.value,
             onPrimary = onPrimary.value
         )
     ) {
-        Column {
-            Row(modifier = Modifier.fillMaxWidth().padding(8.dp),
-                verticalAlignment = Alignment.CenterVertically) {
-                IconButton(modifier = Modifier
-                    .clip(CircleShape)
-                    .background(MaterialTheme.colorScheme.surface),
-                    onClick = { goTo(Screen.Settings) }) {
-                    Icon(modifier = Modifier.size(32.dp),
-                        imageVector = Icons.Default.Savings, contentDescription = stringResource(Res.string.go_to_settings_help))
+        Scaffold(snackbarHost = { SnackbarHost(snackBarHostState, snackbar = { MoinoSnackBar(it) }) }) {
+            Column {
+                Row(modifier = Modifier.fillMaxWidth().padding(8.dp),
+                    verticalAlignment = Alignment.CenterVertically) {
+                    IconButton(modifier = Modifier
+                        .clip(CircleShape)
+                        .background(MaterialTheme.colorScheme.surface),
+                        onClick = { goTo(Screen.Settings) }) {
+                        Icon(modifier = Modifier.size(32.dp),
+                            imageVector = Icons.Default.Savings, contentDescription = stringResource(Res.string.go_to_settings_help))
+                    }
+                    Spacer(Modifier.weight(1f))
+                    YearMonthSwitch(year, onChange = { year = it })
+                    Spacer(Modifier.weight(1f))
+                    IconButton(modifier = Modifier
+                        .clip(CircleShape)
+                        .background(MaterialTheme.colorScheme.surface),
+                        onClick = { goTo(Screen.Settings) }) {
+                        Icon(modifier = Modifier.size(32.dp),
+                            imageVector = Icons.Default.Settings, contentDescription = stringResource(Res.string.go_to_settings_help))
+                    }
                 }
-                Spacer(Modifier.weight(1f))
-                YearMonthSwitch(year, onChange = { year = it })
-                Spacer(Modifier.weight(1f))
-                IconButton(modifier = Modifier
-                    .clip(CircleShape)
-                    .background(MaterialTheme.colorScheme.surface),
-                    onClick = { goTo(Screen.Settings) }) {
-                    Icon(modifier = Modifier.size(32.dp),
-                        imageVector = Icons.Default.Settings, contentDescription = stringResource(Res.string.go_to_settings_help))
-                }
-            }
-            Spacer(modifier = Modifier.height(8.dp))
-            val budgetState = rememberPagerState(initialPage = 1, pageCount = { state.budgets.size + 1 })
-            LaunchedEffect(key1 = budgetState.currentPage) {
-                if (state.budgets.isNotEmpty()) {
-                    val style = if (budgetState.currentPage != 0) state.budgets[budgetState.currentPage - 1].style
+                Spacer(modifier = Modifier.height(8.dp))
+
+                LaunchedEffect(key1 = budgetState.currentPage, key2 = state.budgets) {
+                    if (state.budgets.isNotEmpty()) {
+                        val style = if (budgetState.currentPage != 0) state.budgets[budgetState.currentPage - 1].style
                         else BudgetStyle.CitrusJuice
-                    primary.animateTo(if (preferences.theme.isDark) style.primary.second else style.primary.first)
-                    onPrimary.animateTo(if (preferences.theme.isDark) style.onPrimary.second else style.onPrimary.first)
+                        primary.animateTo(style.getPrimary(preferences))
+                        onPrimary.animateTo(style.getOnPrimary(preferences))
+                    }
                 }
-            }
-            LaunchedEffect(key1 = state.budgets) {
-                if (budgetState.currentPage == 0 && budgetState.pageCount > 1) budgetState.scrollToPage(1)
-            }
-            HorizontalPager(
-                modifier = Modifier.fillMaxWidth(),
-                state = budgetState,
-                contentPadding = PaddingValues(horizontal = 32.dp),
-            ) { page ->
-                if (page == 0) {
-                    Box(modifier = Modifier.fillMaxWidth()
-                        .padding(horizontal = 16.dp)
-                        .height(164.dp)
-                        .aspectRatio(1.9f)
-                        .clip(RoundedCornerShape(24.dp))
-                        .border(2.dp, MaterialTheme.colorScheme.primary, RoundedCornerShape(24.dp))
-                        .clickable(enabled = budgetState.currentPage == 0) { addEditBudgetDialog = true }
-                        .pagerStateOpacity(budgetState, page),
-                        contentAlignment = Alignment.Center) {
-                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                            Icon(modifier = Modifier.size(80.dp)
-                                .clip(CircleShape)
-                                .background(MaterialTheme.colorScheme.surface)
-                                .padding(16.dp),
-                                imageVector = Icons.Default.Add,
-                                contentDescription = stringResource(Res.string.create_budget_description))
-                            Text(stringResource(Res.string.create_budget_description).uppercase(),
-                                modifier = Modifier.padding(top = 16.dp),
-                                style = MaterialTheme.typography.titleMedium,
-                                fontWeight = FontWeight.SemiBold)
+
+                LaunchedEffect(key1 = state.budgets.size) {
+                    if (budgetState.currentPage == 0 && budgetState.pageCount > 1) {
+                        if (!started) {
+                            budgetState.scrollToPage(1)
+                            started = true
+                        }
+                        else budgetState.animateScrollToPage(budgetState.pageCount-1)
+                    }
+                }
+
+                HorizontalPager(
+                    modifier = Modifier.fillMaxWidth(),
+                    state = budgetState,
+                    contentPadding = PaddingValues(horizontal = 32.dp),
+                ) { page ->
+                    if (page == 0) {
+                        Box(modifier = Modifier.fillMaxWidth()
+                            .padding(horizontal = 16.dp)
+                            .height(164.dp)
+                            .aspectRatio(1.9f)
+                            .clip(RoundedCornerShape(24.dp))
+                            .border(2.dp, BudgetStyle.CitrusJuice.getPrimary(preferences), RoundedCornerShape(24.dp))
+                            .clickable(enabled = budgetState.currentPage == 0) { addEditBudgetDialog = true }
+                            .pagerStateOpacity(budgetState, page),
+                            contentAlignment = Alignment.Center) {
+                            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                Icon(modifier = Modifier.size(80.dp)
+                                    .clip(CircleShape)
+                                    .background(MaterialTheme.colorScheme.surface)
+                                    .padding(16.dp),
+                                    imageVector = Icons.Default.Add,
+                                    contentDescription = stringResource(Res.string.create_budget_description))
+                                Text(stringResource(Res.string.create_budget_description).uppercase(),
+                                    modifier = Modifier.padding(top = 16.dp),
+                                    style = MaterialTheme.typography.titleMedium,
+                                    fontWeight = FontWeight.SemiBold)
+                            }
+                        }
+                    }
+                    else {
+                        state.budgets.getOrNull(page-1)?.let { budget ->
+                            FinancialSummary(
+                                modifier = Modifier.pagerStateOpacity(budgetState, page)
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 16.dp),
+                                preferences = preferences,
+                                edit = { budgetForDialog = budget
+                                    addEditBudgetDialog = true},
+                                year = year,
+                                budget = budget)
                         }
                     }
                 }
-                else {
-                    val budget = state.budgets[page-1]
-                    FinancialSummary(
-                        modifier = Modifier.pagerStateOpacity(budgetState, page)
-                            .fillMaxWidth()
-                            .padding(horizontal = 16.dp),
-                        preferences = preferences,
-                        edit = { budgetForDialog = budget
-                               addEditBudgetDialog = true},
-                        year = year,
-                        budget = budget)
-                }
-            }
 
-            Spacer(modifier = Modifier.height(16.dp))
-            val dashboardState = rememberPagerState(pageCount = { state.budgets.size })
-            DashboardTab(dashboardState, onSelect = { scope.launch {
-                dashboardState.animateScrollToPage(it) }})
-            Spacer(Modifier.height(8.dp))
-            if (state.budgets.isNotEmpty()) HorizontalPager(state = dashboardState) { page ->
-                Crossfade(targetState = budgetState.currentPage) { budgetPage ->
-                    if (budgetPage > 0) {
-                        val budget = state.budgets[budgetPage-1]
-                        if (page == IncomeOrOutcome.Outcome.tabId) PaymentsSection(preferences = preferences,
-                            budget = budget,
-                            incomeOrOutcome = IncomeOrOutcome.Outcome,
-                            amount = budget.upcomingPayments.first,
-                            dueExpenses = budget.expenses)
-                        else PaymentsSection(preferences = preferences,
-                            budget = budget,
-                            incomeOrOutcome = IncomeOrOutcome.Income,
-                            amount = budget.rawIncomes.first,
-                            dueExpenses = budget.expenses)
+                Spacer(modifier = Modifier.height(16.dp))
+                val dashboardState = rememberPagerState(pageCount = { state.budgets.size })
+                DashboardTab(dashboardState, onSelect = { scope.launch {
+                    dashboardState.animateScrollToPage(it) }})
+                Spacer(Modifier.height(8.dp))
+                if (state.budgets.isNotEmpty()) HorizontalPager(state = dashboardState) { page ->
+                    Crossfade(targetState = budgetState.currentPage) { budgetPage ->
+                        if (budgetPage > 0) {
+                            state.budgets.getOrNull(budgetPage-1)?.let { budget ->
+                                if (page == IncomeOrOutcome.Outcome.tabId) PaymentsSection(preferences = preferences,
+                                    budget = budget,
+                                    incomeOrOutcome = IncomeOrOutcome.Outcome,
+                                    amount = budget.upcomingPayments.first,
+                                    dueExpenses = budget.expenses)
+                                else PaymentsSection(preferences = preferences,
+                                    budget = budget,
+                                    incomeOrOutcome = IncomeOrOutcome.Income,
+                                    amount = budget.rawIncomes.first,
+                                    dueExpenses = budget.expenses)
+                            }
+                        }
                     }
                 }
             }

@@ -66,6 +66,7 @@
     <string name="edit_label_description">Edit label</string>
     <string name="save_new_label_name_description">Save new label's name</string>
     <string name="delete_budget">Delete budget</string>
+    <string name="cant_delete">Can't delete this budget, you should have at least one.</string>
 
     <!-- Budget Style -->
     <string name="style_red_waves">Red Waves</string>
@@ -76,4 +77,5 @@
     <!-- General purpose -->
     <string name="back_home_description">Navigate back to home screen</string>
     <string name="close_dialog_description">Close dialog</string>
+    <string name="dismiss_message">Dismiss message</string>
 </resources>

@@ -91,8 +91,8 @@ fun NewEditBudgetDialog(
 
     var style by remember { mutableStateOf(budget?.style ?: BudgetStyle.RedWaves) }
 
-    val primary = remember { Animatable(if (preferences.theme.isDark) style.primary.second else style.primary.first) }
-    val onPrimary = remember { Animatable(if (preferences.theme.isDark) style.onPrimary.second else style.onPrimary.first) }
+    val primary = remember { Animatable(style.getPrimary(preferences)) }
+    val onPrimary = remember { Animatable(style.getOnPrimary(preferences)) }
     val pagerState = rememberPagerState(initialPage = 0, pageCount = { styles.size })
 
     var deleteMode by remember { mutableStateOf(false) }
@@ -109,8 +109,8 @@ fun NewEditBudgetDialog(
 
     LaunchedEffect(key1 = pagerState.settledPage) {
         style = styles[pagerState.settledPage]
-        primary.animateTo(if (preferences.theme.isDark) style.primary.second else style.primary.first)
-        onPrimary.animateTo(if (preferences.theme.isDark) style.onPrimary.second else style.onPrimary.first)
+        primary.animateTo(style.getPrimary(preferences))
+        onPrimary.animateTo(style.getOnPrimary(preferences))
     }
 
     Surface(
@@ -219,7 +219,7 @@ fun NewEditBudgetDialog(
                                 onClick = {
                                     if (budgetTitle.isBlank()) titleError = true
                                     else {
-                                        saveBudget(AddEditBudget(id = budget?.id, title = budgetTitle, style = style, labels = budgetLabels))
+                                        saveBudget(AddEditBudget(id = budget?.id, orderIndex = budget?.orderIndex, title = budgetTitle, style = style, labels = budgetLabels))
                                         onDismiss() } }
                             ) {
                                 Icon(imageVector = Icons.Default.Save, contentDescription = stringResource(Res.string.save))

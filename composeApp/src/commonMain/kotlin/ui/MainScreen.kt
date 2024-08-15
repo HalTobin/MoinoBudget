@@ -42,6 +42,7 @@ fun MainScreen(
                     preferences = preferences,
                     state = state,
                     onEvent = viewModel::onEvent,
+                    uiEvent = viewModel.eventFlow,
                     goTo = { navController.navigate(it.route) })
             }
             composable(Screen.Settings.route) {

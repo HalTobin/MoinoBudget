@@ -50,6 +50,7 @@ class MainViewModel(
             if (budgets.isEmpty()) {
                 val defaultBudget = AddEditBudget(
                     id = null,
+                    orderIndex = 0,
                     title = getString(Res.string.default_budget),
                     style = BudgetStyle.CitrusJuice,
                     labels = emptyList()

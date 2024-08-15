@@ -3,6 +3,7 @@ package presentation.data
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.Blue
 import androidx.compose.ui.graphics.Color.Companion.Green
+import data.repository.AppPreferences
 import moinobudget.composeapp.generated.resources.Res
 import moinobudget.composeapp.generated.resources.bg_card_1
 import moinobudget.composeapp.generated.resources.style_citrus
@@ -47,6 +48,13 @@ enum class BudgetStyle(
     CitrusJuice(id = 3, title = Res.string.style_citrus, Background.Gradient(listOf(Yellow, RedPink)),),
     GrassAndSea(id = 4, title = Res.string.style_grass_sea, Background.Gradient(listOf(Blue, Green)),
         primary = Pair(Green40, Green80), onPrimary = Pair(GreenGrey40, GreenGrey80));
+
+    fun getPrimary(preferences: AppPreferences): Color =
+        if (preferences.theme.isDark) primary.second else primary.first
+
+    fun getOnPrimary(preferences: AppPreferences): Color =
+        if (preferences.theme.isDark) onPrimary.second else onPrimary.first
+
     companion object {
         val list = listOf(RedWaves, Winter, CitrusJuice, GrassAndSea)
     }

@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "a1ce902203834663920af5e79d1ef074",
+    "identityHash": "bdfa82f67c9767d3bfed6cd9d5166940",
     "entities": [
       {
         "tableName": "expenses",
@@ -126,11 +126,17 @@
       },
       {
         "tableName": "budgets",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`budget_id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `title` TEXT NOT NULL, `bgId` INTEGER NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`budget_id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `order_index` INTEGER NOT NULL, `title` TEXT NOT NULL, `bgId` INTEGER NOT NULL)",
         "fields": [
           {
             "fieldPath": "id",
             "columnName": "budget_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "orderIndex",
+            "columnName": "order_index",
             "affinity": "INTEGER",
             "notNull": true
           },
@@ -182,7 +188,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'a1ce902203834663920af5e79d1ef074')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'bdfa82f67c9767d3bfed6cd9d5166940')"
     ]
   }
 }

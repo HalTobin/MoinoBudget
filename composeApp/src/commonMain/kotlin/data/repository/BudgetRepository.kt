@@ -26,6 +26,7 @@ import presentation.data.ExpenseIcon
 import presentation.data.ExpenseUI
 import presentation.data.IncomeOrOutcome
 import util.toLocalDate
+import kotlin.coroutines.cancellation.CancellationException
 import kotlin.math.exp
 
 class BudgetRepositoryImpl(
@@ -34,14 +35,14 @@ class BudgetRepositoryImpl(
     private val expenseLabelDao: ExpenseLabelDao,
 ): BudgetRepository {
 
-    override suspend fun upsertBudget(budget: AddEditBudget) {
+    override suspend fun upsertBudget(budget: AddEditBudget): Int {
         budget.id?.let { budgetId ->
             budgetLabelDao.getCrossRefsByBudgetId(budgetId)
                 .filterNot { crossRef -> budget.labels.any { it == crossRef.labelId } }
                 .forEach { crossRef -> budgetLabelDao.deleteBudgetLabelCrossRef(crossRef) }
         }
 
-        val upsertedId = budgetDao.upsert(budget.toBudgetEntity())
+        val upsertedId = budgetDao.upsert(budget.toBudgetEntity(budgetDao.getMaxOrderIndex()+1))
         val budgetId = budget.id ?: upsertedId.toInt()
 
         budgetLabelDao.insertBudgetLabelCrossRefs(
@@ -49,13 +50,17 @@ class BudgetRepositoryImpl(
                 budgetId = budgetId,
                 labelId = it) }
         )
+
+        return budgetId
+    }
+
+    @Throws(NeedOneBudget::class, CancellationException::class)
+    override suspend fun deleteBudget(budgetId: Int) {
+        if (budgetDao.count() > 1) budgetDao.deleteById(budgetId.toLong())
+        else throw NeedOneBudget()
     }
 
     override suspend fun getBudgets(): List<BudgetUI> = budgetDao.getAllWithLabels().mapToBudgetUI()
-
-    override suspend fun deleteBudget(budget: AddEditBudget) {
-        budgetDao.delete(budget.toBudgetEntity())
-    }
 
     override fun getBudgetsFlow(): Flow<List<BudgetUI>> = budgetDao.getAllWithLabelsFlow().map { it.mapToBudgetUI() }
 
@@ -105,6 +110,7 @@ class BudgetRepositoryImpl(
 
         BudgetUI(
             id = budget.budget.id,
+            orderIndex = budget.budget.orderIndex,
             title = budget.budget.title,
             style = BudgetStyle.list.find { it.id == budget.budget.bgId }
                 ?: BudgetStyle.CitrusJuice,
@@ -121,8 +127,11 @@ class BudgetRepositoryImpl(
 }
 
 interface BudgetRepository {
-    suspend fun upsertBudget(budget: AddEditBudget)
+    suspend fun upsertBudget(budget: AddEditBudget): Int
     suspend fun getBudgets(): List<BudgetUI>
-    suspend fun deleteBudget(budget: AddEditBudget)
+    @Throws(NeedOneBudget::class, CancellationException::class)
+    suspend fun deleteBudget(budgetId: Int)
     fun getBudgetsFlow(): Flow<List<BudgetUI>>
 }
+
+class NeedOneBudget: Exception("You should at least have one budget!")
