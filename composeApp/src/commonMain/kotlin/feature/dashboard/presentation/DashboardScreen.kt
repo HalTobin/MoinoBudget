@@ -43,8 +43,10 @@ import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.SyncAlt
 import androidx.compose.material.icons.filled.Wallet
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -93,6 +95,7 @@ import moinobudget.composeapp.generated.resources.edit_label_description
 import moinobudget.composeapp.generated.resources.go_to_settings_help
 import moinobudget.composeapp.generated.resources.my_incomes
 import moinobudget.composeapp.generated.resources.new_budget
+import moinobudget.composeapp.generated.resources.new_operation
 import moinobudget.composeapp.generated.resources.operation
 import moinobudget.composeapp.generated.resources.payments_dd
 import moinobudget.composeapp.generated.resources.to_put_aside_dd
@@ -130,6 +133,8 @@ fun DashboardScreen(
 
     var addEditBudgetDialog by remember { mutableStateOf(false) }
     var budgetForDialog by remember { mutableStateOf<BudgetUI?>(null) }
+    var addEditExpenseDialog by remember { mutableStateOf(false) }
+    var expenseForDialog by remember { mutableStateOf<ExpenseUI?>(null) }
 
     if (addEditBudgetDialog) NewEditBudgetDialog(
         budget = budgetForDialog,
@@ -161,7 +166,13 @@ fun DashboardScreen(
             onPrimary = onPrimary.value
         )
     ) {
-        Scaffold(snackbarHost = { SnackbarHost(snackBarHostState, snackbar = { MoinoSnackBar(it) }) }) {
+        Scaffold(
+            snackbarHost = { SnackbarHost(snackBarHostState, snackbar = { MoinoSnackBar(it) }) },
+            floatingActionButton = { FloatingActionButton(onClick = { addEditExpenseDialog = true },
+                containerColor = MaterialTheme.colorScheme.primary) {
+                Icon(Icons.Default.Add, contentDescription = stringResource(Res.string.new_operation))
+            } }
+        ) {
             Column {
                 Row(modifier = Modifier.fillMaxWidth().padding(8.dp),
                     verticalAlignment = Alignment.CenterVertically) {
@@ -248,7 +259,11 @@ fun DashboardScreen(
                     }
                 }
 
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(Modifier.height(16.dp))
+
+                //RegisterOperation(onClick = {})
+                //Spacer(Modifier.height(8.dp))
+
                 val dashboardState = rememberPagerState(pageCount = { state.budgets.size })
                 DashboardTab(dashboardState, onSelect = { scope.launch {
                     dashboardState.animateScrollToPage(it) }})
@@ -301,38 +316,21 @@ fun DashboardTab(pagerState: PagerState,
 }
 
 @Composable
-fun QuickActions(
-    createBudget: () -> Unit,
-    addOperation: () -> Unit
-) = Row(Modifier.padding(horizontal = 8.dp)) {
-    QuickActionButton(
-        modifier = Modifier.weight(1f).padding(horizontal = 8.dp),
-        title = stringResource(Res.string.new_budget),
-        icon = Icons.Default.Wallet,
-        onClick = createBudget)
-    QuickActionButton(
-        modifier = Modifier.weight(1f).padding(horizontal = 8.dp),
-        title = stringResource(Res.string.operation),
-        icon = Icons.Default.SyncAlt,
-        onClick = addOperation)
+fun RegisterOperation(onClick: () -> Unit) = Button(onClick,
+    modifier = Modifier.fillMaxWidth()
+        .padding(horizontal = 48.dp)
+        .dashedBorder(2.dp, MaterialTheme.colorScheme.primary, 12.dp),
+    colors = ButtonDefaults.buttonColors(
+        contentColor = MaterialTheme.colorScheme.primary,
+        containerColor = Color.Transparent
+    ),
+    shape = RoundedCornerShape(12.dp)
+) {
+    Icon(Icons.Default.Add, contentDescription = stringResource(Res.string.new_operation))
+    Text(stringResource(Res.string.new_operation).uppercase(),
+        modifier = Modifier.padding(horizontal = 8.dp))
 }
 
-@Composable
-fun QuickActionButton(
-    modifier: Modifier,
-    title: String,
-    icon: ImageVector,
-    onClick: () -> Unit
-) = Button(modifier = modifier,
-    onClick = onClick,
-    shape = CircleShape
-) {
-    Icon(imageVector = icon, contentDescription = title)
-    Text(title,
-        modifier = Modifier.padding(horizontal = 8.dp),
-        fontWeight = FontWeight.SemiBold
-    )
-}
 
 @Composable
 fun YearMonthSwitch(

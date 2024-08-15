@@ -68,6 +68,9 @@
     <string name="delete_budget">Delete budget</string>
     <string name="cant_delete">Can't delete this budget, you should have at least one.</string>
 
+    <!-- AddEdit Operation -->
+    <string name="new_operation">Register an operation</string>
+
     <!-- Budget Style -->
     <string name="style_red_waves">Red Waves</string>
     <string name="style_winter">Winter</string>

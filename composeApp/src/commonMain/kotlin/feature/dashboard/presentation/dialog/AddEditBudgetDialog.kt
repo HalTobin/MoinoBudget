@@ -59,6 +59,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import data.repository.AppPreferences
+import feature.dashboard.presentation.component.LabelSelection
 import feature.dashboard.presentation.data.AddEditBudget
 import moinobudget.composeapp.generated.resources.Res
 import moinobudget.composeapp.generated.resources.close_dialog_description
@@ -188,22 +189,15 @@ fun NewEditBudgetDialog(
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.primary
                     )
-                    LazyVerticalGrid(
-                        GridCells.Fixed(4),
-                        modifier = Modifier.padding(horizontal = 16.dp),
-                        contentPadding = PaddingValues(4.dp)
-                    ) {
-                        items(labels) { label ->
-                            LabelEntry(label = label,
-                                modifier = Modifier.animateItem().shake(deleteMode),
-                                selectedLabels = budgetLabels,
-                                onClick = {
-                                    if (budgetLabels.any { it == label.id }) budgetLabels.remove(label.id)
-                                    else budgetLabels.add(label.id)
-                                },
-                            )
-                        }
-                    }
+                    LabelSelection(
+                        labels = labels,
+                        selected = budgetLabels,
+                        onSelect = { labelId ->
+                            if (budgetLabels.any { it == labelId }) budgetLabels.remove(labelId)
+                            else budgetLabels.add(labelId)
+                        },
+                        deleteMode = deleteMode
+                    )
                     AnimatedContent(modifier = Modifier.fillMaxWidth(),
                         targetState = deleteMode,
                         transitionSpec = {
