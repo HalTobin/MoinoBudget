@@ -40,10 +40,13 @@ class BudgetRepositoryImpl(
                 .filterNot { crossRef -> budget.labels.any { it == crossRef.labelId } }
                 .forEach { crossRef -> budgetLabelDao.deleteBudgetLabelCrossRef(crossRef) }
         }
-        val budgetId = budget.id ?: budgetDao.upsert(budget.toBudgetEntity())
+
+        val upsertedId = budgetDao.upsert(budget.toBudgetEntity())
+        val budgetId = budget.id ?: upsertedId.toInt()
+
         budgetLabelDao.insertBudgetLabelCrossRefs(
             budget.labels.map { BudgetLabelCrossRef(
-                budgetId = budgetId.toInt(),
+                budgetId = budgetId,
                 labelId = it) }
         )
     }

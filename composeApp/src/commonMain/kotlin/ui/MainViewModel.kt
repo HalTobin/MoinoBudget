@@ -49,7 +49,7 @@ class MainViewModel(
             val budgets = budgetRepository.getBudgets()
             if (budgets.isEmpty()) {
                 val defaultBudget = AddEditBudget(
-                    id = 1,
+                    id = null,
                     title = getString(Res.string.default_budget),
                     style = BudgetStyle.CitrusJuice,
                     labels = emptyList()

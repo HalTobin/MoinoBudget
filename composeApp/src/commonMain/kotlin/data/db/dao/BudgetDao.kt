@@ -2,8 +2,11 @@ package data.db.dao
 
 import androidx.room.Dao
 import androidx.room.Delete
+import androidx.room.Insert
+import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
+import androidx.room.Update
 import androidx.room.Upsert
 import data.db.relation.BudgetWithLabels
 import data.db.table.Budget
@@ -11,7 +14,6 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface BudgetDao {
-
     @Upsert
     suspend fun upsert(budget: Budget): Long
 
@@ -31,5 +33,4 @@ interface BudgetDao {
     @Transaction
     @Query("SELECT * FROM budgets")
     fun getAllWithLabelsFlow(): Flow<List<BudgetWithLabels>>
-
 }

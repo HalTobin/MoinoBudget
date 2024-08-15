@@ -219,8 +219,6 @@ fun DashboardScreen(
             }
 
             Spacer(modifier = Modifier.height(16.dp))
-            QuickActions(createBudget = { addEditBudgetDialog = true }, {})
-            Spacer(Modifier.height(8.dp))
             val dashboardState = rememberPagerState(pageCount = { state.budgets.size })
             DashboardTab(dashboardState, onSelect = { scope.launch {
                 dashboardState.animateScrollToPage(it) }})
