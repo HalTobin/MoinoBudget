@@ -53,6 +53,10 @@ class BudgetRepositoryImpl(
 
     override suspend fun getBudgets(): List<BudgetUI> = budgetDao.getAllWithLabels().mapToBudgetUI()
 
+    override suspend fun deleteBudget(budget: AddEditBudget) {
+        budgetDao.delete(budget.toBudgetEntity())
+    }
+
     override fun getBudgetsFlow(): Flow<List<BudgetUI>> = budgetDao.getAllWithLabelsFlow().map { it.mapToBudgetUI() }
 
     private suspend fun List<BudgetWithLabels>.mapToBudgetUI() = this.map { budget ->
@@ -119,5 +123,6 @@ class BudgetRepositoryImpl(
 interface BudgetRepository {
     suspend fun upsertBudget(budget: AddEditBudget)
     suspend fun getBudgets(): List<BudgetUI>
+    suspend fun deleteBudget(budget: AddEditBudget)
     fun getBudgetsFlow(): Flow<List<BudgetUI>>
 }

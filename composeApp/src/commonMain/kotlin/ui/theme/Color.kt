@@ -2,6 +2,8 @@ package ui.theme
 
 import androidx.compose.ui.graphics.Color
 
+val RedWarning = Color(0xFF9B0B0B)
+
 val Orange80 = Color(0xFFFFA54C)
 val OrangeGrey80 = Color(0xFF7D3300)
 val Orange40 = Color(0xFFB56900)

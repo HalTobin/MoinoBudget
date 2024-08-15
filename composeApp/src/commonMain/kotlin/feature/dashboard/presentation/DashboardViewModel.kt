@@ -99,6 +99,9 @@ class DashboardViewModel(
             is DashboardEvent.UpsertBudget -> viewModelScope.launch(Dispatchers.IO) {
                 budgetRepository.upsertBudget(event.budget)
             }
+            is DashboardEvent.DeleteBudget -> viewModelScope.launch(Dispatchers.IO) {
+                TODO()
+            }
         }
     }
 

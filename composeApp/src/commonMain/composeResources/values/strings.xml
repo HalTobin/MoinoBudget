@@ -65,6 +65,7 @@
     <string name="create_label">Create a label</string>
     <string name="edit_label_description">Edit label</string>
     <string name="save_new_label_name_description">Save new label's name</string>
+    <string name="delete_budget">Delete budget</string>
 
     <!-- Budget Style -->
     <string name="style_red_waves">Red Waves</string>

@@ -124,10 +124,10 @@ fun DashboardScreen(
     if (addEditBudgetDialog) NewEditBudgetDialog(
         budget = budgetForDialog,
         preferences = preferences,
-        onDismiss = { addEditBudgetDialog = false
-                    budgetForDialog = null },
-        saveBudget = { onEvent(DashboardEvent.UpsertBudget(it)) },
         labels = state.labels,
+        onDismiss = { addEditBudgetDialog = false; budgetForDialog = null },
+        saveBudget = { onEvent(DashboardEvent.UpsertBudget(it)) },
+        deleteBudget = { onEvent(DashboardEvent.DeleteBudget(it)) }
     )
 
     val themePrimary = MaterialTheme.colorScheme.primary
