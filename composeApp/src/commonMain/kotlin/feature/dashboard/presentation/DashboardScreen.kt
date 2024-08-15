@@ -10,7 +10,6 @@ import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -28,7 +27,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyHorizontalGrid
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
@@ -39,7 +37,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Savings
 import androidx.compose.material.icons.filled.Settings
@@ -69,7 +66,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
@@ -79,7 +75,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.util.lerp
 import data.repository.AppPreferences
 import feature.dashboard.data.annual
 import feature.dashboard.data.monthly
@@ -92,7 +87,6 @@ import moinobudget.composeapp.generated.resources.Res
 import moinobudget.composeapp.generated.resources.available_in
 import moinobudget.composeapp.generated.resources.cant_delete
 import moinobudget.composeapp.generated.resources.create_budget_description
-import moinobudget.composeapp.generated.resources.dismiss_message
 import moinobudget.composeapp.generated.resources.disposable_dd
 import moinobudget.composeapp.generated.resources.due_in
 import moinobudget.composeapp.generated.resources.edit_label_description
@@ -113,10 +107,10 @@ import presentation.data.BudgetUI
 import presentation.data.ExpenseUI
 import presentation.data.IncomeOrOutcome
 import presentation.formatCurrency
-import presentation.pager.pagerStateOpacity
+import presentation.dashedBorder
+import presentation.pagerStateOpacity
 import ui.Screen
 import ui.theme.Orange80
-import kotlin.math.absoluteValue
 
 @Composable
 fun DashboardScreen(
@@ -221,7 +215,7 @@ fun DashboardScreen(
                             .height(164.dp)
                             .aspectRatio(1.9f)
                             .clip(RoundedCornerShape(24.dp))
-                            .border(2.dp, BudgetStyle.CitrusJuice.getPrimary(preferences), RoundedCornerShape(24.dp))
+                            .dashedBorder(4.dp, BudgetStyle.CitrusJuice.getPrimary(preferences), 24.dp)
                             .clickable(enabled = budgetState.currentPage == 0) { addEditBudgetDialog = true }
                             .pagerStateOpacity(budgetState, page),
                             contentAlignment = Alignment.Center) {
