@@ -71,7 +71,7 @@ class BudgetRepositoryImpl(
             .map { expense ->
                 val frequency = ExpenseFrequency.findById(expense.expense.frequency)
                 val currentDate = Clock.System.now().epochSeconds.toLocalDate()
-                val nextPayment = expense.expense.lastPayment.toLocalDate()
+                val nextPayment = expense.expense.lastPayment?.toLocalDate() ?: currentDate
                 nextPayment.plus(
                     DatePeriod(
                         years = 0,
@@ -90,7 +90,7 @@ class BudgetRepositoryImpl(
                     payed = false,
                     dueIn = dueIn,
                     nextPayment = nextPayment,
-                    lastPayment = expense.expense.lastPayment.toLocalDate(),
+                    lastPayment = expense.expense.lastPayment?.toLocalDate(),
                     labels = expense.labels.map { it.toLabelUI() }
                 )
             }

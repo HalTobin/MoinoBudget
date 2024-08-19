@@ -82,6 +82,7 @@ import feature.dashboard.data.annual
 import feature.dashboard.data.monthly
 import feature.dashboard.presentation.component.TextSwitch
 import feature.dashboard.presentation.dialog.NewEditBudgetDialog
+import feature.dashboard.presentation.dialog.NewEditExpenseDialog
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -93,6 +94,7 @@ import moinobudget.composeapp.generated.resources.disposable_dd
 import moinobudget.composeapp.generated.resources.due_in
 import moinobudget.composeapp.generated.resources.edit_label_description
 import moinobudget.composeapp.generated.resources.go_to_settings_help
+import moinobudget.composeapp.generated.resources.month
 import moinobudget.composeapp.generated.resources.my_incomes
 import moinobudget.composeapp.generated.resources.new_budget
 import moinobudget.composeapp.generated.resources.new_operation
@@ -100,6 +102,7 @@ import moinobudget.composeapp.generated.resources.operation
 import moinobudget.composeapp.generated.resources.payments_dd
 import moinobudget.composeapp.generated.resources.to_put_aside_dd
 import moinobudget.composeapp.generated.resources.upcoming_payments
+import moinobudget.composeapp.generated.resources.year
 import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
@@ -137,8 +140,8 @@ fun DashboardScreen(
     var expenseForDialog by remember { mutableStateOf<ExpenseUI?>(null) }
 
     if (addEditBudgetDialog) NewEditBudgetDialog(
-        budget = budgetForDialog,
         preferences = preferences,
+        budget = budgetForDialog,
         labels = state.labels,
         onDismiss = { addEditBudgetDialog = false; budgetForDialog = null },
         saveBudget = { onEvent(DashboardEvent.UpsertBudget(it)) },
@@ -166,6 +169,17 @@ fun DashboardScreen(
             onPrimary = onPrimary.value
         )
     ) {
+
+        if (addEditExpenseDialog) NewEditExpenseDialog(
+            preferences = preferences,
+            expense = expenseForDialog,
+            labels = state.labels,
+            budgetLabels = state.budgets.getOrNull(budgetState.currentPage-1)?.labels?.map { it.id } ?: emptyList(),
+            onDismiss = { addEditExpenseDialog = false; expenseForDialog = null },
+            saveExpense = { TODO() },
+            deleteExpense = { TODO() }
+        )
+
         Scaffold(
             snackbarHost = { SnackbarHost(snackBarHostState, snackbar = { MoinoSnackBar(it) }) },
             floatingActionButton = { FloatingActionButton(onClick = { addEditExpenseDialog = true },
@@ -337,6 +351,7 @@ fun YearMonthSwitch(
     year: Boolean,
     onChange: (Boolean) -> Unit
 ) = TextSwitch(
+    items = listOf(stringResource(Res.string.month), stringResource(Res.string.year)),
     modifier = Modifier.width(256.dp),
     selectedIndex = if (year) 1 else 0,
     onSelectionChange = { onChange(!year) }

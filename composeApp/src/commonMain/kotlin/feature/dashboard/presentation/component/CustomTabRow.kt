@@ -27,18 +27,14 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
-import moinobudget.composeapp.generated.resources.Res
-import moinobudget.composeapp.generated.resources.month
-import moinobudget.composeapp.generated.resources.year
-import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun TextSwitch(
+    items: List<String>,
     modifier: Modifier = Modifier,
     selectedIndex: Int,
     onSelectionChange: (Int) -> Unit
 ) {
-    val items = listOf(stringResource(Res.string.month), stringResource(Res.string.year))
     BoxWithConstraints(
         modifier
             .height(40.dp)

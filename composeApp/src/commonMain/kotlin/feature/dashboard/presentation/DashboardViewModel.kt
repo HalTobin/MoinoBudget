@@ -3,6 +3,7 @@ package feature.dashboard.presentation
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import data.repository.BudgetRepository
+import data.repository.ExpenseRepository
 import data.repository.LabelRepository
 import data.repository.NeedOneBudget
 import kotlinx.coroutines.Dispatchers
@@ -21,7 +22,8 @@ import kotlinx.datetime.plus
 
 class DashboardViewModel(
     private val labelRepository: LabelRepository,
-    private val budgetRepository: BudgetRepository
+    private val budgetRepository: BudgetRepository,
+    private val expenseRepository: ExpenseRepository
 ): ViewModel() {
 
     private val _state = MutableStateFlow(DashboardState())

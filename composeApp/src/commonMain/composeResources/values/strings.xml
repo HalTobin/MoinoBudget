@@ -23,7 +23,9 @@
     <string name="operation">Operation</string>
 
     <string name="incomes">Incomes</string>
+    <string name="income">Income</string>
     <string name="outcomes">Outcomes</string>
+    <string name="outcome">Outcome</string>
     <string name="payments">Payments</string>
     <string name="earnings">Earnings</string>
     <string name="disposable_dd">Disposable:</string>
@@ -70,6 +72,10 @@
 
     <!-- AddEdit Operation -->
     <string name="new_operation">Register an operation</string>
+    <string name="create_operation">New operation</string>
+    <string name="edit_operation">Edit operation</string>
+    <string name="delete_operation">Delete operation</string>
+    <string name="icon">Icon</string>
 
     <!-- Budget Style -->
     <string name="style_red_waves">Red Waves</string>

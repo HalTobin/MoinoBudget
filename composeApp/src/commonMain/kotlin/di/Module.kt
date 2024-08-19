@@ -3,10 +3,13 @@ package di
 import data.db.ExpenseDatabase
 import data.db.dao.BudgetDao
 import data.db.dao.BudgetLabelDao
+import data.db.dao.ExpenseDao
 import data.db.dao.ExpenseLabelDao
 import data.db.dao.LabelDao
 import data.repository.BudgetRepository
 import data.repository.BudgetRepositoryImpl
+import data.repository.ExpenseRepository
+import data.repository.ExpenseRepositoryImpl
 import data.repository.LabelRepository
 import data.repository.LabelRepositoryImpl
 import feature.dashboard.presentation.DashboardViewModel
@@ -34,6 +37,7 @@ object ModuleRepositories {
     val repositories = module {
         single { provideLabelRepository(get()) }.bind<LabelRepository>()
         single { provideBudgetRepository(get(), get(), get()) }.bind<BudgetRepository>()
+        single { provideExpenseRepository(get(), get()) }.bind<ExpenseRepository>()
     }
 
     private fun provideLabelRepository(labelDao: LabelDao) = LabelRepositoryImpl(labelDao)
@@ -41,7 +45,11 @@ object ModuleRepositories {
         budgetDao: BudgetDao,
         budgetLabelDao: BudgetLabelDao,
         expenseLabelDao: ExpenseLabelDao
-    ) = BudgetRepositoryImpl(budgetDao, budgetLabelDao, expenseLabelDao)
+    ): BudgetRepository = BudgetRepositoryImpl(budgetDao, budgetLabelDao, expenseLabelDao)
+    private fun provideExpenseRepository(
+        expenseDao: ExpenseDao,
+        expenseLabelDao: ExpenseLabelDao
+    ): ExpenseRepository = ExpenseRepositoryImpl(expenseDao, expenseLabelDao)
 }
 
 object ModuleDAO {

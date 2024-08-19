@@ -11,7 +11,7 @@ import kotlinx.coroutines.flow.Flow
 interface ExpenseDao {
 
     @Upsert
-    suspend fun upsert(expense: Expense)
+    suspend fun upsert(expense: Expense): Long
 
     @Delete
     suspend fun delete(expense: Expense)

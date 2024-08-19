@@ -7,9 +7,7 @@ import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -19,10 +17,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
@@ -53,7 +47,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -229,32 +222,5 @@ fun NewEditBudgetDialog(
                 }
             }
         }
-    }
-}
-
-@Composable
-fun LabelEntry(
-    modifier: Modifier,
-    label: LabelUI,
-    selectedLabels: List<Int>,
-    onClick: () -> Unit
-) {
-    val selected = selectedLabels.any { it == label.id }
-    Box(modifier = modifier
-        .aspectRatio(1f)
-        .padding(horizontal = 4.dp, vertical = 6.dp)
-        .clip(RoundedCornerShape(8.dp))
-        .background(
-            if (selected) MaterialTheme.colorScheme.primary
-            else MaterialTheme.colorScheme.surface)
-        .clickable { onClick() }
-        .padding(4.dp),
-        contentAlignment = Alignment.Center) {
-        Box(Modifier
-            .size(30.dp)
-            .clip(CircleShape)
-            .border(2.dp, Color.Black, CircleShape)
-            .background(label.color)
-        )
     }
 }
