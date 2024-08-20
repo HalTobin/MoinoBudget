@@ -11,6 +11,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import data.repository.AppPreferences
+import feature.add_edit_expense.presentation.AddEditExpenseScreen
+import feature.add_edit_expense.presentation.AddEditExpenseViewModel
 import feature.dashboard.presentation.DashboardScreen
 import feature.dashboard.presentation.DashboardViewModel
 import feature.settings.SettingsScreen
@@ -44,6 +46,17 @@ fun MainScreen(
                     onEvent = viewModel::onEvent,
                     uiEvent = viewModel.eventFlow,
                     goTo = { navController.navigate(it.route) })
+            }
+            composable(Screen.AddEditExpense.route) {
+                val viewModel = koinViewModel<AddEditExpenseViewModel>()
+                val state by viewModel.state.collectAsState()
+                AddEditExpenseScreen(
+                    preferences = preferences,
+                    state = state,
+                    onEvent = viewModel::onEvent,
+                    //uiEvent = viewModel.eventFlow,
+                    goBack = { navController.popBackStack() }
+                )
             }
             composable(Screen.Settings.route) {
                 val viewModel = koinViewModel<SettingsViewModel>()

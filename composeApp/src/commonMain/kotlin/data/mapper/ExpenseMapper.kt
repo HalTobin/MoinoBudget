@@ -1,7 +1,7 @@
 package data.mapper
 
 import data.db.table.Expense
-import feature.dashboard.presentation.data.AddEditExpense
+import feature.add_edit_expense.data.AddEditExpense
 
 fun AddEditExpense.toExpenseEntity(): Expense =
     Expense(

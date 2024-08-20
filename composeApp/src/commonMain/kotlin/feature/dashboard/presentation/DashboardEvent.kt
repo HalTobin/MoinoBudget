@@ -1,7 +1,7 @@
 package feature.dashboard.presentation
 
 import feature.dashboard.presentation.data.AddEditBudget
-import feature.dashboard.presentation.data.AddEditExpense
+import feature.add_edit_expense.data.AddEditExpense
 import presentation.data.LabelUI
 
 sealed class DashboardEvent {

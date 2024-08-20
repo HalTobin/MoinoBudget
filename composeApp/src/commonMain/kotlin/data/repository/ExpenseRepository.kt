@@ -4,7 +4,7 @@ import data.db.dao.ExpenseDao
 import data.db.dao.ExpenseLabelDao
 import data.db.table.ExpenseLabelCrossRef
 import data.mapper.toExpenseEntity
-import feature.dashboard.presentation.data.AddEditExpense
+import feature.add_edit_expense.data.AddEditExpense
 
 class ExpenseRepositoryImpl(
     private val expenseDao: ExpenseDao,

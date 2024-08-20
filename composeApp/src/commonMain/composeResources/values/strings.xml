@@ -76,6 +76,7 @@
     <string name="edit_operation">Edit operation</string>
     <string name="delete_operation">Delete operation</string>
     <string name="icon">Icon</string>
+    <string name="amount">Amount</string>
 
     <!-- Budget Style -->
     <string name="style_red_waves">Red Waves</string>

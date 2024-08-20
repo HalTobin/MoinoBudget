@@ -54,7 +54,7 @@ import androidx.compose.ui.window.Dialog
 import data.repository.AppPreferences
 import feature.dashboard.presentation.component.LabelSelection
 import feature.dashboard.presentation.component.TextSwitch
-import feature.dashboard.presentation.data.AddEditExpense
+import feature.add_edit_expense.data.AddEditExpense
 import moinobudget.composeapp.generated.resources.Res
 import moinobudget.composeapp.generated.resources.close_dialog_description
 import moinobudget.composeapp.generated.resources.create_operation
@@ -193,12 +193,14 @@ fun NewEditExpenseDialog(
                             onClick = {
                                 if (expenseTitle.isBlank()) titleError = true
                                 else {
-                                    saveExpense(AddEditExpense(
+                                    saveExpense(
+                                        AddEditExpense(
                                         id = expense?.id,
                                         incomeOrOutcome = expenseIncomeOrOutcome,
                                         title = expenseTitle,
                                         icon = expenseIcon,
-                                        labels = expenseLabels))
+                                        labels = expenseLabels)
+                                    )
                                     onDismiss() } }
                         ) {
                             Icon(imageVector = Icons.Default.Save, contentDescription = stringResource(Res.string.save))

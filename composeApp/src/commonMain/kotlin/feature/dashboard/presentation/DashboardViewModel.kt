@@ -57,6 +57,8 @@ class DashboardViewModel(
                     _eventFlow.emit(UiEvent.OneBudgetIsNeeded)
                 }
             }
+            is DashboardEvent.DeleteExpense -> TODO()
+            is DashboardEvent.UpsertExpense -> TODO()
         }
     }
 

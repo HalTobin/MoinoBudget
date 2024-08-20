@@ -12,6 +12,7 @@ import data.repository.ExpenseRepository
 import data.repository.ExpenseRepositoryImpl
 import data.repository.LabelRepository
 import data.repository.LabelRepositoryImpl
+import feature.add_edit_expense.presentation.AddEditExpenseViewModel
 import feature.dashboard.presentation.DashboardViewModel
 import feature.settings.SettingsViewModel
 import org.koin.compose.viewmodel.dsl.viewModelOf
@@ -29,6 +30,7 @@ object ModuleVM {
     val viewModels = module {
         viewModelOf(::MainViewModel)
         viewModelOf(::DashboardViewModel)
+        viewModelOf(::AddEditExpenseViewModel)
         viewModelOf(::SettingsViewModel)
     }
 }

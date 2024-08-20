@@ -182,7 +182,7 @@ fun DashboardScreen(
 
         Scaffold(
             snackbarHost = { SnackbarHost(snackBarHostState, snackbar = { MoinoSnackBar(it) }) },
-            floatingActionButton = { FloatingActionButton(onClick = { addEditExpenseDialog = true },
+            floatingActionButton = { FloatingActionButton(onClick = { goTo(Screen.AddEditExpense) },
                 containerColor = MaterialTheme.colorScheme.primary) {
                 Icon(Icons.Default.Add, contentDescription = stringResource(Res.string.new_operation))
             } }
