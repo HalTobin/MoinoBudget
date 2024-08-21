@@ -13,6 +13,5 @@ data class AddEditExpense(
     val monthOffset: Int = 0,
     val day: Int = 1,
     val icon: ExpenseIcon = ExpenseIcon.DefaultOutcome,
-    val labels: List<Int> = emptyList(),
-    val lastPayment: Long? = null
+    val labels: List<Int> = emptyList()
 )

@@ -13,5 +13,4 @@ fun AddEditExpense.toExpenseEntity(): Expense =
         frequency = this.frequency.id,
         monthOffset = this.monthOffset,
         day = this.day,
-        lastPayment = this.lastPayment
     )
