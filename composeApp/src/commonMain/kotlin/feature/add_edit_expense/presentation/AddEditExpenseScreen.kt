@@ -53,6 +53,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import data.repository.AppPreferences
+import feature.add_edit_expense.presentation.component.SelectDay
 import feature.add_edit_expense.presentation.component.SelectMonthOption
 import feature.dashboard.presentation.component.LabelSelection
 import feature.dashboard.presentation.component.TextSwitch
@@ -183,13 +184,20 @@ fun AddEditExpenseScreen(
                         selectedIndex = state.expenseFrequency.id,
                         onSelectionChange = { onEvent(AddEditExpenseEvent.UpdateFrequency(ExpenseFrequency.findById(it))) }
                     )
-                    AnimatedVisibility(state.expenseFrequency.options.isNotEmpty()) {
-                        Column {
-                            Spacer(Modifier.height(16.dp))
-                            SelectMonthOption(Modifier.fillMaxWidth(0.5f),
-                                options = state.expenseFrequency.options,
-                                value = state.expenseMonth,
-                                onSelect = { onEvent(AddEditExpenseEvent.UpdateMonthOffset(it)) })
+                    Spacer(Modifier.height(16.dp))
+                    AnimatedContent(state.expenseFrequency.options.isNotEmpty()) { monthSection ->
+                        Row {
+                            SelectDay(
+                                value = state.expenseDay,
+                                onChange = { onEvent(AddEditExpenseEvent.UpdateDay(it)) },
+                                month = state.expenseMonth)
+                            if (monthSection) {
+                                Spacer(Modifier.width(16.dp))
+                                SelectMonthOption(Modifier.fillMaxWidth(0.5f),
+                                    options = state.expenseFrequency.options,
+                                    value = state.expenseMonth,
+                                    onSelect = { onEvent(AddEditExpenseEvent.UpdateMonthOffset(it)) })
+                            }
                         }
                     }
                     Spacer(Modifier.height(8.dp))

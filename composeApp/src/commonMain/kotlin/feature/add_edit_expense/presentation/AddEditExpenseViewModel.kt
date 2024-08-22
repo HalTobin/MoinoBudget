@@ -1,21 +1,19 @@
 package feature.add_edit_expense.presentation
 
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import data.repository.BudgetRepository
 import data.repository.ExpenseRepository
 import data.repository.LabelRepository
-import data.repository.NeedOneBudget
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import util.getMaxDay
+import kotlin.math.min
 
 class AddEditExpenseViewModel(
     //savedStateHandle: SavedStateHandle,
@@ -44,7 +42,11 @@ class AddEditExpenseViewModel(
             is AddEditExpenseEvent.UpdateFrequency -> {
                 _state.update { it.copy(expenseFrequency = event.frequency, expenseMonth = event.frequency.options.firstOrNull()) }
             }
-            is AddEditExpenseEvent.UpdateMonthOffset -> _state.update { it.copy(expenseMonth = event.month) }
+            is AddEditExpenseEvent.UpdateMonthOffset -> {
+                val maxMonthDay = event.month.offset.plus(1).getMaxDay()
+                val day = min(_state.value.expenseDay, maxMonthDay)
+                _state.update { it.copy(expenseMonth = event.month, expenseDay = day) }
+            }
             is AddEditExpenseEvent.UpdateIncomeOrOutcome -> _state.update { it.copy(expenseIncomeOrOutcome = event.incomeOrOutcome) }
             is AddEditExpenseEvent.UpdateLabel -> {
                 val currentLabels = _state.value.expenseLabels.toMutableList()

@@ -5,8 +5,11 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -29,6 +32,10 @@ import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import moinobudget.composeapp.generated.resources.Res
+import moinobudget.composeapp.generated.resources.day
+import moinobudget.composeapp.generated.resources.month
+import org.jetbrains.compose.resources.stringResource
 import presentation.data.MonthOption
 
 @Composable
@@ -46,24 +53,39 @@ fun SelectMonthOption(
         label = "rotation for the dropdown menu's icon"
     )
 
-    Row(modifier = modifier
-        .fillMaxWidth()
-        .clip(RoundedCornerShape(24.dp))
-        .background(MaterialTheme.colorScheme.surface)
-        .clickable { expandedMenu = !expandedMenu }
-        .padding(8.dp),
-        verticalAlignment = Alignment.CenterVertically) {
-        Crossfade(targetState = value,
-            modifier = Modifier.weight(1f)) { selectedMonth ->
-            Text(selectedMonth?.getText() ?: "",
-                textAlign = TextAlign.Center,
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.SemiBold,
-                modifier = Modifier.fillMaxWidth().padding(start = 12.dp))
+    Column {
+        Text(
+            stringResource(Res.string.month),
+            modifier = Modifier.padding(start = 16.dp),
+            fontWeight = FontWeight.Bold,
+            color = MaterialTheme.colorScheme.primary
+        )
+        Spacer(Modifier.height(8.dp))
+        Row(modifier = modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(24.dp))
+            .background(MaterialTheme.colorScheme.surface)
+            .clickable { expandedMenu = !expandedMenu }
+            .padding(8.dp),
+            verticalAlignment = Alignment.CenterVertically) {
+            Crossfade(
+                targetState = value,
+                modifier = Modifier.weight(1f)
+            ) { selectedMonth ->
+                Text(
+                    selectedMonth?.getText() ?: "",
+                    textAlign = TextAlign.Center,
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.SemiBold,
+                    modifier = Modifier.fillMaxWidth().padding(start = 12.dp)
+                )
+            }
+            Icon(
+                Icons.Default.ArrowDropDown,
+                modifier = Modifier.size(28.dp).rotate(rotationAngle),
+                contentDescription = null
+            )
         }
-        Icon(Icons.Default.ArrowDropDown,
-            modifier = Modifier.size(28.dp).rotate(rotationAngle),
-            contentDescription = null)
     }
 
     DropdownMenu(

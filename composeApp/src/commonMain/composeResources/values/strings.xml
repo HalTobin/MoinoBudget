@@ -17,6 +17,7 @@
     <string name="half-year">Half-Year</string>
     <string name="semester">Semester</string>
     <string name="month">Month</string>
+    <string name="day">Day</string>
 
     <!-- Dashboard -->
     <string name="new_budget">New budget</string>
@@ -77,12 +78,14 @@
     <string name="delete_operation">Delete operation</string>
     <string name="icon">Icon</string>
     <string name="amount">Amount</string>
+    <string name="select_day">Select a day</string>
 
     <!-- Budget Style -->
     <string name="style_red_waves">Red Waves</string>
     <string name="style_winter">Winter</string>
     <string name="style_citrus">Citrus Juice</string>
     <string name="style_grass_sea">Grass &amp; Sea</string>
+    <string name="style_silver">Silver</string>
 
     <!-- General purpose -->
     <string name="back_home_description">Navigate back to home screen</string>

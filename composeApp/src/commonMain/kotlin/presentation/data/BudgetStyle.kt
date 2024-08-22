@@ -6,6 +6,7 @@ import androidx.compose.ui.graphics.Color.Companion.Green
 import data.repository.AppPreferences
 import moinobudget.composeapp.generated.resources.Res
 import moinobudget.composeapp.generated.resources.bg_card_1
+import moinobudget.composeapp.generated.resources.style_silver
 import moinobudget.composeapp.generated.resources.style_citrus
 import moinobudget.composeapp.generated.resources.style_grass_sea
 import moinobudget.composeapp.generated.resources.style_red_waves
@@ -47,7 +48,9 @@ enum class BudgetStyle(
         primary = Pair(Cyan40, Cyan80), onPrimary = Pair(CyanGrey40, CyanGrey80)),
     CitrusJuice(id = 3, title = Res.string.style_citrus, Background.Gradient(listOf(Yellow, RedPink)),),
     GrassAndSea(id = 4, title = Res.string.style_grass_sea, Background.Gradient(listOf(Blue, Green)),
-        primary = Pair(Green40, Green80), onPrimary = Pair(GreenGrey40, GreenGrey80));
+        primary = Pair(Green40, Green80), onPrimary = Pair(GreenGrey40, GreenGrey80)),
+    Silver(id = 5, title = Res.string.style_silver, Background.Gradient(listOf(Color.Black, Color.White)),
+        primary = Pair(Color.Black, Color.White), onPrimary = Pair(Color.White, Color.Black));
 
     fun getPrimary(preferences: AppPreferences): Color =
         if (preferences.theme.isDark) primary.second else primary.first
@@ -56,7 +59,7 @@ enum class BudgetStyle(
         if (preferences.theme.isDark) onPrimary.second else onPrimary.first
 
     companion object {
-        val list = listOf(RedWaves, Winter, CitrusJuice, GrassAndSea)
+        val list = BudgetStyle.entries.map { it }.sortedBy { it.id }
     }
 }
 
