@@ -60,6 +60,8 @@ enum class BudgetStyle(
 
     companion object {
         val list = BudgetStyle.entries.map { it }.sortedBy { it.id }
+
+        fun findById(id: Int) = list.find { it.id == id } ?: CitrusJuice
     }
 }
 

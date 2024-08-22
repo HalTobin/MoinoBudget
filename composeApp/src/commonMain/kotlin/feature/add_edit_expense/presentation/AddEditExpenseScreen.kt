@@ -42,6 +42,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -68,6 +69,7 @@ import moinobudget.composeapp.generated.resources.labels
 import moinobudget.composeapp.generated.resources.save
 import moinobudget.composeapp.generated.resources.title
 import org.jetbrains.compose.resources.stringResource
+import presentation.data.BudgetStyle
 import presentation.data.ExpenseFrequency
 import presentation.data.ExpenseIcon
 import presentation.data.IncomeOrOutcome
@@ -79,17 +81,23 @@ fun AddEditExpenseScreen(
     preferences: AppPreferences,
     state: AddEditExpenseState,
     onEvent: (AddEditExpenseEvent) -> Unit,
+    style: BudgetStyle,
+    labels: List<Int>,
     //expense: ExpenseUI?,
-    //labels: List<LabelUI>,
     //budgetLabels: List<Int>,
     goBack: () -> Unit,
-    //saveExpense: (AddEditExpense) -> Unit,
-    //deleteExpense: (Int) -> Unit
 ) {
     var deleteMode by remember { mutableStateOf(false) }
 
-    MaterialTheme(
+    LaunchedEffect(true) {
+        if (state.labels.isEmpty()) labels.forEach { onEvent(AddEditExpenseEvent.UpdateLabel(it)) }
+    }
 
+    MaterialTheme(
+        colorScheme = MaterialTheme.colorScheme.copy(
+            primary = style.getPrimary(preferences),
+            onPrimary = style.getOnPrimary(preferences)
+        )
     ) {
         Surface(
             color = MaterialTheme.colorScheme.background,
@@ -120,7 +128,7 @@ fun AddEditExpenseScreen(
                         onClick = goBack) {
                         Icon(Icons.Default.Close, contentDescription = stringResource(Res.string.close_dialog_description)) }
                 }
-                Spacer(Modifier.height(8.dp))
+                Spacer(Modifier.height(24.dp))
 
                 Column(Modifier.padding(bottom = 8.dp),
                     horizontalAlignment = Alignment.CenterHorizontally) {
@@ -222,7 +230,9 @@ fun AddEditExpenseScreen(
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.primary
                     )
-                    Row(Modifier.padding(horizontal = 32.dp)) {
+
+                    // Element - Label
+                    Row(Modifier.padding(horizontal = 48.dp)) {
                         LabelSelection(
                             labels = state.labels,
                             selected = state.expenseLabels,
@@ -251,11 +261,12 @@ fun AddEditExpenseScreen(
                                 Icon(imageVector = Icons.Default.Save, contentDescription = stringResource(Res.string.save))
                                 Text(stringResource(Res.string.save),
                                     modifier = Modifier.padding(horizontal = 8.dp),
+                                    style = MaterialTheme.typography.titleMedium,
                                     fontWeight = FontWeight.SemiBold)
                             }
                         }
                         else state.expenseId?.let { expenseId ->
-                            TextButton(onClick = { TODO(); goBack() }) {
+                            TextButton(onClick = { onEvent(AddEditExpenseEvent.DeleteExpense); goBack() }) {
                                 Text(stringResource(Res.string.delete_budget),
                                     color = MaterialTheme.colorScheme.error)
                             }

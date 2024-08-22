@@ -14,4 +14,6 @@ sealed class AddEditExpenseEvent {
     data class UpdateDay(val day: Int): AddEditExpenseEvent()
     data class UpdateLabel(val labelId: Int): AddEditExpenseEvent()
     data class UpdateIcon(val icon: ExpenseIcon): AddEditExpenseEvent()
+    data object UpsertExpense: AddEditExpenseEvent()
+    data object DeleteExpense: AddEditExpenseEvent()
 }

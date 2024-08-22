@@ -7,9 +7,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.navigation.NamedNavArgument
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
+import androidx.navigation.toRoute
 import data.repository.AppPreferences
 import feature.add_edit_expense.presentation.AddEditExpenseScreen
 import feature.add_edit_expense.presentation.AddEditExpenseViewModel
@@ -20,6 +23,7 @@ import feature.settings.SettingsViewModel
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.annotation.KoinExperimentalAPI
+import presentation.data.BudgetStyle
 import ui.theme.MoinoBudgetTheme
 
 @OptIn(KoinExperimentalAPI::class)
@@ -35,9 +39,9 @@ fun MainScreen(
     ) {
         NavHost(
             navController = navController,
-            startDestination = MoinoBudgetScreen.Dashboard.route,
+            startDestination = MoinoBudgetScreen.Dashboard,
         ) {
-            composable(MoinoBudgetScreen.Dashboard.route) {
+            composable<MoinoBudgetScreen.Dashboard> {
                 val viewModel = koinViewModel<DashboardViewModel>()
                 val state by viewModel.state.collectAsState()
                 DashboardScreen(
@@ -45,20 +49,25 @@ fun MainScreen(
                     state = state,
                     onEvent = viewModel::onEvent,
                     uiEvent = viewModel.eventFlow,
-                    goTo = { navController.navigate(it.route) })
+                    goTo = { navController.navigate(it) })
             }
-            composable(MoinoBudgetScreen.AddEditExpense.route) {
+            composable<MoinoBudgetScreen.AddEditExpense>{
+                val args = it.toRoute<MoinoBudgetScreen.AddEditExpense>()
+                val style = BudgetStyle.findById(args.styleId)
+                val labels = args.labelIds
+
                 val viewModel = koinViewModel<AddEditExpenseViewModel>()
                 val state by viewModel.state.collectAsState()
                 AddEditExpenseScreen(
+                    style = style,
+                    labels = labels,
                     preferences = preferences,
                     state = state,
                     onEvent = viewModel::onEvent,
-                    //uiEvent = viewModel.eventFlow,
                     goBack = { navController.popBackStack() }
                 )
             }
-            composable(MoinoBudgetScreen.Settings.route) {
+            composable<MoinoBudgetScreen.Settings> {
                 val viewModel = koinViewModel<SettingsViewModel>()
                 SettingsScreen(
                     goBack = { navController.popBackStack() },

@@ -182,7 +182,11 @@ fun DashboardScreen(
 
         Scaffold(
             snackbarHost = { SnackbarHost(snackBarHostState, snackbar = { MoinoSnackBar(it) }) },
-            floatingActionButton = { FloatingActionButton(onClick = { goTo(MoinoBudgetScreen.AddEditExpense) },
+            floatingActionButton = { FloatingActionButton(onClick = {
+                val budget = state.budgets.getOrNull(budgetState.currentPage-1)
+                val style = budget?.style ?: BudgetStyle.CitrusJuice
+                val labels = budget?.labels?.map { it.id } ?: emptyList()
+                goTo(MoinoBudgetScreen.AddEditExpense(styleId = style.id, labelIds = labels)) },
                 containerColor = MaterialTheme.colorScheme.primary) {
                 Icon(Icons.Default.Add, contentDescription = stringResource(Res.string.new_operation))
             } }
@@ -212,8 +216,7 @@ fun DashboardScreen(
 
                 LaunchedEffect(key1 = budgetState.currentPage, key2 = state.budgets) {
                     if (state.budgets.isNotEmpty()) {
-                        val style = if (budgetState.currentPage != 0) state.budgets[budgetState.currentPage - 1].style
-                        else BudgetStyle.CitrusJuice
+                        val style = state.budgets.getOrNull(budgetState.currentPage-1)?.style ?: BudgetStyle.CitrusJuice
                         primary.animateTo(style.getPrimary(preferences))
                         onPrimary.animateTo(style.getOnPrimary(preferences))
                     }

@@ -1,5 +1,6 @@
 package feature.add_edit_expense.presentation
 
+import feature.add_edit_expense.data.AddEditExpense
 import presentation.data.BudgetUI
 import presentation.data.ExpenseFrequency
 import presentation.data.ExpenseIcon
@@ -21,4 +22,12 @@ data class AddEditExpenseState(
     val expenseLabels: List<Int> = emptyList(),
 
     val labels: List<LabelUI> = emptyList()
-)
+) {
+
+    fun generateAddEditExpense(): AddEditExpense = AddEditExpense(
+        id = expenseId,
+        title = expenseTitle,
+        incomeOrOutcome = expenseIncomeOrOutcome,
+    )
+
+}
