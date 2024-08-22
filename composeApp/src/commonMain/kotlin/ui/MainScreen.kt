@@ -35,9 +35,9 @@ fun MainScreen(
     ) {
         NavHost(
             navController = navController,
-            startDestination = Screen.Dashboard.route,
+            startDestination = MoinoBudgetScreen.Dashboard.route,
         ) {
-            composable(Screen.Dashboard.route) {
+            composable(MoinoBudgetScreen.Dashboard.route) {
                 val viewModel = koinViewModel<DashboardViewModel>()
                 val state by viewModel.state.collectAsState()
                 DashboardScreen(
@@ -47,7 +47,7 @@ fun MainScreen(
                     uiEvent = viewModel.eventFlow,
                     goTo = { navController.navigate(it.route) })
             }
-            composable(Screen.AddEditExpense.route) {
+            composable(MoinoBudgetScreen.AddEditExpense.route) {
                 val viewModel = koinViewModel<AddEditExpenseViewModel>()
                 val state by viewModel.state.collectAsState()
                 AddEditExpenseScreen(
@@ -58,7 +58,7 @@ fun MainScreen(
                     goBack = { navController.popBackStack() }
                 )
             }
-            composable(Screen.Settings.route) {
+            composable(MoinoBudgetScreen.Settings.route) {
                 val viewModel = koinViewModel<SettingsViewModel>()
                 SettingsScreen(
                     goBack = { navController.popBackStack() },

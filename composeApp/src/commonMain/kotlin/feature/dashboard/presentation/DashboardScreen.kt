@@ -115,7 +115,7 @@ import presentation.data.IncomeOrOutcome
 import presentation.formatCurrency
 import presentation.dashedBorder
 import presentation.pagerStateOpacity
-import ui.Screen
+import ui.MoinoBudgetScreen
 import ui.theme.Orange80
 
 @Composable
@@ -124,7 +124,7 @@ fun DashboardScreen(
     state: DashboardState,
     onEvent: (DashboardEvent) -> Unit,
     uiEvent: SharedFlow<DashboardViewModel.UiEvent>,
-    goTo: (Screen) -> Unit
+    goTo: (MoinoBudgetScreen) -> Unit
 ) = Box {
     val scope = rememberCoroutineScope()
     val snackBarHostState = remember { SnackbarHostState() }
@@ -182,7 +182,7 @@ fun DashboardScreen(
 
         Scaffold(
             snackbarHost = { SnackbarHost(snackBarHostState, snackbar = { MoinoSnackBar(it) }) },
-            floatingActionButton = { FloatingActionButton(onClick = { goTo(Screen.AddEditExpense) },
+            floatingActionButton = { FloatingActionButton(onClick = { goTo(MoinoBudgetScreen.AddEditExpense) },
                 containerColor = MaterialTheme.colorScheme.primary) {
                 Icon(Icons.Default.Add, contentDescription = stringResource(Res.string.new_operation))
             } }
@@ -193,7 +193,7 @@ fun DashboardScreen(
                     IconButton(modifier = Modifier
                         .clip(CircleShape)
                         .background(MaterialTheme.colorScheme.surface),
-                        onClick = { goTo(Screen.Settings) }) {
+                        onClick = { goTo(MoinoBudgetScreen.Settings) }) {
                         Icon(modifier = Modifier.size(32.dp),
                             imageVector = Icons.Default.Savings, contentDescription = stringResource(Res.string.go_to_settings_help))
                     }
@@ -203,7 +203,7 @@ fun DashboardScreen(
                     IconButton(modifier = Modifier
                         .clip(CircleShape)
                         .background(MaterialTheme.colorScheme.surface),
-                        onClick = { goTo(Screen.Settings) }) {
+                        onClick = { goTo(MoinoBudgetScreen.Settings) }) {
                         Icon(modifier = Modifier.size(32.dp),
                             imageVector = Icons.Default.Settings, contentDescription = stringResource(Res.string.go_to_settings_help))
                     }

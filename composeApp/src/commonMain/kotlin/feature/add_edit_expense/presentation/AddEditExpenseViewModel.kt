@@ -41,7 +41,10 @@ class AddEditExpenseViewModel(
             is AddEditExpenseEvent.UpdateTitle -> _state.update { it.copy(expenseTitle = event.title) }
             is AddEditExpenseEvent.UpdateAmount -> _state.update { it.copy(expenseAmount = event.amount) }
             is AddEditExpenseEvent.UpdateDay -> _state.update { it.copy(expenseDay = event.day) }
-            is AddEditExpenseEvent.UpdateFrequency -> _state.update { it.copy(expenseFrequency = event.frequency) }
+            is AddEditExpenseEvent.UpdateFrequency -> {
+                _state.update { it.copy(expenseFrequency = event.frequency, expenseMonth = event.frequency.options.firstOrNull()) }
+            }
+            is AddEditExpenseEvent.UpdateMonthOffset -> _state.update { it.copy(expenseMonth = event.month) }
             is AddEditExpenseEvent.UpdateIncomeOrOutcome -> _state.update { it.copy(expenseIncomeOrOutcome = event.incomeOrOutcome) }
             is AddEditExpenseEvent.UpdateLabel -> {
                 val currentLabels = _state.value.expenseLabels.toMutableList()

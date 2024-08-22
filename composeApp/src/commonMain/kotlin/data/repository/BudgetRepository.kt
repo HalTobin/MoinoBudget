@@ -25,6 +25,7 @@ import presentation.data.ExpenseFrequency
 import presentation.data.ExpenseIcon
 import presentation.data.ExpenseUI
 import presentation.data.IncomeOrOutcome
+import util.calculateNextPayment
 import util.toLocalDate
 import kotlin.coroutines.cancellation.CancellationException
 import kotlin.math.exp
@@ -90,8 +91,7 @@ class BudgetRepositoryImpl(
                     frequency = frequency,
                     payed = false,
                     dueIn = dueIn,
-                    nextPayment = nextPayment,
-                    lastPayment = expense.expense.lastPayment?.toLocalDate(),
+                    nextPayment = calculateNextPayment(expense.expense),
                     labels = expense.labels.map { it.toLabelUI() }
                 )
             }

@@ -48,9 +48,10 @@ enum class ExpenseIcon(val id: Int, val keywords: String, val icon: ImageVector)
     Cloud(20, "cloud", Icons.Default.Cloud);
 
     companion object {
-        val list = listOf(DefaultIncome, DefaultOutcome,
+        val list = ExpenseIcon.entries.map { it }.sortedBy { it.id }
+        /*listOf(DefaultIncome, DefaultOutcome,
             Transport, Housing, Grocery, Phone, Help, Savings, Bank, Incomes,
-            Store, Party, Film, Internet, Class, VideoGame, Health, Electricity, Cloud)
+            Store, Party, Film, Internet, Class, VideoGame, Health, Electricity, Cloud)*/
 
         fun findById(id: Int): ExpenseIcon = list.find { it.id == id } ?: Transport
     }

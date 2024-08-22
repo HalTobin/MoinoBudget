@@ -5,6 +5,7 @@ import presentation.data.ExpenseFrequency
 import presentation.data.ExpenseIcon
 import presentation.data.IncomeOrOutcome
 import presentation.data.LabelUI
+import presentation.data.MonthOption
 
 data class AddEditExpenseState(
     val budgetUI: BudgetUI? = null,
@@ -14,7 +15,7 @@ data class AddEditExpenseState(
     val expenseTitle: String = "",
     val expenseAmount: String = "",
     val expenseDay: Int = 1,
-    val expenseMonth: Int? = null,
+    val expenseMonth: MonthOption? = null,
     val expenseFrequency: ExpenseFrequency = ExpenseFrequency.Monthly,
     val expenseIcon: ExpenseIcon = ExpenseIcon.DefaultOutcome,
     val expenseLabels: List<Int> = emptyList(),

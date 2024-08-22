@@ -1,6 +1,7 @@
 package feature.add_edit_expense.presentation
 
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
@@ -52,9 +53,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import data.repository.AppPreferences
+import feature.add_edit_expense.presentation.component.SelectMonthOption
 import feature.dashboard.presentation.component.LabelSelection
 import feature.dashboard.presentation.component.TextSwitch
 import moinobudget.composeapp.generated.resources.Res
+import moinobudget.composeapp.generated.resources.amount
 import moinobudget.composeapp.generated.resources.close_dialog_description
 import moinobudget.composeapp.generated.resources.create_operation
 import moinobudget.composeapp.generated.resources.delete_budget
@@ -67,6 +70,7 @@ import org.jetbrains.compose.resources.stringResource
 import presentation.data.ExpenseFrequency
 import presentation.data.ExpenseIcon
 import presentation.data.IncomeOrOutcome
+import presentation.data.MonthOption
 import presentation.shake
 
 @Composable
@@ -88,9 +92,7 @@ fun AddEditExpenseScreen(
     ) {
         Surface(
             color = MaterialTheme.colorScheme.background,
-            border = BorderStroke(2.dp, MaterialTheme.colorScheme.surfaceVariant),
             contentColor = MaterialTheme.colorScheme.onBackground,
-            shape = RoundedCornerShape(32.dp)
         ) {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 Box(Modifier.fillMaxWidth().padding(start = 8.dp, end = 8.dp, top = 8.dp)) {
@@ -124,6 +126,7 @@ fun AddEditExpenseScreen(
 
                     Spacer(Modifier.height(4.dp))
 
+                    // Element - Income Or Outcome
                     TextSwitch(
                         items = IncomeOrOutcome.list.map { stringResource(it.textSingular) },
                         modifier = Modifier.width(256.dp).height(48.dp),
@@ -132,7 +135,9 @@ fun AddEditExpenseScreen(
                     )
                     Spacer(Modifier.height(24.dp))
 
+                    // Element - Title
                     var titleError by remember { mutableStateOf(false) }
+                    var amountError by remember { mutableStateOf(false) }
                     Row(Modifier.padding(horizontal = 16.dp)) {
                         TextField(modifier = Modifier.shake(deleteMode).weight(2f).clip(RoundedCornerShape(16.dp)),
                             isError = titleError,
@@ -149,11 +154,16 @@ fun AddEditExpenseScreen(
                             shape = RoundedCornerShape(16.dp)
                         )
                         Spacer(Modifier.width(16.dp))
+
+                        // Element - Amount
                         TextField(modifier = Modifier.shake(deleteMode).weight(1f).clip(RoundedCornerShape(16.dp)),
+                            isError = amountError,
                             value = state.expenseAmount,
-                            onValueChange = { amountText ->
-                                amountText.toFloatOrNull()?.let { onEvent(AddEditExpenseEvent.UpdateAmount(it)) } },
-                            label = { Text(stringResource(Res.string.title)) },
+                            onValueChange = {
+                                if (amountError) amountError = false
+                                onEvent(AddEditExpenseEvent.UpdateAmount(it))
+                            },
+                            label = { Text(stringResource(Res.string.amount)) },
                             colors = TextFieldDefaults.colors(
                                 unfocusedIndicatorColor = MaterialTheme.colorScheme.primary
                             ),
@@ -166,15 +176,24 @@ fun AddEditExpenseScreen(
 
                     Spacer(Modifier.height(24.dp))
 
+                    // Element - Frequency
                     TextSwitch(
                         items = ExpenseFrequency.list.map { stringResource(it.title) },
                         modifier = Modifier.width(256.dp).height(48.dp),
                         selectedIndex = state.expenseFrequency.id,
                         onSelectionChange = { onEvent(AddEditExpenseEvent.UpdateFrequency(ExpenseFrequency.findById(it))) }
                     )
-                    Spacer(Modifier.height(24.dp))
-
+                    AnimatedVisibility(state.expenseFrequency.options.isNotEmpty()) {
+                        Column {
+                            Spacer(Modifier.height(16.dp))
+                            SelectMonthOption(Modifier.fillMaxWidth(0.5f),
+                                options = state.expenseFrequency.options,
+                                value = state.expenseMonth,
+                                onSelect = { onEvent(AddEditExpenseEvent.UpdateMonthOffset(it)) })
+                        }
+                    }
                     Spacer(Modifier.height(8.dp))
+
                     Text(stringResource(Res.string.icon),
                         modifier = Modifier.padding(start = 64.dp, top = 8.dp).fillMaxWidth(),
                         fontWeight = FontWeight.Bold,
@@ -214,9 +233,10 @@ fun AddEditExpenseScreen(
                             Button(modifier = Modifier.padding(vertical = 4.dp),
                                 shape = CircleShape,
                                 onClick = {
-                                    if (state.expenseTitle.isBlank()) titleError = true
-                                    else {
-                                        TODO()
+                                    titleError = state.expenseTitle.isBlank()
+                                    state.expenseAmount.toFloatOrNull()
+                                    amountError = (state.expenseAmount.toFloatOrNull() == null)
+                                    if (!titleError && !amountError) {
                                         goBack() }
                                 }
                             ) {

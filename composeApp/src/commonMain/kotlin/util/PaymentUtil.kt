@@ -17,9 +17,17 @@ fun calculateNextPayment(expense: Expense): LocalDate {
                 thisMonthPayment.plus(DatePeriod(months = 1))
             }
         }
+        ExpenseFrequency.Quarterly.id -> { // Quarterly
+            val quarterMonths = listOf(1, 4, 7, 10).map { it + expense.monthOffset!! }
+            return calculateNextPaymentForMultipleMonths(quarterMonths, expense, currentDate)
+        }
+        ExpenseFrequency.Biannually.id -> { // Biannual
+            val biannualMonths = listOf(1, 7).map { it + expense.monthOffset!! }
+            return calculateNextPaymentForMultipleMonths(biannualMonths, expense, currentDate)
+        }
         ExpenseFrequency.Annually.id -> { // Annually
             // Determine the month from the monthOffset
-            val targetMonth = expense.monthOffset ?: 1 // Default to January if no monthOffset is provided
+            val targetMonth = expense.monthOffset?.plus(1) ?: 1 // Default to January if no monthOffset is provided
             var annualPayment = safeLocalDate(currentDate.year, targetMonth, expense.day)
 
             // If this year's payment has passed, move to the next year
@@ -32,6 +40,27 @@ fun calculateNextPayment(expense: Expense): LocalDate {
 
         else -> throw IllegalArgumentException("Unsupported frequency: ${expense.frequency}")
     }
+}
+
+fun calculateNextPaymentForMultipleMonths(targetMonths: List<Int>, expense: Expense, currentDate: LocalDate): LocalDate {
+    val year = currentDate.year
+    for (month in targetMonths) {
+        val adjustedMonth = (month - 1) % 12 + 1 // Adjust month to valid range (1-12)
+        val adjustedYear = year + (month - 1) / 12 // Adjust year if month exceeds December
+        val validDay = getValidDayOfMonth(adjustedYear, adjustedMonth, expense.day)
+        val paymentDate = LocalDate(adjustedYear, adjustedMonth, validDay)
+
+        if (paymentDate >= currentDate) {
+            return paymentDate
+        }
+    }
+
+    // If all target months for this year have passed, calculate for the next year's first target month
+    val firstMonthNextYear = targetMonths.first()
+    val adjustedMonth = (firstMonthNextYear - 1) % 12 + 1
+    val adjustedYear = year + 1 + (firstMonthNextYear - 1) / 12
+    val validDay = getValidDayOfMonth(adjustedYear, adjustedMonth, expense.day)
+    return LocalDate(adjustedYear, adjustedMonth, validDay)
 }
 
 fun safeLocalDate(year: Int, month: Int, day: Int): LocalDate {
