@@ -278,12 +278,9 @@ fun DashboardScreen(
 
                 Spacer(Modifier.height(16.dp))
 
-                //RegisterOperation(onClick = {})
-                //Spacer(Modifier.height(8.dp))
-
                 val dashboardState = rememberPagerState(pageCount = { state.budgets.size })
-                DashboardTab(dashboardState, onSelect = { scope.launch {
-                    dashboardState.animateScrollToPage(it) }})
+                DashboardTab(dashboardState, onSelect = {
+                    scope.launch { dashboardState.animateScrollToPage(it) } })
                 Spacer(Modifier.height(8.dp))
                 if (state.budgets.isNotEmpty()) HorizontalPager(state = dashboardState) { page ->
                     Crossfade(targetState = budgetState.currentPage) { budgetPage ->
@@ -293,12 +290,30 @@ fun DashboardScreen(
                                     budget = budget,
                                     incomeOrOutcome = IncomeOrOutcome.Outcome,
                                     amount = budget.upcomingPayments.first,
-                                    dueExpenses = budget.expenses)
+                                    editExpense = {
+                                        val style = budget.style
+                                        val labels = budget.labels.map { it.id }
+                                        goTo(MoinoBudgetScreen.AddEditExpense(
+                                            styleId = style.id,
+                                            labelIds = labels,
+                                            expenseId = it
+                                        ))
+                                                  },
+                                    expenses = budget.expenses)
                                 else PaymentsSection(preferences = preferences,
                                     budget = budget,
                                     incomeOrOutcome = IncomeOrOutcome.Income,
                                     amount = budget.rawIncomes.first,
-                                    dueExpenses = budget.expenses)
+                                    editExpense = {
+                                        val style = budget.style
+                                        val labels = budget.labels.map { it.id }
+                                        goTo(MoinoBudgetScreen.AddEditExpense(
+                                            styleId = style.id,
+                                            labelIds = labels,
+                                            expenseId = it
+                                        ))
+                                    },
+                                    expenses = budget.expenses)
                             }
                         }
                     }
@@ -474,11 +489,12 @@ fun MonthYearText(
 
 @Composable
 fun PaymentsSection(
+    editExpense: (Int) -> Unit,
     preferences: AppPreferences,
     budget: BudgetUI,
     incomeOrOutcome: IncomeOrOutcome,
     amount: Float,
-    dueExpenses: List<ExpenseUI>
+    expenses: List<ExpenseUI>
 ) = Column(modifier = Modifier.fillMaxWidth(),
     horizontalAlignment = Alignment.CenterHorizontally) {
     Row(Modifier.padding(horizontal = 16.dp),
@@ -494,12 +510,13 @@ fun PaymentsSection(
     }
     Spacer(modifier = Modifier.height(8.dp))
     LazyColumn(Modifier.weight(1f)) {
-        items(dueExpenses
+        items(expenses
             .filter { it.type == incomeOrOutcome && it.labels.any { label -> budget.labels.any { budget -> budget.id == label.id } } }
-            .sortedBy { it.dueIn }) { dueExpense ->
+            .sortedBy { it.dueIn }) { expense ->
             DueExpenseItem(modifier = Modifier.animateItem(),
+                onClick = { editExpense(expense.id) },
                 preferences = preferences,
-                dueExpense = dueExpense)
+                dueExpense = expense)
         }
     }
 }
@@ -507,6 +524,7 @@ fun PaymentsSection(
 @Composable
 fun DueExpenseItem(
     modifier: Modifier,
+    onClick: () -> Unit,
     preferences: AppPreferences,
     dueExpense: ExpenseUI) = Row(
     modifier = modifier
@@ -514,6 +532,7 @@ fun DueExpenseItem(
         .padding(horizontal = 16.dp, vertical = 8.dp)
         .clip(RoundedCornerShape(8.dp))
         .background(MaterialTheme.colorScheme.surface)
+        .clickable { onClick() }
         .padding(8.dp),
     verticalAlignment = Alignment.CenterVertically
 ) {

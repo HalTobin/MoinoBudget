@@ -82,8 +82,6 @@ fun AddEditExpenseScreen(
     state: AddEditExpenseState,
     onEvent: (AddEditExpenseEvent) -> Unit,
     style: BudgetStyle,
-    //expense: ExpenseUI?,
-    //budgetLabels: List<Int>,
     goBack: () -> Unit,
 ) {
     var deleteMode by remember { mutableStateOf(false) }
@@ -250,6 +248,7 @@ fun AddEditExpenseScreen(
                                     state.expenseAmount.toFloatOrNull()
                                     amountError = (state.expenseAmount.toFloatOrNull() == null)
                                     if (!titleError && !amountError) {
+                                        onEvent(AddEditExpenseEvent.UpsertExpense)
                                         goBack() }
                                 }
                             ) {

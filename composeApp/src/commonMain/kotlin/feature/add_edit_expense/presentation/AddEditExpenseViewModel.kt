@@ -69,7 +69,9 @@ class AddEditExpenseViewModel(
             }
             is AddEditExpenseEvent.UpdateIcon -> _state.update { it.copy(expenseIcon = event.icon) }
             is AddEditExpenseEvent.UpsertExpense -> {
-
+                _state.value.generateAddEditExpense()?.let { expense ->
+                    expenseRepository.upsertExpense(expense)
+                }
             }
             is AddEditExpenseEvent.DeleteExpense -> {
                 _state.value.expenseId?.let { expenseRepository.deleteExpense(it) }

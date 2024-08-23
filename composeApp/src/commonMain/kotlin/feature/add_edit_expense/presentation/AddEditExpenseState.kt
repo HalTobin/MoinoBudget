@@ -25,20 +25,17 @@ data class AddEditExpenseState(
 
     fun generateAddEditExpense(): AddEditExpense? {
         expenseAmount.toFloatOrNull()?.let { amount ->
-            expenseMonth?.offset?.let { monthOffset ->
-                return AddEditExpense(
-                    id = expenseId,
-                    incomeOrOutcome = expenseIncomeOrOutcome,
-                    title = expenseTitle,
-                    amount = amount,
-                    frequency = expenseFrequency,
-                    monthOffset = monthOffset,
-                    day = expenseDay,
-                    icon = expenseIcon,
-                    labels = expenseLabels
-                )
-            }
-            return null
+            return AddEditExpense(
+                id = expenseId,
+                incomeOrOutcome = expenseIncomeOrOutcome,
+                title = expenseTitle,
+                amount = amount,
+                frequency = expenseFrequency,
+                monthOffset = expenseMonth?.offset ?: 0,
+                day = expenseDay,
+                icon = expenseIcon,
+                labels = expenseLabels
+            )
         }
         return null
     }
