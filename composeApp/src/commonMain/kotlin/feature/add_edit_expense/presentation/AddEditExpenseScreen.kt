@@ -82,16 +82,11 @@ fun AddEditExpenseScreen(
     state: AddEditExpenseState,
     onEvent: (AddEditExpenseEvent) -> Unit,
     style: BudgetStyle,
-    labels: List<Int>,
     //expense: ExpenseUI?,
     //budgetLabels: List<Int>,
     goBack: () -> Unit,
 ) {
     var deleteMode by remember { mutableStateOf(false) }
-
-    LaunchedEffect(true) {
-        if (state.labels.isEmpty()) labels.forEach { onEvent(AddEditExpenseEvent.UpdateLabel(it)) }
-    }
 
     MaterialTheme(
         colorScheme = MaterialTheme.colorScheme.copy(

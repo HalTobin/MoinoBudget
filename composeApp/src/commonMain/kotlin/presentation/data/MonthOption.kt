@@ -57,5 +57,15 @@ enum class MonthOption(val textResources: List<StringResource>, val offset: Int)
             August, September, October, November, December)
         val biannualOptions = listOf(JaJu, FeAu, MaSe, ApOc, MaNo, JuDe)
         val quarterlyOptions = listOf(JaApJuOc, FeMaAuNo, MaJuSeDe)
+
+        fun findByOffsetAndFrequency(frequency: ExpenseFrequency, offset: Int?): MonthOption? {
+            return if (offset == null || frequency == ExpenseFrequency.Monthly) null
+            else when (frequency) {
+                ExpenseFrequency.Monthly -> emptyList()
+                ExpenseFrequency.Annually -> annualOptions
+                ExpenseFrequency.Quarterly -> quarterlyOptions
+                ExpenseFrequency.Biannually -> biannualOptions
+            }.find { it.offset == offset }
+        }
     }
 }

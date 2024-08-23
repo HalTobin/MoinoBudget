@@ -15,10 +15,6 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.datetime.DatePeriod
-import kotlinx.datetime.LocalDate
-import kotlinx.datetime.minus
-import kotlinx.datetime.plus
 
 class DashboardViewModel(
     private val labelRepository: LabelRepository,

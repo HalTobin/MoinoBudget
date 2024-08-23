@@ -4,12 +4,21 @@ import data.db.dao.ExpenseDao
 import data.db.dao.ExpenseLabelDao
 import data.db.table.ExpenseLabelCrossRef
 import data.mapper.toExpenseEntity
+import data.mapper.toExpenseUI
 import feature.add_edit_expense.data.AddEditExpense
+import presentation.data.ExpenseFrequency
+import presentation.data.ExpenseIcon
+import presentation.data.ExpenseUI
+import presentation.data.IncomeOrOutcome
+import kotlin.math.exp
 
 class ExpenseRepositoryImpl(
     private val expenseDao: ExpenseDao,
     private val expenseLabelDao: ExpenseLabelDao
 ): ExpenseRepository {
+
+    override suspend fun getExpense(id: Int): ExpenseUI =
+        expenseLabelDao.getExpenseWithLabels(id).toExpenseUI()
 
     override suspend fun upsertExpense(expense: AddEditExpense) {
         expense.id?.let { expenseId ->
@@ -35,6 +44,7 @@ class ExpenseRepositoryImpl(
 }
 
 interface ExpenseRepository {
+    suspend fun getExpense(id: Int): ExpenseUI
     suspend fun upsertExpense(expense: AddEditExpense)
     suspend fun deleteExpense(expenseId: Int)
 }

@@ -6,6 +6,7 @@ import presentation.data.IncomeOrOutcome
 import presentation.data.MonthOption
 
 sealed class AddEditExpenseEvent {
+    data class Init(val expenseId: Int?, val labels: List<Int>): AddEditExpenseEvent()
     data class UpdateTitle(val title: String): AddEditExpenseEvent()
     data class UpdateAmount(val amount: String): AddEditExpenseEvent()
     data class UpdateFrequency(val frequency: ExpenseFrequency): AddEditExpenseEvent()

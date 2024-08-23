@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import data.repository.ExpenseRepository
 import data.repository.LabelRepository
+import feature.dashboard.presentation.DashboardEvent
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -16,10 +17,11 @@ import util.getMaxDay
 import kotlin.math.min
 
 class AddEditExpenseViewModel(
-    //savedStateHandle: SavedStateHandle,
     private val labelRepository: LabelRepository,
     private val expenseRepository: ExpenseRepository
 ): ViewModel() {
+
+    private var _initiated = false
 
     private val _state = MutableStateFlow(AddEditExpenseState())
     val state = _state.asStateFlow()
@@ -36,6 +38,17 @@ class AddEditExpenseViewModel(
 
     fun onEvent(event: AddEditExpenseEvent) = viewModelScope.launch(Dispatchers.IO) {
         when (event) {
+            is AddEditExpenseEvent.Init -> {
+                if (!_initiated) {
+                    event.expenseId?.let {
+                        _state.update { AddEditExpenseState.generateStateFromExpenseUI(
+                            labels = labelRepository.getLabels(),
+                            expense = expenseRepository.getExpense(event.expenseId),
+                        ) }
+                    } ?: _state.update { it.copy(expenseLabels = event.labels) }
+                    _initiated = true
+                }
+            }
             is AddEditExpenseEvent.UpdateTitle -> _state.update { it.copy(expenseTitle = event.title) }
             is AddEditExpenseEvent.UpdateAmount -> _state.update { it.copy(expenseAmount = event.amount) }
             is AddEditExpenseEvent.UpdateDay -> _state.update { it.copy(expenseDay = event.day) }

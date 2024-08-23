@@ -8,6 +8,7 @@ import data.db.relation.BudgetWithLabels
 import data.db.table.Budget
 import data.db.table.BudgetLabelCrossRef
 import data.mapper.toBudgetEntity
+import data.mapper.toExpenseUI
 import data.mapper.toLabelUI
 import feature.dashboard.data.MonthYearPair
 import feature.dashboard.presentation.data.AddEditBudget
@@ -25,6 +26,7 @@ import presentation.data.ExpenseFrequency
 import presentation.data.ExpenseIcon
 import presentation.data.ExpenseUI
 import presentation.data.IncomeOrOutcome
+import presentation.data.MonthOption
 import util.calculateNextPayment
 import util.toLocalDate
 import kotlin.coroutines.cancellation.CancellationException
@@ -69,32 +71,7 @@ class BudgetRepositoryImpl(
         val expenses = expenseLabelDao.getExpensesWithLabelsLabelIds(budget.labels.map { it.id })
             .distinctBy { it.expenseId }
             .map { expenseLabelDao.getExpenseWithLabels(it.expenseId) }
-            .map { expense ->
-                val frequency = ExpenseFrequency.findById(expense.expense.frequency)
-                val currentDate = Clock.System.now().epochSeconds.toLocalDate()
-                val nextPayment = currentDate
-                // TODO - Operation for nextPayment
-                nextPayment.plus(
-                    DatePeriod(
-                        years = 0,
-                        months = frequency.everyXMonth
-                    )
-                )
-                val dueIn = nextPayment.compareTo(currentDate)
-
-                ExpenseUI(
-                    id = expense.expense.id,
-                    amount = expense.expense.amount,
-                    type = IncomeOrOutcome.getByDbId(expense.expense.isIncome),
-                    title = expense.expense.title,
-                    icon = ExpenseIcon.findById(expense.expense.iconId),
-                    frequency = frequency,
-                    payed = false,
-                    dueIn = dueIn,
-                    nextPayment = calculateNextPayment(expense.expense),
-                    labels = expense.labels.map { it.toLabelUI() }
-                )
-            }
+            .map { it.toExpenseUI() }
 
         val yearIncomes = expenses
             .filter { it.type == IncomeOrOutcome.Income }

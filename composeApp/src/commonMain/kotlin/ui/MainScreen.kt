@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -14,6 +15,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import androidx.navigation.toRoute
 import data.repository.AppPreferences
+import feature.add_edit_expense.presentation.AddEditExpenseEvent
 import feature.add_edit_expense.presentation.AddEditExpenseScreen
 import feature.add_edit_expense.presentation.AddEditExpenseViewModel
 import feature.dashboard.presentation.DashboardScreen
@@ -54,13 +56,21 @@ fun MainScreen(
             composable<MoinoBudgetScreen.AddEditExpense>{
                 val args = it.toRoute<MoinoBudgetScreen.AddEditExpense>()
                 val style = BudgetStyle.findById(args.styleId)
+                val expenseId = args.expenseId
                 val labels = args.labelIds
 
                 val viewModel = koinViewModel<AddEditExpenseViewModel>()
                 val state by viewModel.state.collectAsState()
+
+                LaunchedEffect(true) {
+                    viewModel.onEvent(AddEditExpenseEvent.Init(
+                        expenseId = if (expenseId == -1) null else expenseId,
+                        labels = labels
+                    ))
+                }
+
                 AddEditExpenseScreen(
                     style = style,
-                    labels = labels,
                     preferences = preferences,
                     state = state,
                     onEvent = viewModel::onEvent,
