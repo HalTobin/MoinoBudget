@@ -73,7 +73,6 @@ import presentation.data.BudgetStyle
 import presentation.data.ExpenseFrequency
 import presentation.data.ExpenseIcon
 import presentation.data.IncomeOrOutcome
-import presentation.data.MonthOption
 import presentation.shake
 
 @Composable
@@ -132,8 +131,10 @@ fun AddEditExpenseScreen(
                     TextSwitch(
                         items = IncomeOrOutcome.list.map { stringResource(it.textSingular) },
                         modifier = Modifier.width(256.dp).height(48.dp),
-                        selectedIndex = state.expenseIncomeOrOutcome.id,
-                        onSelectionChange = { onEvent(AddEditExpenseEvent.UpdateIncomeOrOutcome(IncomeOrOutcome.getById(it))) }
+                        selectedIndex = state.expenseIncomeOrOutcome.tabId,
+                        onSelectionChange = {
+                            onEvent(AddEditExpenseEvent.UpdateIncomeOrOutcome(IncomeOrOutcome.getByTabId(it)))
+                        }
                     )
                     Spacer(Modifier.height(24.dp))
 

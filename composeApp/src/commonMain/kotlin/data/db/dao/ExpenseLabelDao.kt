@@ -6,6 +6,7 @@ import data.db.relation.LabelWithExpenses
 import data.db.table.Expense
 import data.db.table.ExpenseLabelCrossRef
 import data.db.table.Label
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface ExpenseLabelDao {
@@ -32,8 +33,20 @@ interface ExpenseLabelDao {
     suspend fun getExpenseWithLabels(expenseId: Int): ExpenseWithLabels
 
     @Transaction
+    @Query("SELECT * FROM expenses")
+    suspend fun getAllExpensesWithLabels(): List<ExpenseWithLabels>
+
+    @Transaction
+    @Query("SELECT * FROM expenses")
+    fun getAllExpensesWithLabelsFlow(): Flow<List<ExpenseWithLabels>>
+
+    @Transaction
     @Query("SELECT * FROM expense_label_crossref WHERE label_id IN (:labelIds)")
     suspend fun getExpensesWithLabelsLabelIds(labelIds: List<Int>): List<ExpenseLabelCrossRef>
+
+    @Transaction
+    @Query("SELECT * FROM expense_label_crossref WHERE label_id IN (:labelIds)")
+    fun getExpensesWithLabelsLabelIdsFlow(labelIds: List<Int>): Flow<List<ExpenseLabelCrossRef>>
 
     @Transaction
     @Query("SELECT * FROM labels WHERE label_id = :labelId")

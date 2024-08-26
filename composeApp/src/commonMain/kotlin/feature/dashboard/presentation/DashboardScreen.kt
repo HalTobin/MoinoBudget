@@ -278,9 +278,10 @@ fun DashboardScreen(
 
                 Spacer(Modifier.height(16.dp))
 
-                val dashboardState = rememberPagerState(pageCount = { state.budgets.size })
+                val dashboardState = rememberPagerState(pageCount = { IncomeOrOutcome.list.size })
                 DashboardTab(dashboardState, onSelect = {
-                    scope.launch { dashboardState.animateScrollToPage(it) } })
+                    scope.launch { dashboardState.animateScrollToPage(it) }
+                })
                 Spacer(Modifier.height(8.dp))
                 if (state.budgets.isNotEmpty()) HorizontalPager(state = dashboardState) { page ->
                     Crossfade(targetState = budgetState.currentPage) { budgetPage ->
@@ -330,8 +331,9 @@ fun DashboardTab(pagerState: PagerState,
         selectedTabIndex = pagerState.currentPage,
         containerColor = MaterialTheme.colorScheme.background,
         tabs = {
-            listOf(IncomeOrOutcome.Outcome, IncomeOrOutcome.Income).forEach { incomeOrOutcome ->
+            IncomeOrOutcome.list.forEach { incomeOrOutcome ->
                 Tab(
+                    modifier = Modifier.clip(RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)),
                     selected = (pagerState.currentPage == incomeOrOutcome.tabId),
                     onClick = { onSelect(incomeOrOutcome.tabId) },
                     text = { Row(verticalAlignment = Alignment.CenterVertically) {
@@ -346,23 +348,6 @@ fun DashboardTab(pagerState: PagerState,
     )
     Spacer(Modifier.height(8.dp))
 }
-
-@Composable
-fun RegisterOperation(onClick: () -> Unit) = Button(onClick,
-    modifier = Modifier.fillMaxWidth()
-        .padding(horizontal = 48.dp)
-        .dashedBorder(2.dp, MaterialTheme.colorScheme.primary, 12.dp),
-    colors = ButtonDefaults.buttonColors(
-        contentColor = MaterialTheme.colorScheme.primary,
-        containerColor = Color.Transparent
-    ),
-    shape = RoundedCornerShape(12.dp)
-) {
-    Icon(Icons.Default.Add, contentDescription = stringResource(Res.string.new_operation))
-    Text(stringResource(Res.string.new_operation).uppercase(),
-        modifier = Modifier.padding(horizontal = 8.dp))
-}
-
 
 @Composable
 fun YearMonthSwitch(

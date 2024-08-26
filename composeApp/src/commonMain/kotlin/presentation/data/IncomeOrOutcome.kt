@@ -21,16 +21,16 @@ enum class IncomeOrOutcome(
     val color: Color,
     val icon: ImageVector
 ) {
-    Income(id = 1, dbId = true, tabId = 1, text = Res.string.incomes, textSingular = Res.string.income, color = Color(0xFF1FC600), icon = Icons.Default.AccountBalanceWallet),
-    Outcome(id = 0, dbId = false, tabId = 0, text = Res.string.outcomes, textSingular = Res.string.outcome, color = Color(0xFFF70A0A), icon = Icons.Default.CreditCard);
+    Outcome(id = 0, dbId = false, tabId = 1, text = Res.string.outcomes, textSingular = Res.string.outcome, color = Color(0xFFF70A0A), icon = Icons.Default.CreditCard),
+    Income(id = 1, dbId = true, tabId = 0, text = Res.string.incomes, textSingular = Res.string.income, color = Color(0xFF1FC600), icon = Icons.Default.AccountBalanceWallet);
 
     companion object {
         val list = listOf(Income, Outcome)
         fun getByDbId(dbId: Boolean): IncomeOrOutcome =
-            if (dbId == Income.dbId) Income
-            else Outcome
+            if (dbId == Income.dbId) Income else Outcome
+        fun getByTabId(tabId: Int): IncomeOrOutcome =
+            if (tabId == Income.tabId) Income else Outcome
         fun getById(id: Int): IncomeOrOutcome =
-            if (id == Income.id) Income
-            else Outcome
+            if (id == Income.id) Income else Outcome
     }
 }
