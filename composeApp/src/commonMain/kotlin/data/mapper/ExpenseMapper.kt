@@ -4,6 +4,7 @@ import data.db.relation.ExpenseWithLabels
 import data.db.table.Expense
 import feature.add_edit_expense.data.AddEditExpense
 import kotlinx.datetime.Clock
+import kotlinx.datetime.daysUntil
 import presentation.data.ExpenseFrequency
 import presentation.data.ExpenseIcon
 import presentation.data.ExpenseUI
@@ -26,9 +27,9 @@ fun AddEditExpense.toExpenseEntity(): Expense =
 
 fun ExpenseWithLabels.toExpenseUI(): ExpenseUI {
     val frequency = ExpenseFrequency.findById(this.expense.frequency)
-    val currentDate = Clock.System.now().epochSeconds.toLocalDate()
+    val currentDate = Clock.System.now().toEpochMilliseconds().toLocalDate()
     val nextPayment = calculateNextPayment(this.expense)
-    val dueIn = nextPayment.compareTo(currentDate)
+    val dueIn = currentDate.daysUntil(nextPayment)
     return ExpenseUI(
         id = this.expense.id,
         amount = this.expense.amount,

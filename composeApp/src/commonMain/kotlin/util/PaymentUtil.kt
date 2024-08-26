@@ -5,7 +5,7 @@ import kotlinx.datetime.*
 import presentation.data.ExpenseFrequency
 
 fun calculateNextPayment(expense: Expense): LocalDate {
-    val currentDate = Clock.System.now().epochSeconds.toLocalDate()
+    val currentDate = Clock.System.now().toEpochMilliseconds().toLocalDate()
 
     return when (expense.frequency) {
         ExpenseFrequency.Monthly.id -> { // Monthly

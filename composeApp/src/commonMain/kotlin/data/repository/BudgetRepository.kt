@@ -2,11 +2,9 @@ package data.repository
 
 import data.db.dao.BudgetDao
 import data.db.dao.BudgetLabelDao
-import data.db.dao.ExpenseDao
 import data.db.dao.ExpenseLabelDao
 import data.db.relation.BudgetWithLabels
 import data.db.relation.ExpenseWithLabels
-import data.db.table.Budget
 import data.db.table.BudgetLabelCrossRef
 import data.mapper.toBudgetEntity
 import data.mapper.toExpenseUI
@@ -15,25 +13,11 @@ import feature.dashboard.data.MonthYearPair
 import feature.dashboard.presentation.data.AddEditBudget
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.filter
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.map
-import kotlinx.datetime.Clock
-import kotlinx.datetime.DatePeriod
-import kotlinx.datetime.LocalDate
-import kotlinx.datetime.plus
-import kotlinx.datetime.toLocalDateTime
 import presentation.data.BudgetStyle
 import presentation.data.BudgetUI
 import presentation.data.ExpenseFrequency
-import presentation.data.ExpenseIcon
-import presentation.data.ExpenseUI
 import presentation.data.IncomeOrOutcome
-import presentation.data.MonthOption
-import util.calculateNextPayment
-import util.toLocalDate
 import kotlin.coroutines.cancellation.CancellationException
-import kotlin.math.exp
 
 class BudgetRepositoryImpl(
     private val budgetDao: BudgetDao,
