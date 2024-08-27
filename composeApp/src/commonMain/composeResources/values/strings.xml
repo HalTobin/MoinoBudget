@@ -33,7 +33,6 @@
     <string name="payments_dd">Payments:</string>
     <string name="to_put_aside_dd">To put aside:</string>
     <string name="upcoming_payments">Upcoming Payments</string>
-    <string name="my_incomes">My Incomes</string>
     <plurals name="due_in">
         <item quantity="one">due in %1$d day</item>
         <item quantity="other">due in %1$d days</item>

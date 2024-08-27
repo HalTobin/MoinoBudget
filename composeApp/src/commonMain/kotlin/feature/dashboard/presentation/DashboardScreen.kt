@@ -2,7 +2,6 @@ package feature.dashboard.presentation
 
 import androidx.compose.animation.Animatable
 import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.Crossfade
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -37,13 +36,11 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.ArrowDownward
+import androidx.compose.material.icons.filled.ArrowUpward
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Savings
 import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material.icons.filled.SyncAlt
-import androidx.compose.material.icons.filled.Wallet
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.FloatingActionButton
@@ -67,8 +64,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -95,25 +92,21 @@ import moinobudget.composeapp.generated.resources.due_in
 import moinobudget.composeapp.generated.resources.edit_label_description
 import moinobudget.composeapp.generated.resources.go_to_settings_help
 import moinobudget.composeapp.generated.resources.month
-import moinobudget.composeapp.generated.resources.my_incomes
-import moinobudget.composeapp.generated.resources.new_budget
 import moinobudget.composeapp.generated.resources.new_operation
-import moinobudget.composeapp.generated.resources.operation
 import moinobudget.composeapp.generated.resources.payments_dd
 import moinobudget.composeapp.generated.resources.to_put_aside_dd
-import moinobudget.composeapp.generated.resources.upcoming_payments
 import moinobudget.composeapp.generated.resources.year
 import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 import presentation.BudgetBackground
 import presentation.MoinoSnackBar
+import presentation.dashedBorder
 import presentation.data.BudgetStyle
 import presentation.data.BudgetUI
 import presentation.data.ExpenseUI
 import presentation.data.IncomeOrOutcome
 import presentation.formatCurrency
-import presentation.dashedBorder
 import presentation.pagerStateOpacity
 import ui.MoinoBudgetScreen
 import ui.theme.Orange80
@@ -277,46 +270,22 @@ fun DashboardScreen(
                 }
 
                 Spacer(Modifier.height(16.dp))
-
-                val dashboardState = rememberPagerState(pageCount = { IncomeOrOutcome.list.size })
-                DashboardTab(dashboardState, onSelect = {
-                    scope.launch { dashboardState.animateScrollToPage(it) }
-                })
-                Spacer(Modifier.height(8.dp))
-                if (state.budgets.isNotEmpty()) HorizontalPager(state = dashboardState) { page ->
-                    Crossfade(targetState = budgetState.currentPage) { budgetPage ->
-                        if (budgetPage > 0) {
-                            state.budgets.getOrNull(budgetPage-1)?.let { budget ->
-                                if (page == IncomeOrOutcome.Outcome.tabId) PaymentsSection(preferences = preferences,
-                                    budget = budget,
-                                    incomeOrOutcome = IncomeOrOutcome.Outcome,
-                                    amount = budget.upcomingPayments.first,
-                                    editExpense = {
-                                        val style = budget.style
-                                        val labels = budget.labels.map { it.id }
-                                        goTo(MoinoBudgetScreen.AddEditExpense(
-                                            styleId = style.id,
-                                            labelIds = labels,
-                                            expenseId = it
-                                        ))
-                                                  },
-                                    expenses = budget.expenses)
-                                else PaymentsSection(preferences = preferences,
-                                    budget = budget,
-                                    incomeOrOutcome = IncomeOrOutcome.Income,
-                                    amount = budget.rawIncomes.first,
-                                    editExpense = {
-                                        val style = budget.style
-                                        val labels = budget.labels.map { it.id }
-                                        goTo(MoinoBudgetScreen.AddEditExpense(
-                                            styleId = style.id,
-                                            labelIds = labels,
-                                            expenseId = it
-                                        ))
-                                    },
-                                    expenses = budget.expenses)
-                            }
-                        }
+                val budgetPage = budgetState.currentPage
+                if (budgetPage > 0) {
+                    state.budgets.getOrNull(budgetPage-1)?.let { budget ->
+                        PaymentsSection(preferences = preferences,
+                            incomes = budget.rawIncomes.first,
+                            outcomes = budget.upcomingPayments.first,
+                            editExpense = {
+                                val style = budget.style
+                                val labels = budget.labels.map { it.id }
+                                goTo(MoinoBudgetScreen.AddEditExpense(
+                                    styleId = style.id,
+                                    labelIds = labels,
+                                    expenseId = it
+                                ))
+                                          },
+                            expenses = budget.expenses)
                     }
                 }
             }
@@ -368,8 +337,8 @@ fun FinancialSummary(
     preferences: AppPreferences,
     budget: BudgetUI,
 ) = Card(modifier = modifier
-    .height(164.dp)
-    .aspectRatio(1.9f),
+    //.height(164.dp)
+    .aspectRatio(1.8f),
     shape = RoundedCornerShape(24.dp),
     elevation = CardDefaults.cardElevation(32.dp)
 ) {
@@ -476,33 +445,42 @@ fun MonthYearText(
 fun PaymentsSection(
     editExpense: (Int) -> Unit,
     preferences: AppPreferences,
-    budget: BudgetUI,
-    incomeOrOutcome: IncomeOrOutcome,
-    amount: Float,
+    incomes: Float,
+    outcomes: Float,
     expenses: List<ExpenseUI>
 ) = Column(modifier = Modifier.fillMaxWidth(),
     horizontalAlignment = Alignment.CenterHorizontally) {
-    Row(Modifier.padding(horizontal = 16.dp),
+    Row(Modifier.padding(horizontal = 48.dp),
         verticalAlignment = Alignment.CenterVertically) {
-        Text(stringResource(if (incomeOrOutcome == IncomeOrOutcome.Outcome) Res.string.upcoming_payments else Res.string.my_incomes),
-            modifier = Modifier.weight(1f),
-            fontSize = 20.sp, fontWeight = FontWeight.Bold)
+        Icon(Icons.Default.ArrowUpward, contentDescription = null)
         Text(
-            formatCurrency(amount, preferences),
+            formatCurrency(incomes, preferences),
             style = MaterialTheme.typography.titleLarge,
             fontWeight = FontWeight.SemiBold,
-            color = incomeOrOutcome.color)
+            color = IncomeOrOutcome.Income.color
+        )
+        Spacer(Modifier.weight(1f))
+        Icon(Icons.Default.ArrowDownward, contentDescription = null)
+        Text(
+            formatCurrency(outcomes, preferences),
+            style = MaterialTheme.typography.titleLarge,
+            fontWeight = FontWeight.SemiBold,
+            color = IncomeOrOutcome.Outcome.color)
     }
     Spacer(modifier = Modifier.height(8.dp))
-    LazyColumn(Modifier.weight(1f)) {
-        items(expenses
-            .filter { it.type == incomeOrOutcome && it.labels.any { label -> budget.labels.any { budget -> budget.id == label.id } } }
-            .sortedBy { it.dueIn }) { expense ->
-            DueExpenseItem(modifier = Modifier.animateItem(),
-                onClick = { editExpense(expense.id) },
-                preferences = preferences,
-                dueExpense = expense)
+    Box(Modifier.weight(1f)) {
+        LazyColumn() {
+            items(expenses.sortedBy { it.dueIn }) { expense ->
+                DueExpenseItem(modifier = Modifier.animateItem(),
+                    onClick = { editExpense(expense.id) },
+                    preferences = preferences,
+                    dueExpense = expense)
+            }
+            item { Spacer(Modifier.height(80.dp)) }
         }
+        Box(Modifier
+            .height(8.dp)
+            .background(brush = Brush.verticalGradient(listOf(MaterialTheme.colorScheme.background, Color.Transparent))))
     }
 }
 
