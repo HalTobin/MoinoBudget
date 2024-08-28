@@ -573,8 +573,13 @@ fun DueExpenseItem(
                 append(splitText[1])
             }
             Text(styledText, fontSize = 14.sp, modifier = Modifier.weight(1f))
-            dueExpense.labels.forEach {
-                Box(Modifier.padding(horizontal = 4.dp).size(20.dp).clip(CircleShape).background(it.color))
+            Box {
+                dueExpense.labels.forEachIndexed { index, labelUI ->
+                    Box(Modifier
+                        .offset (x = (-(10)*index).dp)
+                        .padding(horizontal = 4.dp)
+                        .size(20.dp).clip(CircleShape).background(labelUI.color))
+                }
             }
         }
     }
