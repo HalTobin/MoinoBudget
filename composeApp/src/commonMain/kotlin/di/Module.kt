@@ -61,6 +61,7 @@ object ModuleDAO {
         single { provideExpenseLabelDao(get()) }
         single { provideBudgetDao(get()) }
         single { provideBudgetLabelDao(get()) }
+        single { provideSavingsDao(get()) }
     }
 
     private fun provideLabelDao(db: ExpenseDatabase) = db.labelDao()
@@ -68,4 +69,5 @@ object ModuleDAO {
     private fun provideExpenseLabelDao(db: ExpenseDatabase) = db.expenseLabelDao()
     private fun provideBudgetDao(db: ExpenseDatabase) = db.budgetDao()
     private fun provideBudgetLabelDao(db: ExpenseDatabase) = db.budgetLabelDao()
+    private fun provideSavingsDao(db: ExpenseDatabase) = db.savingsDao()
 }

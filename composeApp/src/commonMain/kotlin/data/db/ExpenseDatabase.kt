@@ -11,11 +11,13 @@ import data.db.dao.BudgetLabelDao
 import data.db.dao.ExpenseDao
 import data.db.dao.ExpenseLabelDao
 import data.db.dao.LabelDao
+import data.db.dao.SavingsDao
 import data.db.table.Budget
 import data.db.table.BudgetLabelCrossRef
 import data.db.table.Label
 import data.db.table.Expense
 import data.db.table.ExpenseLabelCrossRef
+import data.db.table.Savings
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 
@@ -24,7 +26,8 @@ import kotlinx.coroutines.IO
         Label::class,
         ExpenseLabelCrossRef::class,
         Budget::class,
-        BudgetLabelCrossRef::class
+        BudgetLabelCrossRef::class,
+        Savings::class
     ],
     version = 1
 )
@@ -36,6 +39,7 @@ abstract class ExpenseDatabase: RoomDatabase() {
     abstract fun expenseLabelDao(): ExpenseLabelDao
     abstract fun budgetDao(): BudgetDao
     abstract fun budgetLabelDao(): BudgetLabelDao
+    abstract fun savingsDao(): SavingsDao
 
 }
 
