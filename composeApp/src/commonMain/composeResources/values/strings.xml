@@ -47,6 +47,7 @@
     <string name="sort_amount">Amount</string>
     <string name="sort_frequency">Frequency</string>
     <string name="sort_category">Category</string>
+    <string name="sort_type">Type</string>
 
     <!-- Settings Screen -->
     <string name="settings">Settings</string>

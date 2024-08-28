@@ -16,6 +16,7 @@ import androidx.compose.material.icons.filled.Medication
 import androidx.compose.material.icons.filled.MusicNote
 import androidx.compose.material.icons.filled.Payments
 import androidx.compose.material.icons.filled.Phone
+import androidx.compose.material.icons.filled.Receipt
 import androidx.compose.material.icons.filled.Savings
 import androidx.compose.material.icons.filled.School
 import androidx.compose.material.icons.filled.SmokingRooms
@@ -55,7 +56,8 @@ enum class ExpenseIcon(val id: Int, val keywords: String, val icon: ImageVector)
     Smoke(22, "smoke, vape, cigarettes", Icons.Default.SmokingRooms),
     Vape(23, "smoke, vape, liquids, cigarettes", Icons.Default.VapingRooms),
     Plane(24, "transport, plane", Icons.Default.Flight),
-    Music(25, "music, art", Icons.Default.MusicNote);
+    Music(25, "music, art", Icons.Default.MusicNote),
+    Taxes(26, "taxes", Icons.Default.Receipt);
 
     companion object {
         val list = ExpenseIcon.entries.map { it }.sortedBy { it.id }
