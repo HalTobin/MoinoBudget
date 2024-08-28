@@ -268,7 +268,7 @@ fun DashboardScreen(
                     }
                 }
 
-                Spacer(Modifier.height(16.dp))
+                Spacer(Modifier.height(8.dp))
                 val budgetPage = budgetState.currentPage
 
                 val budget = state.budgets.getOrNull(budgetPage-1)
@@ -436,14 +436,14 @@ fun PaymentsSection(
             Icon(Icons.Default.ArrowUpward, contentDescription = null)
             Text(formatCurrency(values.first, preferences),
                 modifier = Modifier.padding(start = 4.dp, end = 8.dp),
-                style = MaterialTheme.typography.titleLarge,
+                style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.SemiBold,
                 color = IncomeOrOutcome.Income.color)
-            Spacer(Modifier.width(16.dp))
+            Spacer(Modifier.width(8.dp))
             Icon(Icons.Default.ArrowDownward, contentDescription = null)
             Text(formatCurrency(values.second, preferences),
                 modifier = Modifier.padding(start = 4.dp),
-                style = MaterialTheme.typography.titleLarge,
+                style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.SemiBold,
                 color = IncomeOrOutcome.Outcome.color)
 
@@ -470,7 +470,6 @@ fun PaymentsSection(
 
         }
     }
-    Spacer(modifier = Modifier.height(4.dp))
     Crossfade(targetState = listState.canScrollBackward) { displayDivider ->
         if (displayDivider) HorizontalDivider(Modifier.fillMaxWidth(),
             thickness = 2.dp)

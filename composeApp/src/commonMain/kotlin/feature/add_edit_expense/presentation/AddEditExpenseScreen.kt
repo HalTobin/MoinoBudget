@@ -63,6 +63,7 @@ import moinobudget.composeapp.generated.resources.amount
 import moinobudget.composeapp.generated.resources.close_dialog_description
 import moinobudget.composeapp.generated.resources.create_operation
 import moinobudget.composeapp.generated.resources.delete_budget
+import moinobudget.composeapp.generated.resources.delete_operation
 import moinobudget.composeapp.generated.resources.edit_operation
 import moinobudget.composeapp.generated.resources.icon
 import moinobudget.composeapp.generated.resources.labels
@@ -261,8 +262,9 @@ fun AddEditExpenseScreen(
                             }
                         }
                         else state.expenseId?.let { expenseId ->
-                            TextButton(onClick = { onEvent(AddEditExpenseEvent.DeleteExpense); goBack() }) {
-                                Text(stringResource(Res.string.delete_budget),
+                            TextButton(modifier = Modifier.padding(horizontal = 64.dp),
+                                onClick = { onEvent(AddEditExpenseEvent.DeleteExpense); goBack() }) {
+                                Text(stringResource(Res.string.delete_operation),
                                     color = MaterialTheme.colorScheme.error)
                             }
                         }

@@ -42,9 +42,8 @@ class ExpenseRepositoryImpl(
         )
     }
 
-    override suspend fun deleteExpense(expenseId: Int) {
-        TODO("Not yet implemented")
-    }
+    override suspend fun deleteExpense(expenseId: Int) =
+        expenseDao.deleteById(expenseId.toLong())
 
 }
 

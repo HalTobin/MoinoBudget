@@ -213,7 +213,8 @@ fun NewEditBudgetDialog(
                             }
                         }
                         else budget?.let {
-                            TextButton(onClick = { deleteBudget(budget.id); onDismiss() }) {
+                            TextButton(modifier = Modifier.padding(horizontal = 64.dp),
+                                onClick = { deleteBudget(budget.id); onDismiss() }) {
                                 Text(stringResource(Res.string.delete_budget),
                                     color = MaterialTheme.colorScheme.error)
                             }
