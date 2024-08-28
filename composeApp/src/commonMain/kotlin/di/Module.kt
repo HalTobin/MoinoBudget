@@ -6,14 +6,18 @@ import data.db.dao.BudgetLabelDao
 import data.db.dao.ExpenseDao
 import data.db.dao.ExpenseLabelDao
 import data.db.dao.LabelDao
+import data.db.dao.SavingsDao
 import data.repository.BudgetRepository
 import data.repository.BudgetRepositoryImpl
 import data.repository.ExpenseRepository
 import data.repository.ExpenseRepositoryImpl
 import data.repository.LabelRepository
 import data.repository.LabelRepositoryImpl
+import data.repository.SavingsRepository
+import data.repository.SavingsRepositoryImpl
 import feature.add_edit_expense.presentation.AddEditExpenseViewModel
 import feature.dashboard.presentation.DashboardViewModel
+import feature.savings.presentation.SavingsViewModel
 import feature.settings.SettingsViewModel
 import org.koin.compose.viewmodel.dsl.viewModelOf
 import org.koin.core.module.Module
@@ -32,6 +36,7 @@ object ModuleVM {
         viewModelOf(::DashboardViewModel)
         viewModelOf(::AddEditExpenseViewModel)
         viewModelOf(::SettingsViewModel)
+        viewModelOf(::SavingsViewModel)
     }
 }
 
@@ -40,6 +45,7 @@ object ModuleRepositories {
         single { provideLabelRepository(get()) }.bind<LabelRepository>()
         single { provideBudgetRepository(get(), get(), get()) }.bind<BudgetRepository>()
         single { provideExpenseRepository(get(), get()) }.bind<ExpenseRepository>()
+        single { provideSavingsRepository(get()) }.bind<SavingsRepository>()
     }
 
     private fun provideLabelRepository(labelDao: LabelDao) = LabelRepositoryImpl(labelDao)
@@ -52,6 +58,7 @@ object ModuleRepositories {
         expenseDao: ExpenseDao,
         expenseLabelDao: ExpenseLabelDao
     ): ExpenseRepository = ExpenseRepositoryImpl(expenseDao, expenseLabelDao)
+    private fun provideSavingsRepository(savingsDao: SavingsDao): SavingsRepository = SavingsRepositoryImpl(savingsDao)
 }
 
 object ModuleDAO {

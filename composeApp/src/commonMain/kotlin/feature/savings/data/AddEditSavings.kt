@@ -1,11 +1,12 @@
 package feature.savings.data
 
-import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.LocalDate
 
 data class AddEditSavings(
-    val id: Int,
+    val id: Int?,
+    val title: String,
     val amount: Int,
     val goal: Int,
     val autoIncrement: Int,
-    val lastMonthAutoIncrement: LocalDateTime?
+    val lastMonthAutoIncrement: LocalDate?
 )
