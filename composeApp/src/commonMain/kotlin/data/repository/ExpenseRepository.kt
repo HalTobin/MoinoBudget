@@ -6,6 +6,8 @@ import data.db.table.ExpenseLabelCrossRef
 import data.mapper.toExpenseEntity
 import data.mapper.toExpenseUI
 import feature.add_edit_expense.data.AddEditExpense
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import presentation.data.ExpenseFrequency
 import presentation.data.ExpenseIcon
 import presentation.data.ExpenseUI
@@ -19,6 +21,9 @@ class ExpenseRepositoryImpl(
 
     override suspend fun getExpense(id: Int): ExpenseUI =
         expenseLabelDao.getExpenseWithLabels(id).toExpenseUI()
+
+    override suspend fun getExpensesFlow(): Flow<List<ExpenseUI>> =
+        expenseLabelDao.getAllExpensesWithLabelsFlow().map { it.map { expenseWithLabel -> expenseWithLabel.toExpenseUI() } }
 
     override suspend fun upsertExpense(expense: AddEditExpense) {
         expense.id?.let { expenseId ->
@@ -45,6 +50,7 @@ class ExpenseRepositoryImpl(
 
 interface ExpenseRepository {
     suspend fun getExpense(id: Int): ExpenseUI
+    suspend fun getExpensesFlow(): Flow<List<ExpenseUI>>
     suspend fun upsertExpense(expense: AddEditExpense)
     suspend fun deleteExpense(expenseId: Int)
 }

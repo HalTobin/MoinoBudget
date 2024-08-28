@@ -270,23 +270,21 @@ fun DashboardScreen(
 
                 Spacer(Modifier.height(16.dp))
                 val budgetPage = budgetState.currentPage
-                if (budgetPage > 0) {
-                    state.budgets.getOrNull(budgetPage-1)?.let { budget ->
-                        PaymentsSection(preferences = preferences,
-                            incomes = budget.rawIncomes.first,
-                            outcomes = budget.upcomingPayments.first,
-                            editExpense = {
-                                val style = budget.style
-                                val labels = budget.labels.map { it.id }
-                                goTo(MoinoBudgetScreen.AddEditExpense(
-                                    styleId = style.id,
-                                    labelIds = labels,
-                                    expenseId = it
-                                ))
-                                          },
-                            expenses = budget.expenses)
-                    }
-                }
+
+                val budget = state.budgets.getOrNull(budgetPage-1)
+                PaymentsSection(preferences = preferences,
+                    incomes = budget?.rawIncomes?.first ?: state.expenses.filter { it.type == IncomeOrOutcome.Income }.sumOf { it.amount.toDouble() }.toFloat(),
+                    outcomes = budget?.upcomingPayments?.first ?: state.expenses.filter { it.type == IncomeOrOutcome.Outcome }.sumOf { it.amount.toDouble() }.toFloat(),
+                    editExpense = {
+                        val style = budget?.style ?: BudgetStyle.CitrusJuice
+                        val labels = budget?.labels?.map { it.id } ?: emptyList()
+                        goTo(MoinoBudgetScreen.AddEditExpense(
+                            styleId = style.id,
+                            labelIds = labels,
+                            expenseId = it
+                        ))
+                                  },
+                    expenses = budget?.expenses ?: state.expenses)
             }
         }
     }
@@ -429,44 +427,48 @@ fun PaymentsSection(
 
     var sortingMethod by remember { mutableStateOf(ExpenseSort.Date) }
 
-    Row(Modifier.fillMaxWidth().padding(horizontal = 20.dp),
-        verticalAlignment = Alignment.CenterVertically) {
+    val incomesWithOutcomes = Pair(incomes, outcomes)
 
-        Icon(Icons.Default.ArrowUpward, contentDescription = null)
-        Text(formatCurrency(incomes, preferences),
-            modifier = Modifier.padding(start = 4.dp, end = 8.dp),
-            style = MaterialTheme.typography.titleLarge,
-            fontWeight = FontWeight.SemiBold,
-            color = IncomeOrOutcome.Income.color)
-        Spacer(Modifier.width(16.dp))
-        Icon(Icons.Default.ArrowDownward, contentDescription = null)
-        Text(formatCurrency(outcomes, preferences),
-            modifier = Modifier.padding(start = 4.dp),
-            style = MaterialTheme.typography.titleLarge,
-            fontWeight = FontWeight.SemiBold,
-            color = IncomeOrOutcome.Outcome.color)
+    Crossfade(targetState = incomesWithOutcomes) { values ->
+        Row(Modifier.fillMaxWidth().padding(horizontal = 20.dp),
+            verticalAlignment = Alignment.CenterVertically) {
 
-        Spacer(Modifier.weight(1f))
+            Icon(Icons.Default.ArrowUpward, contentDescription = null)
+            Text(formatCurrency(values.first, preferences),
+                modifier = Modifier.padding(start = 4.dp, end = 8.dp),
+                style = MaterialTheme.typography.titleLarge,
+                fontWeight = FontWeight.SemiBold,
+                color = IncomeOrOutcome.Income.color)
+            Spacer(Modifier.width(16.dp))
+            Icon(Icons.Default.ArrowDownward, contentDescription = null)
+            Text(formatCurrency(values.second, preferences),
+                modifier = Modifier.padding(start = 4.dp),
+                style = MaterialTheme.typography.titleLarge,
+                fontWeight = FontWeight.SemiBold,
+                color = IncomeOrOutcome.Outcome.color)
 
-        var sortingMenu by remember { mutableStateOf(false) }
-        TextButton(onClick = { sortingMenu = !sortingMenu },
-            colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.onBackground)) {
-            Icon(Icons.Default.SwapVert, contentDescription = null)
-            Text(stringResource(sortingMethod.text),
-                modifier = Modifier.padding(horizontal = 4.dp),
-                style = MaterialTheme.typography.titleMedium)
-            DropdownMenu(expanded = sortingMenu,
-                shape = RoundedCornerShape(16.dp),
-                onDismissRequest = { sortingMenu = false }) {
-                ExpenseSort.list.forEach { sorting ->
-                    DropdownMenuItem(
-                        leadingIcon = { Icon(imageVector = sorting.icon, contentDescription = null) },
-                        text = { Text(stringResource(sorting.text)) },
-                        onClick =  { sortingMethod = sorting; sortingMenu = false })
+            Spacer(Modifier.weight(1f))
+
+            var sortingMenu by remember { mutableStateOf(false) }
+            TextButton(onClick = { sortingMenu = !sortingMenu },
+                colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.onBackground)) {
+                Icon(Icons.Default.SwapVert, contentDescription = null)
+                Text(stringResource(sortingMethod.text),
+                    modifier = Modifier.padding(horizontal = 4.dp),
+                    style = MaterialTheme.typography.titleMedium)
+                DropdownMenu(expanded = sortingMenu,
+                    shape = RoundedCornerShape(16.dp),
+                    onDismissRequest = { sortingMenu = false }) {
+                    ExpenseSort.list.forEach { sorting ->
+                        DropdownMenuItem(
+                            leadingIcon = { Icon(imageVector = sorting.icon, contentDescription = null) },
+                            text = { Text(stringResource(sorting.text)) },
+                            onClick =  { sortingMethod = sorting; sortingMenu = false })
+                    }
                 }
             }
-        }
 
+        }
     }
     Spacer(modifier = Modifier.height(4.dp))
     Crossfade(targetState = listState.canScrollBackward) { displayDivider ->

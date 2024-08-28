@@ -23,19 +23,14 @@ fun formatNumber(value: Float, preferences: AppPreferences): String {
 
     // Split the string into the integer and fractional parts
     val parts = amount.split(".", ",")
-
     // Get the part before the decimal/comma
     val integerPart = parts[0]
-
     // Reverse the integer part to facilitate adding spaces every 3 characters
     val reversedIntegerPart = integerPart.reversed()
-
     // Add spaces every 3 characters
     val formattedReversed = reversedIntegerPart.chunked(3).joinToString(" ")
-
     // Reverse it back to get the final formatted integer part
     val formattedIntegerPart = formattedReversed.reversed()
-
     // If there is a fractional part, append it back with a "." or ","
     return if (parts.size > 1) "$formattedIntegerPart.${parts[1]}" else formattedIntegerPart
 }

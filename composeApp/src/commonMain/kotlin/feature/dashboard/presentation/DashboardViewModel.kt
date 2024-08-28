@@ -26,6 +26,7 @@ class DashboardViewModel(
     val state = _state.asStateFlow()
 
     private var budgetJob: Job? = null
+    private var expenseJob: Job? = null
     private var labelJob: Job? = null
 
     private val _eventFlow = MutableSharedFlow<UiEvent>(replay = 1)
@@ -34,6 +35,7 @@ class DashboardViewModel(
     init {
         // Load expenses and payments...
         setUpLabelJob()
+        setUpExpenseJob()
         setUpBudgetJob()
 
         viewModelScope.launch(Dispatchers.IO) {
@@ -61,6 +63,15 @@ class DashboardViewModel(
         budgetJob = viewModelScope.launch(Dispatchers.IO) {
             budgetRepository.getBudgetsFlow().collect { budgets ->
                 _state.update { it.copy(budgets = budgets) }
+            }
+        }
+    }
+
+    private fun setUpExpenseJob() {
+        expenseJob?.cancel()
+        expenseJob = viewModelScope.launch(Dispatchers.IO) {
+            expenseRepository.getExpensesFlow().collect { expenses ->
+                _state.update { it.copy(expenses = expenses) }
             }
         }
     }

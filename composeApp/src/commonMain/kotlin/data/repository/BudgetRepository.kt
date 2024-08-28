@@ -13,6 +13,7 @@ import feature.dashboard.data.MonthYearPair
 import feature.dashboard.presentation.data.AddEditBudget
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.map
 import presentation.data.BudgetStyle
 import presentation.data.BudgetUI
 import presentation.data.ExpenseFrequency
