@@ -32,27 +32,23 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.pager.HorizontalPager
-import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Divider
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.Sort
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowDownward
 import androidx.compose.material.icons.filled.ArrowUpward
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Savings
 import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material.icons.filled.Sort
 import androidx.compose.material.icons.filled.SwapVert
-import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -61,8 +57,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.Tab
-import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -85,7 +79,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import data.db.table.Expense
 import data.repository.AppPreferences
 import feature.dashboard.data.ExpenseSort
 import feature.dashboard.data.annual
@@ -93,10 +86,8 @@ import feature.dashboard.data.expenseSort
 import feature.dashboard.data.monthly
 import feature.dashboard.presentation.component.TextSwitch
 import feature.dashboard.presentation.dialog.NewEditBudgetDialog
-import feature.dashboard.presentation.dialog.NewEditExpenseDialog
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.launch
 import moinobudget.composeapp.generated.resources.Res
 import moinobudget.composeapp.generated.resources.available_in
 import moinobudget.composeapp.generated.resources.cant_delete
@@ -143,8 +134,6 @@ fun DashboardScreen(
 
     var addEditBudgetDialog by remember { mutableStateOf(false) }
     var budgetForDialog by remember { mutableStateOf<BudgetUI?>(null) }
-    var addEditExpenseDialog by remember { mutableStateOf(false) }
-    var expenseForDialog by remember { mutableStateOf<ExpenseUI?>(null) }
 
     if (addEditBudgetDialog) NewEditBudgetDialog(
         preferences = preferences,
@@ -177,26 +166,22 @@ fun DashboardScreen(
         )
     ) {
 
-        if (addEditExpenseDialog) NewEditExpenseDialog(
-            preferences = preferences,
-            expense = expenseForDialog,
-            labels = state.labels,
-            budgetLabels = state.budgets.getOrNull(budgetState.currentPage-1)?.labels?.map { it.id } ?: emptyList(),
-            onDismiss = { addEditExpenseDialog = false; expenseForDialog = null },
-            saveExpense = { TODO() },
-            deleteExpense = { TODO() }
-        )
-
         Scaffold(
             snackbarHost = { SnackbarHost(snackBarHostState, snackbar = { MoinoSnackBar(it) }) },
-            floatingActionButton = { FloatingActionButton(onClick = {
-                val budget = state.budgets.getOrNull(budgetState.currentPage-1)
-                val style = budget?.style ?: BudgetStyle.CitrusJuice
-                val labels = budget?.labels?.map { it.id } ?: emptyList()
-                goTo(MoinoBudgetScreen.AddEditExpense(styleId = style.id, labelIds = labels)) },
-                containerColor = MaterialTheme.colorScheme.primary) {
-                Icon(Icons.Default.Add, contentDescription = stringResource(Res.string.new_operation))
-            } }
+            floatingActionButton = {
+                ExtendedFloatingActionButton(onClick = {
+                    val budget = state.budgets.getOrNull(budgetState.currentPage-1)
+                    val style = budget?.style ?: BudgetStyle.CitrusJuice
+                    val labels = budget?.labels?.map { it.id } ?: emptyList()
+                    goTo(MoinoBudgetScreen.AddEditExpense(styleId = style.id, labelIds = labels))
+                },
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    contentColor = MaterialTheme.colorScheme.onPrimary,
+                    content = {
+                        Icon(Icons.Default.Add, contentDescription = stringResource(Res.string.new_operation))
+                        Text(stringResource(Res.string.new_operation), Modifier.padding(start = 8.dp))
+                    })
+            }
         ) {
             Column {
                 Row(modifier = Modifier.fillMaxWidth().padding(8.dp),
@@ -305,31 +290,6 @@ fun DashboardScreen(
             }
         }
     }
-}
-
-@Composable
-fun DashboardTab(pagerState: PagerState,
-                 onSelect: (tabId: Int) -> Unit) {
-    TabRow(modifier = Modifier.fillMaxWidth(),
-        selectedTabIndex = pagerState.currentPage,
-        containerColor = MaterialTheme.colorScheme.background,
-        tabs = {
-            IncomeOrOutcome.list.forEach { incomeOrOutcome ->
-                Tab(
-                    modifier = Modifier.clip(RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)),
-                    selected = (pagerState.currentPage == incomeOrOutcome.tabId),
-                    onClick = { onSelect(incomeOrOutcome.tabId) },
-                    text = { Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(imageVector = incomeOrOutcome.icon, contentDescription = null)
-                        Text(stringResource(incomeOrOutcome.text).uppercase(),
-                            modifier = Modifier.padding(start = 8.dp))
-                    } }
-                )
-            }
-        },
-        divider = { HorizontalDivider(thickness = 2.dp) }
-    )
-    Spacer(Modifier.height(8.dp))
 }
 
 @Composable
@@ -465,7 +425,7 @@ fun PaymentsSection(
 ) = Column(modifier = Modifier.fillMaxWidth(),
     horizontalAlignment = Alignment.CenterHorizontally) {
 
-    var listState = rememberLazyListState()
+    val listState = rememberLazyListState()
 
     var sortingMethod by remember { mutableStateOf(ExpenseSort.Date) }
 
