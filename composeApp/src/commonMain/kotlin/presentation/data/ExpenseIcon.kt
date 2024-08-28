@@ -9,16 +9,21 @@ import androidx.compose.material.icons.filled.Celebration
 import androidx.compose.material.icons.filled.Class
 import androidx.compose.material.icons.filled.Cloud
 import androidx.compose.material.icons.filled.Diversity3
+import androidx.compose.material.icons.filled.Flight
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.LocalGroceryStore
 import androidx.compose.material.icons.filled.Medication
+import androidx.compose.material.icons.filled.MusicNote
 import androidx.compose.material.icons.filled.Payments
 import androidx.compose.material.icons.filled.Phone
 import androidx.compose.material.icons.filled.Savings
+import androidx.compose.material.icons.filled.School
+import androidx.compose.material.icons.filled.SmokingRooms
 import androidx.compose.material.icons.filled.Storefront
 import androidx.compose.material.icons.filled.Train
 import androidx.compose.material.icons.filled.TrendingDown
 import androidx.compose.material.icons.filled.TrendingUp
+import androidx.compose.material.icons.filled.VapingRooms
 import androidx.compose.material.icons.filled.VideoLibrary
 import androidx.compose.material.icons.filled.VideogameAsset
 import androidx.compose.material.icons.filled.WaterDrop
@@ -45,7 +50,12 @@ enum class ExpenseIcon(val id: Int, val keywords: String, val icon: ImageVector)
     Health(17, "health", Icons.Default.Medication),
     Water(18, "water", Icons.Default.WaterDrop),
     Electricity(19, "electricity", Icons.Default.Bolt),
-    Cloud(20, "cloud", Icons.Default.Cloud);
+    Cloud(20, "cloud", Icons.Default.Cloud),
+    School(21, "school, classes, teacher", Icons.Default.School),
+    Smoke(22, "smoke, vape, cigarettes", Icons.Default.SmokingRooms),
+    Vape(23, "smoke, vape, liquids, cigarettes", Icons.Default.VapingRooms),
+    Plane(24, "transport, plane", Icons.Default.Flight),
+    Music(25, "music, art", Icons.Default.MusicNote);
 
     companion object {
         val list = ExpenseIcon.entries.map { it }.sortedBy { it.id }

@@ -2,6 +2,7 @@ package feature.dashboard.presentation
 
 import androidx.compose.animation.Animatable
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.Crossfade
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -29,20 +30,29 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Divider
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Sort
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowDownward
 import androidx.compose.material.icons.filled.ArrowUpward
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Savings
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.Sort
+import androidx.compose.material.icons.filled.SwapVert
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -54,6 +64,7 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -74,8 +85,11 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import data.db.table.Expense
 import data.repository.AppPreferences
+import feature.dashboard.data.ExpenseSort
 import feature.dashboard.data.annual
+import feature.dashboard.data.expenseSort
 import feature.dashboard.data.monthly
 import feature.dashboard.presentation.component.TextSwitch
 import feature.dashboard.presentation.dialog.NewEditBudgetDialog
@@ -450,27 +464,59 @@ fun PaymentsSection(
     expenses: List<ExpenseUI>
 ) = Column(modifier = Modifier.fillMaxWidth(),
     horizontalAlignment = Alignment.CenterHorizontally) {
-    Row(Modifier.padding(horizontal = 48.dp),
+
+    var listState = rememberLazyListState()
+
+    var sortingMethod by remember { mutableStateOf(ExpenseSort.Date) }
+
+    Row(Modifier.fillMaxWidth().padding(horizontal = 20.dp),
         verticalAlignment = Alignment.CenterVertically) {
+
         Icon(Icons.Default.ArrowUpward, contentDescription = null)
-        Text(
-            formatCurrency(incomes, preferences),
+        Text(formatCurrency(incomes, preferences),
+            modifier = Modifier.padding(start = 4.dp, end = 8.dp),
             style = MaterialTheme.typography.titleLarge,
             fontWeight = FontWeight.SemiBold,
-            color = IncomeOrOutcome.Income.color
-        )
-        Spacer(Modifier.weight(1f))
+            color = IncomeOrOutcome.Income.color)
+        Spacer(Modifier.width(16.dp))
         Icon(Icons.Default.ArrowDownward, contentDescription = null)
-        Text(
-            formatCurrency(outcomes, preferences),
+        Text(formatCurrency(outcomes, preferences),
+            modifier = Modifier.padding(start = 4.dp),
             style = MaterialTheme.typography.titleLarge,
             fontWeight = FontWeight.SemiBold,
             color = IncomeOrOutcome.Outcome.color)
+
+        Spacer(Modifier.weight(1f))
+
+        var sortingMenu by remember { mutableStateOf(false) }
+        TextButton(onClick = { sortingMenu = !sortingMenu },
+            colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.onBackground)) {
+            Icon(Icons.Default.SwapVert, contentDescription = null)
+            Text(stringResource(sortingMethod.text),
+                modifier = Modifier.padding(horizontal = 4.dp),
+                style = MaterialTheme.typography.titleMedium)
+            DropdownMenu(expanded = sortingMenu,
+                shape = RoundedCornerShape(16.dp),
+                onDismissRequest = { sortingMenu = false }) {
+                ExpenseSort.list.forEach { sorting ->
+                    DropdownMenuItem(
+                        leadingIcon = { Icon(imageVector = sorting.icon, contentDescription = null) },
+                        text = { Text(stringResource(sorting.text)) },
+                        onClick =  { sortingMethod = sorting; sortingMenu = false })
+                }
+            }
+        }
+
     }
-    Spacer(modifier = Modifier.height(8.dp))
+    Spacer(modifier = Modifier.height(4.dp))
+    Crossfade(targetState = listState.canScrollBackward) { displayDivider ->
+        if (displayDivider) HorizontalDivider(Modifier.fillMaxWidth(),
+            thickness = 2.dp)
+    }
+
     Box(Modifier.weight(1f)) {
-        LazyColumn() {
-            items(expenses.sortedBy { it.dueIn }) { expense ->
+        LazyColumn(state = listState) {
+            items(expenses.expenseSort(sortingMethod)) { expense ->
                 DueExpenseItem(modifier = Modifier.animateItem(),
                     onClick = { editExpense(expense.id) },
                     preferences = preferences,
