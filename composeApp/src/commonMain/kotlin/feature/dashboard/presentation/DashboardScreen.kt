@@ -189,7 +189,11 @@ fun DashboardScreen(
                     IconButton(modifier = Modifier
                         .clip(CircleShape)
                         .background(MaterialTheme.colorScheme.surface),
-                        onClick = { goTo(MoinoBudgetScreen.Settings) }) {
+                        onClick = {
+                            val budget = state.budgets.getOrNull(budgetState.currentPage-1)
+                            val style = budget?.style ?: BudgetStyle.CitrusJuice
+                            goTo(MoinoBudgetScreen.Savings(styleId = style.id))
+                        }) {
                         Icon(modifier = Modifier.size(32.dp),
                             imageVector = Icons.Default.Savings, contentDescription = stringResource(Res.string.go_to_settings_help))
                     }
@@ -470,12 +474,13 @@ fun PaymentsSection(
 
         }
     }
-    Crossfade(targetState = listState.canScrollBackward) { displayDivider ->
-        if (displayDivider) HorizontalDivider(Modifier.fillMaxWidth(),
-            thickness = 2.dp)
-    }
 
     Box(Modifier.weight(1f)) {
+        Crossfade(modifier = Modifier.align(Alignment.TopCenter).fillMaxWidth(),
+            targetState = listState.canScrollBackward) { displayDivider ->
+            if (displayDivider) HorizontalDivider(Modifier.fillMaxWidth(),
+                thickness = 2.dp)
+        }
         LazyColumn(state = listState) {
             items(expenses.expenseSort(sortingMethod)) { expense ->
                 DueExpenseItem(modifier = Modifier.animateItem(),
@@ -485,9 +490,6 @@ fun PaymentsSection(
             }
             item { Spacer(Modifier.height(80.dp)) }
         }
-        Box(Modifier
-            .height(8.dp)
-            .background(brush = Brush.verticalGradient(listOf(MaterialTheme.colorScheme.background, Color.Transparent))))
     }
 }
 

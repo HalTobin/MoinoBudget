@@ -12,6 +12,7 @@ private val DarkColorScheme = darkColorScheme(
     onPrimary = OrangeGrey80,
     surface = DarkSurface,
     surfaceVariant = Color.Black,
+    surfaceContainerHigh = Color.LightGray,
     onSurface = Color.White,
     error = RedWarning
 )
@@ -22,6 +23,7 @@ private val DarkOledColorScheme = darkColorScheme(
     background = Color.Black,
     surface = DarkSurface,
     surfaceVariant = DarkSurface,
+    surfaceContainerHigh = Color.DarkGray,
     onSurface = Color.White,
     error = RedWarning
 )
@@ -31,6 +33,7 @@ private val LightColorScheme = lightColorScheme(
     onPrimary = OrangeGrey40,
     surface = LightSurface,
     surfaceVariant = LightSurface,
+    surfaceContainerHigh = Color.DarkGray,
     error = RedWarning
 
     /* Other default colors to override

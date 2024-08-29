@@ -8,6 +8,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NamedNavArgument
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -20,6 +21,8 @@ import feature.add_edit_expense.presentation.AddEditExpenseScreen
 import feature.add_edit_expense.presentation.AddEditExpenseViewModel
 import feature.dashboard.presentation.DashboardScreen
 import feature.dashboard.presentation.DashboardViewModel
+import feature.savings.presentation.SavingsScreen
+import feature.savings.presentation.SavingsViewModel
 import feature.settings.SettingsScreen
 import feature.settings.SettingsViewModel
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -45,7 +48,7 @@ fun MainScreen(
         ) {
             composable<MoinoBudgetScreen.Dashboard> {
                 val viewModel = koinViewModel<DashboardViewModel>()
-                val state by viewModel.state.collectAsState()
+                val state by viewModel.state.collectAsStateWithLifecycle()
                 DashboardScreen(
                     preferences = preferences,
                     state = state,
@@ -60,7 +63,7 @@ fun MainScreen(
                 val labels = args.labelIds
 
                 val viewModel = koinViewModel<AddEditExpenseViewModel>()
-                val state by viewModel.state.collectAsState()
+                val state by viewModel.state.collectAsStateWithLifecycle()
 
                 LaunchedEffect(true) {
                     viewModel.onEvent(AddEditExpenseEvent.Init(
@@ -83,6 +86,19 @@ fun MainScreen(
                     goBack = { navController.popBackStack() },
                     preferences = preferences,
                     onEvent = viewModel::onEvent)
+            }
+            composable<MoinoBudgetScreen.Savings> {
+                val args = it.toRoute<MoinoBudgetScreen.Savings>()
+                val style = BudgetStyle.findById(args.styleId)
+
+                val viewModel = koinViewModel<SavingsViewModel>()
+                val state by viewModel.state.collectAsStateWithLifecycle()
+                SavingsScreen(
+                    state = state,
+                    preferences = preferences,
+                    style = style,
+                    goBack = { navController.popBackStack() }
+                )
             }
         }
     }

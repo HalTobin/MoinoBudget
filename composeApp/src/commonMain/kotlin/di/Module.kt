@@ -45,7 +45,7 @@ object ModuleRepositories {
         single { provideLabelRepository(get()) }.bind<LabelRepository>()
         single { provideBudgetRepository(get(), get(), get()) }.bind<BudgetRepository>()
         single { provideExpenseRepository(get(), get()) }.bind<ExpenseRepository>()
-        single { provideSavingsRepository(get()) }.bind<SavingsRepository>()
+        single { provideSavingsRepository(get(), get()) }.bind<SavingsRepository>()
     }
 
     private fun provideLabelRepository(labelDao: LabelDao) = LabelRepositoryImpl(labelDao)
@@ -58,7 +58,10 @@ object ModuleRepositories {
         expenseDao: ExpenseDao,
         expenseLabelDao: ExpenseLabelDao
     ): ExpenseRepository = ExpenseRepositoryImpl(expenseDao, expenseLabelDao)
-    private fun provideSavingsRepository(savingsDao: SavingsDao): SavingsRepository = SavingsRepositoryImpl(savingsDao)
+    private fun provideSavingsRepository(
+        savingsDao: SavingsDao,
+        labelDao: LabelDao
+    ): SavingsRepository = SavingsRepositoryImpl(savingsDao, labelDao)
 }
 
 object ModuleDAO {

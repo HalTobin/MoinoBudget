@@ -3,6 +3,7 @@ package data.mapper
 import data.db.table.Savings
 import feature.savings.data.AddEditSavings
 import kotlinx.datetime.Clock
+import presentation.data.LabelUI
 import presentation.data.SavingsUI
 import util.toLocalDate
 
@@ -12,20 +13,24 @@ fun AddEditSavings.toSavingsEntity(): Savings {
     return Savings(
         id = this.id ?: 0,
         title = this.title,
+        subtitle = this.subtitle,
         amount = this.amount,
         goal = this.goal,
         autoIncrement = this.autoIncrement,
-        lastMonthAutoIncrement = lastAutoIncrement ?: currentDate
+        lastMonthAutoIncrement = lastAutoIncrement ?: currentDate,
+        labelId = this.labelId ?: 0
     )
 }
 
-fun Savings.toSavingsUI(): SavingsUI {
+fun Savings.toSavingsUI(labels: List<LabelUI>): SavingsUI {
     return SavingsUI(
         id = this.id,
         title = this.title,
+        subtitle = this.subtitle,
         amount = this.amount,
         goal = this.goal,
         autoIncrement = this.autoIncrement,
-        lastMonthAutoIncrement = this.lastMonthAutoIncrement.toLocalDate()
+        lastMonthAutoIncrement = this.lastMonthAutoIncrement.toLocalDate(),
+        label = if (this.labelId != 0) labels.find { it.id == this.labelId } else null
     )
 }

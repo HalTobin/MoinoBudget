@@ -1,11 +1,13 @@
 package data.db.dao
 
+import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Query
 import androidx.room.Upsert
 import data.db.table.Savings
 import kotlinx.coroutines.flow.Flow
 
+@Dao
 interface SavingsDao {
     @Upsert
     suspend fun upsert(savings: Savings): Long

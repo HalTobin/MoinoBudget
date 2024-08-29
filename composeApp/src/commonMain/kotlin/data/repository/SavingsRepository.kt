@@ -1,6 +1,8 @@
 package data.repository
 
+import data.db.dao.LabelDao
 import data.db.dao.SavingsDao
+import data.mapper.toLabelUI
 import data.mapper.toSavingsEntity
 import data.mapper.toSavingsUI
 import feature.savings.data.AddEditSavings
@@ -9,16 +11,17 @@ import kotlinx.coroutines.flow.map
 import presentation.data.SavingsUI
 
 class SavingsRepositoryImpl(
-    private val dao: SavingsDao
+    private val savingsDao: SavingsDao,
+    private val labelsDao: LabelDao
 ): SavingsRepository {
-    override suspend fun getSavingsFlow(): Flow<List<SavingsUI>> = dao.getAll().map {
-        it.map { savings -> savings.toSavingsUI() } }
+    override suspend fun getSavingsFlow(): Flow<List<SavingsUI>> = savingsDao.getAll().map {
+        it.map { savings -> savings.toSavingsUI(labelsDao.getAll().map { label -> label.toLabelUI() }) } }
 
     override suspend fun upsertSavings(savings: AddEditSavings) =
-        dao.upsert(savings.toSavingsEntity())
+        savingsDao.upsert(savings.toSavingsEntity())
 
     override suspend fun deleteSavings(savingsId: Int) =
-        dao.deleteById(savingsId.toLong())
+        savingsDao.deleteById(savingsId.toLong())
 }
 
 interface SavingsRepository {

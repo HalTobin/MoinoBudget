@@ -42,6 +42,7 @@ import moinobudget.composeapp.generated.resources.settings
 import moinobudget.composeapp.generated.resources.theme
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
+import presentation.TopBackAndTitle
 
 @Composable
 fun SettingsScreen(
@@ -49,15 +50,8 @@ fun SettingsScreen(
     preferences: AppPreferences,
     onEvent: (SettingsEvent) -> Unit
 ) = Column {
-    Row(verticalAlignment = Alignment.CenterVertically) {
-        IconButton(onClick = goBack) {
-            Icon(imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                contentDescription = stringResource(Res.string.back_home_description))
-        }
-        Text(modifier = Modifier.padding(start = 8.dp),
-            style = MaterialTheme.typography.titleLarge,
-            text = stringResource(Res.string.settings))
-    }
+    TopBackAndTitle(title = stringResource(Res.string.settings),
+        goBack = goBack)
 
     SectionTitle(stringResource(Res.string.section_interface))
 

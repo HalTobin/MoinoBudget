@@ -1,8 +1,8 @@
 package data.db
 
+import androidx.room.AutoMigration
 import androidx.room.ConstructedBy
 import androidx.room.Database
-import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.RoomDatabaseConstructor
 import androidx.sqlite.driver.bundled.BundledSQLiteDriver
@@ -14,9 +14,9 @@ import data.db.dao.LabelDao
 import data.db.dao.SavingsDao
 import data.db.table.Budget
 import data.db.table.BudgetLabelCrossRef
-import data.db.table.Label
 import data.db.table.Expense
 import data.db.table.ExpenseLabelCrossRef
+import data.db.table.Label
 import data.db.table.Savings
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
@@ -29,7 +29,17 @@ import kotlinx.coroutines.IO
         BudgetLabelCrossRef::class,
         Savings::class
     ],
-    version = 1
+    autoMigrations = [
+        AutoMigration (
+            from = 1,
+            to = 2,
+        ),
+        AutoMigration (
+            from = 2,
+            to = 3,
+        )
+    ],
+    version = 3
 )
 @ConstructedBy(ExpenseDbCtor::class) // NEW
 abstract class ExpenseDatabase: RoomDatabase() {

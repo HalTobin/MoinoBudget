@@ -111,4 +111,13 @@
     <string name="october">October</string>
     <string name="november">November</string>
     <string name="december">December</string>
+
+    <!-- Savings -->
+    <string name="savings">Savings</string>
+    <string name="goal">Goal</string>
+    <string name="goal_with_value">Goal: %1$s</string>
+    <string name="register_savings">Register savings</string>
+    <string name="register_savings_details">Define a goal and track your savings</string>
+    <string name="new_savings">New savings</string>
+    <string name="edit_savings">Edit savings</string>
 </resources>
