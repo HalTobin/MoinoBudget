@@ -1,5 +1,6 @@
 package feature.savings.presentation
 
+import androidx.compose.animation.Crossfade
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
@@ -14,10 +15,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
@@ -31,6 +34,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -46,6 +50,7 @@ import org.jetbrains.compose.resources.stringResource
 import presentation.TopBackAndTitle
 import presentation.dashedBorder
 import presentation.data.BudgetStyle
+import presentation.data.IncomeOrOutcome
 import presentation.data.SavingsUI
 import presentation.formatCurrency
 
@@ -53,6 +58,7 @@ import presentation.formatCurrency
 fun SavingsScreen(
     state: SavingsState,
     preferences: AppPreferences,
+    onEvent: (SavingsEvent) -> Unit,
     style: BudgetStyle,
     goBack: () -> Unit
     //onEvent
@@ -70,8 +76,8 @@ fun SavingsScreen(
         savings = savingsForDialog,
         preferences = preferences,
         labels = state.labels,
-        saveSavings = { TODO() },
-        deleteSavings = { TODO() },
+        saveSavings = { onEvent(SavingsEvent.UpsertSavings(it)) },
+        deleteSavings = { onEvent(SavingsEvent.DeleteSavings(it)) },
         onDismiss = { addSavingsDialog = false; savingsForDialog = null }
     )
 
@@ -79,9 +85,28 @@ fun SavingsScreen(
         TopBackAndTitle(title = stringResource(Res.string.savings),
             goBack = goBack)
         Spacer(Modifier.height(16.dp))
-        LazyColumn(modifier = Modifier.padding(horizontal = 16.dp)) {
+        Crossfade(modifier = Modifier.fillMaxWidth(),
+            targetState = state.total) { total ->
+            Text(formatCurrency(total, preferences.copy(decimalMode = true)),
+                modifier = Modifier.fillMaxWidth(1f).padding(horizontal = 16.dp),
+                textAlign = TextAlign.End,
+                fontWeight = FontWeight.Bold,
+                style = MaterialTheme.typography.headlineMedium,
+                color = IncomeOrOutcome.Income.color)
+        }
+        Spacer(Modifier.height(16.dp))
+        val listState = rememberLazyListState()
+        Box(Modifier.weight(1f)) {
+            Crossfade(modifier = Modifier.align(Alignment.TopCenter).fillMaxWidth(),
+                targetState = listState.canScrollBackward) { displayDivider ->
+                if (displayDivider) HorizontalDivider(Modifier.fillMaxWidth(),
+                    thickness = 2.dp)
+            }
+            LazyColumn(state = listState,
+                modifier = Modifier.padding(horizontal = 16.dp)) {
             items(state.savings) { savings ->
-                SavingsItem(savings = savings,
+                SavingsItem(modifier = Modifier.animateItem(),
+                    savings = savings,
                     preferences = preferences,
                     onClick = { savingsForDialog = savings; addSavingsDialog = true })
             }
@@ -113,15 +138,17 @@ fun SavingsScreen(
                 }
             }
         }
+        }
     }
 }
 
 @Composable
 fun SavingsItem(
+    modifier: Modifier,
     preferences: AppPreferences,
     savings: SavingsUI,
     onClick: () -> Unit
-) = Box(Modifier
+) = Box(modifier
     .fillMaxWidth()
     .padding(vertical = 12.dp)
     .clip(RoundedCornerShape(16.dp))

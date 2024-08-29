@@ -36,12 +36,21 @@ class SavingsViewModel(
     )
 
     init {
-        //setUpSavingsJob()
+        setUpSavingsJob()
         viewModelScope.launch(Dispatchers.IO) {
             labels = labelRepository.getLabels()
             _state.update { it.copy(
+                //total = dummySavings.sumOf { it.amount }.toFloat(),
                 labels = labels,
-                savings = dummySavings.map { it.toSavingsUI(labels) }) }
+                //savings = dummySavings.map { it.toSavingsUI(labels) }
+            ) }
+        }
+    }
+
+    fun onEvent(event: SavingsEvent) = viewModelScope.launch {
+        when (event) {
+            is SavingsEvent.UpsertSavings -> savingsRepository.upsertSavings(event.savings)
+            is SavingsEvent.DeleteSavings -> savingsRepository.deleteSavings(event.savingsId)
         }
     }
 
@@ -49,7 +58,7 @@ class SavingsViewModel(
         savingsJob?.cancel()
         savingsJob = viewModelScope.launch(Dispatchers.IO) {
             savingsRepository.getSavingsFlow().collect { savings ->
-                _state.update { it.copy(savings = savings) }
+                _state.update { it.copy(total = savings.sumOf { it.amount }.toFloat(), savings = savings) }
             }
         }
     }

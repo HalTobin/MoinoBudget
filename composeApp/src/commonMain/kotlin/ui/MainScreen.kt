@@ -97,6 +97,7 @@ fun MainScreen(
                     state = state,
                     preferences = preferences,
                     style = style,
+                    onEvent = viewModel::onEvent,
                     goBack = { navController.popBackStack() }
                 )
             }
