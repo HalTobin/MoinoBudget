@@ -64,14 +64,15 @@ fun SavingsScreen(
 ) {
 
     var addSavingsDialog by remember { mutableStateOf(false) }
+    var savingsForDialog by remember { mutableStateOf<SavingsUI?>(null) }
 
     if (addSavingsDialog) AddEditSavingsDialog(
-        savings = null,
+        savings = savingsForDialog,
         preferences = preferences,
         labels = state.labels,
         saveSavings = { TODO() },
         deleteSavings = { TODO() },
-        onDismiss = { addSavingsDialog = false }
+        onDismiss = { addSavingsDialog = false; savingsForDialog = null }
     )
 
     Column {
@@ -82,7 +83,7 @@ fun SavingsScreen(
             items(state.savings) { savings ->
                 SavingsItem(savings = savings,
                     preferences = preferences,
-                    onClick = {})
+                    onClick = { savingsForDialog = savings; addSavingsDialog = true })
             }
             item {
                 Row(Modifier

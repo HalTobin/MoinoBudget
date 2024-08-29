@@ -120,4 +120,6 @@
     <string name="register_savings_details">Define a goal and track your savings</string>
     <string name="new_savings">New savings</string>
     <string name="edit_savings">Edit savings</string>
+    <string name="delete_savings">Delete savings</string>
+    <string name="subtitle">Label</string>
 </resources>

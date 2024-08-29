@@ -49,7 +49,6 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExtendedFloatingActionButton
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -69,7 +68,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
@@ -85,7 +83,7 @@ import feature.dashboard.data.annual
 import feature.dashboard.data.expenseSort
 import feature.dashboard.data.monthly
 import feature.dashboard.presentation.component.TextSwitch
-import feature.dashboard.presentation.dialog.NewEditBudgetDialog
+import feature.dashboard.presentation.dialog.AddEditBudgetDialog
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.collectLatest
 import moinobudget.composeapp.generated.resources.Res
@@ -135,7 +133,7 @@ fun DashboardScreen(
     var addEditBudgetDialog by remember { mutableStateOf(false) }
     var budgetForDialog by remember { mutableStateOf<BudgetUI?>(null) }
 
-    if (addEditBudgetDialog) NewEditBudgetDialog(
+    if (addEditBudgetDialog) AddEditBudgetDialog(
         preferences = preferences,
         budget = budgetForDialog,
         labels = state.labels,

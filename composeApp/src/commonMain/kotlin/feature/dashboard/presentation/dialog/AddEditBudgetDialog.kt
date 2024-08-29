@@ -70,7 +70,7 @@ import presentation.data.LabelUI
 import presentation.shake
 
 @Composable
-fun NewEditBudgetDialog(
+fun AddEditBudgetDialog(
     preferences: AppPreferences,
     budget: BudgetUI?,
     labels: List<LabelUI>,
