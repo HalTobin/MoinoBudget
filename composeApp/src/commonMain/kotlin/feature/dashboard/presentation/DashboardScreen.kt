@@ -474,11 +474,6 @@ fun PaymentsSection(
     }
 
     Box(Modifier.weight(1f)) {
-        Crossfade(modifier = Modifier.align(Alignment.TopCenter).fillMaxWidth(),
-            targetState = listState.canScrollBackward) { displayDivider ->
-            if (displayDivider) HorizontalDivider(Modifier.fillMaxWidth(),
-                thickness = 2.dp)
-        }
         LazyColumn(state = listState) {
             items(expenses.expenseSort(sortingMethod)) { expense ->
                 DueExpenseItem(modifier = Modifier.animateItem(),
@@ -487,6 +482,11 @@ fun PaymentsSection(
                     dueExpense = expense)
             }
             item { Spacer(Modifier.height(80.dp)) }
+        }
+        Crossfade(modifier = Modifier.align(Alignment.TopCenter).fillMaxWidth(),
+            targetState = listState.canScrollBackward) { displayDivider ->
+            if (displayDivider) HorizontalDivider(Modifier.fillMaxWidth(),
+                thickness = 2.dp)
         }
     }
 }
