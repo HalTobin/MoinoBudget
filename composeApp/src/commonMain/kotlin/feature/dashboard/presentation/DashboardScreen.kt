@@ -43,6 +43,7 @@ import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Savings
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.SwapVert
+import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -69,6 +70,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.semantics.Role.Companion.Button
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -431,23 +433,51 @@ fun PaymentsSection(
 
     val incomesWithOutcomes = Pair(incomes, outcomes)
 
+    var typeFilter by remember { mutableStateOf<IncomeOrOutcome?>(null) }
+
     Crossfade(targetState = incomesWithOutcomes) { values ->
-        Row(Modifier.fillMaxWidth().padding(horizontal = 20.dp),
+        Row(Modifier.fillMaxWidth().padding(horizontal = 12.dp),
             verticalAlignment = Alignment.CenterVertically) {
 
-            Icon(Icons.Default.ArrowUpward, contentDescription = null)
-            Text(formatCurrency(values.first, preferences),
-                modifier = Modifier.padding(start = 4.dp, end = 8.dp),
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.SemiBold,
-                color = IncomeOrOutcome.Income.color)
+            Crossfade(targetState = (typeFilter == IncomeOrOutcome.Income)) { active ->
+                TextButton(onClick = {
+                    typeFilter = if (typeFilter == IncomeOrOutcome.Income) null
+                        else IncomeOrOutcome.Income
+                                     },
+                    colors = ButtonDefaults.textButtonColors(
+                        containerColor = if (active) IncomeOrOutcome.Income.bgColor else Color.Transparent
+                    )) {
+                    Icon(Icons.Default.ArrowUpward,
+                        tint = MaterialTheme.colorScheme.onBackground,
+                        contentDescription = null)
+                    Text(formatCurrency(values.first, preferences.copy(decimalMode = false)),
+                        modifier = Modifier.padding(start = 4.dp, end = 8.dp),
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.SemiBold,
+                        color = IncomeOrOutcome.Income.color)
+                }
+            }
+
             Spacer(Modifier.width(8.dp))
-            Icon(Icons.Default.ArrowDownward, contentDescription = null)
-            Text(formatCurrency(values.second, preferences),
-                modifier = Modifier.padding(start = 4.dp),
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.SemiBold,
-                color = IncomeOrOutcome.Outcome.color)
+
+            Crossfade(targetState = (typeFilter == IncomeOrOutcome.Outcome)) { active ->
+                TextButton(onClick = {
+                    typeFilter = if (typeFilter == IncomeOrOutcome.Outcome) null
+                        else IncomeOrOutcome.Outcome
+                                     },
+                    colors = ButtonDefaults.textButtonColors(
+                        containerColor = if (active) IncomeOrOutcome.Outcome.bgColor else Color.Transparent
+                    )) {
+                    Icon(Icons.Default.ArrowDownward,
+                        tint = MaterialTheme.colorScheme.onBackground,
+                        contentDescription = null)
+                    Text(formatCurrency(values.second, preferences.copy(decimalMode = false)),
+                        modifier = Modifier.padding(start = 4.dp, end = 8.dp),
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.SemiBold,
+                        color = IncomeOrOutcome.Outcome.color)
+                }
+            }
 
             Spacer(Modifier.weight(1f))
 
@@ -475,7 +505,7 @@ fun PaymentsSection(
 
     Box(Modifier.weight(1f)) {
         LazyColumn(state = listState) {
-            items(expenses.expenseSort(sortingMethod)) { expense ->
+            items(expenses.expenseSort(typeFilter, sortingMethod)) { expense ->
                 DueExpenseItem(modifier = Modifier.animateItem(),
                     onClick = { editExpense(expense.id) },
                     preferences = preferences,

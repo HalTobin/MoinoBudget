@@ -124,10 +124,11 @@ fun SavingsScreen(
                             contentDescription = stringResource(Res.string.register_savings_details))
                         Column(Modifier.padding(start = 16.dp)) {
                             Text(stringResource(Res.string.register_savings),
-                                fontWeight = FontWeight.Bold,
-                                style = MaterialTheme.typography.titleLarge)
-                            Text(stringResource(Res.string.register_savings_details),
+                                fontWeight = FontWeight.SemiBold,
                                 style = MaterialTheme.typography.titleMedium)
+                            Text(stringResource(Res.string.register_savings_details),
+                                fontWeight = FontWeight.Normal,
+                                style = MaterialTheme.typography.titleSmall)
                         }
                     }
             }
@@ -158,11 +159,12 @@ fun SavingsItem(
     val savingPrimary = savings.label?.color ?: MaterialTheme.colorScheme.primary
 
     val currentProgress = remember { Animatable(0f) }
+    val progress = savings.amount.toFloat() / savings.goal
 
-    LaunchedEffect(key1 = true) {
-        delay(150)
+    LaunchedEffect(key1 = progress) {
+        delay(300)
         currentProgress.animateTo(
-            targetValue = (savings.amount.toFloat() / savings.goal.toFloat()),
+            targetValue = progress,
             animationSpec = tween(1500)
         )
     }
@@ -189,11 +191,16 @@ fun SavingsItem(
             trackColor = MaterialTheme.colorScheme.surfaceContainerHigh,
             drawStopIndicator = {}
         )
-        Text(
-            stringResource(Res.string.goal_with_value, formatCurrency(savings.goal.toFloat(), preferences)),
-            modifier = Modifier.fillMaxWidth(),
-            style = MaterialTheme.typography.titleLarge,
-            fontWeight = FontWeight.Light,
-            textAlign = TextAlign.End)
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Text("${(progress * 100).toInt()}%",
+                modifier = Modifier.weight(1f),
+                fontWeight = FontWeight.Bold,
+                color = savingPrimary,
+                style = MaterialTheme.typography.titleLarge)
+            Text(
+                stringResource(Res.string.goal_with_value, formatCurrency(savings.goal.toFloat(), preferences)),
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Light)
+        }
     }
 }

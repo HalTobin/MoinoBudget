@@ -19,10 +19,21 @@ enum class IncomeOrOutcome(
     val text: StringResource,
     val textSingular: StringResource,
     val color: Color,
+    val bgColor: Color,
     val icon: ImageVector
 ) {
-    Outcome(id = 0, dbId = false, tabId = 1, text = Res.string.outcomes, textSingular = Res.string.outcome, color = Color(0xFFF70A0A), icon = Icons.Default.CreditCard),
-    Income(id = 1, dbId = true, tabId = 0, text = Res.string.incomes, textSingular = Res.string.income, color = Color(0xFF1FC600), icon = Icons.Default.AccountBalanceWallet);
+    Outcome(id = 0, dbId = false, tabId = 1,
+        text = Res.string.outcomes,
+        textSingular = Res.string.outcome,
+        color = Color(0xFFF70A0A),
+        bgColor = Color(0xFF5E0000),
+        icon = Icons.Default.CreditCard),
+    Income(id = 1, dbId = true, tabId = 0,
+        text = Res.string.incomes,
+        textSingular = Res.string.income,
+        color = Color(0xFF1FC600),
+        bgColor = Color(0xFF0C4E00),
+        icon = Icons.Default.AccountBalanceWallet);
 
     companion object {
         val list = listOf(Income, Outcome)

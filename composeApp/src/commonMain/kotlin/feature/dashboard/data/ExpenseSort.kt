@@ -11,6 +11,7 @@ import moinobudget.composeapp.generated.resources.sort_category
 import moinobudget.composeapp.generated.resources.sort_date
 import org.jetbrains.compose.resources.StringResource
 import presentation.data.ExpenseUI
+import presentation.data.IncomeOrOutcome
 
 enum class ExpenseSort(val text: StringResource, val icon: ImageVector) {
     Date(text = Res.string.sort_date, icon = Icons.Default.CalendarMonth),
@@ -24,10 +25,12 @@ enum class ExpenseSort(val text: StringResource, val icon: ImageVector) {
     }
 }
 
-fun List<ExpenseUI>.expenseSort(sortingMethod: ExpenseSort): List<ExpenseUI> =
+fun List<ExpenseUI>.expenseSort(typeFilter: IncomeOrOutcome?,sortingMethod: ExpenseSort): List<ExpenseUI> =
     when (sortingMethod) {
         ExpenseSort.Date -> this.sortedBy { it.dueIn }
         ExpenseSort.Amount -> this.sortedByDescending { it.amount }
         //ExpenseSort.Frequency -> this.sortedBy { it.frequency }
         ExpenseSort.Category -> this.sortedBy { it.icon }
-    }
+    }.filter { typeFilter?.let { type ->
+        it.type == type
+    } ?: true }

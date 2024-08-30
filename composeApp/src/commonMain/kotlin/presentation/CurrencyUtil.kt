@@ -18,8 +18,7 @@ fun formatNumber(value: Float, preferences: AppPreferences): String {
         if (rounded % 1.0 == 0.0) rounded.toInt().toString() // Convert to integer if there's no fractional part
         else rounded.toString() // Otherwise, return the rounded value as a string
     }
-    else ceil(value).toString())
-
+    else ceil(value).toInt().toString())
 
     // Split the string into the integer and fractional parts
     val parts = amount.split(".", ",")
