@@ -166,9 +166,9 @@ fun DashboardScreen(
         }
     ) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Spacer(Modifier.height(12.dp))
+            Spacer(Modifier.height(10.dp))
             YearMonthSwitch(year, onChange = { year = it })
-            Spacer(Modifier.height(12.dp))
+            Spacer(Modifier.height(10.dp))
 
             LaunchedEffect(key1 = budgetState.currentPage, key2 = state.budgets) {
                 if (state.budgets.isNotEmpty()) {
@@ -231,7 +231,7 @@ fun DashboardScreen(
                 }
             }
 
-            Spacer(Modifier.height(8.dp))
+            Spacer(Modifier.height(4.dp))
             val budgetPage = budgetState.currentPage
 
             val budget = state.budgets.getOrNull(budgetPage-1)
@@ -489,7 +489,7 @@ fun DueExpenseItem(
     dueExpense: ExpenseUI) = Row(
     modifier = modifier
         .fillMaxWidth()
-        .padding(horizontal = 16.dp, vertical = 8.dp)
+        .padding(horizontal = 16.dp, vertical = 6.dp)
         .clip(RoundedCornerShape(8.dp))
         .background(MaterialTheme.colorScheme.surface)
         .clickable { onClick() }

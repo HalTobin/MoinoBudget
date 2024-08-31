@@ -112,7 +112,7 @@ fun HubScreen(
             ) {
                 Box {
                     FloatingActionButton(
-                        modifier = Modifier.align(Alignment.TopEnd).padding(8.dp).zIndex(2f).size(48.dp),
+                        modifier = Modifier.align(Alignment.TopEnd).padding(8.dp).zIndex(2f).size(44.dp),
                         shape = CircleShape,
                         containerColor = MaterialTheme.colorScheme.surface,
                         contentColor = MaterialTheme.colorScheme.onSurface,

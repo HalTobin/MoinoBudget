@@ -80,7 +80,7 @@ fun SavingsScreen(
     )
 
     Column {
-        Column(Modifier.padding(horizontal = 24.dp, vertical = 16.dp)) {
+        Column(Modifier.padding(start = 24.dp, top = 16.dp, bottom = 8.dp)) {
             Crossfade(modifier = Modifier.fillMaxWidth(),
                 targetState = state.total) { total ->
                 Text(formatCurrency(total, preferences.copy(decimalMode = true)),
@@ -106,7 +106,7 @@ fun SavingsScreen(
                 item {
                     Row(Modifier
                         .fillMaxWidth()
-                        .padding(vertical = 8.dp)
+                        .padding(top = 20.dp, bottom = 24.dp)
                         .dashedBorder(4.dp, MaterialTheme.colorScheme.primary, 16.dp)
                         .clip(RoundedCornerShape(16.dp))
                         .background(MaterialTheme.colorScheme.surface)
