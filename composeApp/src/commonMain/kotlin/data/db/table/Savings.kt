@@ -11,7 +11,7 @@ data class Savings(
     val title: String,
     @ColumnInfo(defaultValue = "") val subtitle: String,
     val amount: Int,
-    val goal: Int,
+    val goal: Int?,
     val autoIncrement: Int,
     val lastMonthAutoIncrement: Long,
     val labelId: Int

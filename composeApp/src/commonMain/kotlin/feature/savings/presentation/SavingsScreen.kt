@@ -35,7 +35,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import data.repository.AppPreferences
 import feature.savings.presentation.dialog.AddEditSavingsDialog
@@ -44,11 +43,9 @@ import moinobudget.composeapp.generated.resources.Res
 import moinobudget.composeapp.generated.resources.goal_with_value
 import moinobudget.composeapp.generated.resources.register_savings
 import moinobudget.composeapp.generated.resources.register_savings_details
-import moinobudget.composeapp.generated.resources.savings
+import moinobudget.composeapp.generated.resources.total_savings
 import org.jetbrains.compose.resources.stringResource
-import presentation.TopBackAndTitle
 import presentation.dashedBorder
-import presentation.data.BudgetStyle
 import presentation.data.IncomeOrOutcome
 import presentation.data.SavingsUI
 import presentation.formatCurrency
@@ -58,16 +55,10 @@ fun SavingsScreen(
     state: SavingsState,
     preferences: AppPreferences,
     onEvent: (SavingsEvent) -> Unit,
-    style: BudgetStyle,
+    //style: BudgetStyle,
     goBack: () -> Unit
     //onEvent
-) = MaterialTheme(
-    colorScheme = MaterialTheme.colorScheme.copy(
-        primary = style.getPrimary(preferences),
-        onPrimary = style.getOnPrimary(preferences)
-    )
 ) {
-
     var addSavingsDialog by remember { mutableStateOf(false) }
     var savingsForDialog by remember { mutableStateOf<SavingsUI?>(null) }
 
@@ -81,19 +72,19 @@ fun SavingsScreen(
     )
 
     Column {
-        TopBackAndTitle(title = stringResource(Res.string.savings),
-            goBack = goBack)
-        Spacer(Modifier.height(16.dp))
-        Crossfade(modifier = Modifier.fillMaxWidth(),
-            targetState = state.total) { total ->
-            Text(formatCurrency(total, preferences.copy(decimalMode = true)),
-                modifier = Modifier.fillMaxWidth(1f).padding(horizontal = 16.dp),
-                textAlign = TextAlign.End,
-                fontWeight = FontWeight.Bold,
-                style = MaterialTheme.typography.headlineMedium,
-                color = IncomeOrOutcome.Income.color)
+        Column(Modifier.padding(horizontal = 24.dp, vertical = 16.dp)) {
+            Crossfade(modifier = Modifier.fillMaxWidth(),
+                targetState = state.total) { total ->
+                Text(formatCurrency(total, preferences.copy(decimalMode = true)),
+                    fontWeight = FontWeight.Bold,
+                    style = MaterialTheme.typography.headlineMedium,
+                    color = IncomeOrOutcome.Income.color)
+            }
+            Text(stringResource(Res.string.total_savings),
+                fontWeight = FontWeight.SemiBold,
+                style = MaterialTheme.typography.titleMedium)
         }
-        Spacer(Modifier.height(16.dp))
+
         val listState = rememberLazyListState()
         Box(Modifier.weight(1f)) {
             LazyColumn(state = listState,
@@ -107,7 +98,7 @@ fun SavingsScreen(
                 item {
                     Row(Modifier
                         .fillMaxWidth()
-                        .padding(vertical = 12.dp)
+                        .padding(vertical = 8.dp)
                         .dashedBorder(4.dp, MaterialTheme.colorScheme.primary, 16.dp)
                         .clip(RoundedCornerShape(16.dp))
                         .background(MaterialTheme.colorScheme.surface)
@@ -150,7 +141,7 @@ fun SavingsItem(
     onClick: () -> Unit
 ) = Box(modifier
     .fillMaxWidth()
-    .padding(vertical = 12.dp)
+    .padding(vertical = 8.dp)
     .clip(RoundedCornerShape(16.dp))
     .background(MaterialTheme.colorScheme.surface)
     .clickable { onClick() }
@@ -158,19 +149,8 @@ fun SavingsItem(
 ) {
     val savingPrimary = savings.label?.color ?: MaterialTheme.colorScheme.primary
 
-    val currentProgress = remember { Animatable(0f) }
-    val progress = savings.amount.toFloat() / savings.goal
-
-    LaunchedEffect(key1 = progress) {
-        delay(300)
-        currentProgress.animateTo(
-            targetValue = progress,
-            animationSpec = tween(1500)
-        )
-    }
-
     Column(Modifier.padding(horizontal = 8.dp)) {
-        Row {
+        Row() {
             Text(savings.title,
                 style = MaterialTheme.typography.titleLarge,
                 modifier = Modifier.weight(1f),
@@ -184,23 +164,37 @@ fun SavingsItem(
         Text(savings.subtitle,
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.SemiBold)
-        LinearProgressIndicator(
-            modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp).height(6.dp),
-            progress = { currentProgress.value },
-            color = savingPrimary,
-            trackColor = MaterialTheme.colorScheme.surfaceContainerHigh,
-            drawStopIndicator = {}
-        )
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Text("${(progress * 100).toInt()}%",
-                modifier = Modifier.weight(1f),
-                fontWeight = FontWeight.Bold,
+        savings.goal?.let {
+
+            val currentProgress = remember { Animatable(0f) }
+            val progress = savings.amount.toFloat() / savings.goal
+
+            LaunchedEffect(key1 = progress) {
+                delay(300)
+                currentProgress.animateTo(
+                    targetValue = progress,
+                    animationSpec = tween(1500)
+                )
+            }
+
+            LinearProgressIndicator(
+                modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp).height(6.dp),
+                progress = { currentProgress.value },
                 color = savingPrimary,
-                style = MaterialTheme.typography.titleLarge)
-            Text(
-                stringResource(Res.string.goal_with_value, formatCurrency(savings.goal.toFloat(), preferences)),
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Light)
+                trackColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+                drawStopIndicator = {}
+            )
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text("${(progress * 100).toInt()}%",
+                    modifier = Modifier.weight(1f),
+                    fontWeight = FontWeight.Bold,
+                    color = savingPrimary,
+                    style = MaterialTheme.typography.titleLarge)
+                Text(
+                    stringResource(Res.string.goal_with_value, formatCurrency(savings.goal.toFloat(), preferences)),
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Light)
+            }
         }
     }
 }

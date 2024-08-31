@@ -1,6 +1,9 @@
 <resources>
     <!-- Home Screen -->
     <string name="app_name">MoinoBudget</string>
+    <string name="savings_tab">Savings</string>
+    <string name="budgets_tab">Budgets</string>
+    <string name="expenses_tab">Expenses</string>
 
     <!-- Expense Frequencies -->
     <string name="annually">Annually</string>
@@ -114,6 +117,7 @@
 
     <!-- Savings -->
     <string name="savings">Savings</string>
+    <string name="total_savings">Total savings</string>
     <string name="goal">Goal</string>
     <string name="goal_with_value">Goal: %1$s</string>
     <string name="register_savings">Register savings</string>

@@ -5,7 +5,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 sealed class MoinoBudgetScreen(val route: String) {
     @Serializable
-    data object Dashboard: MoinoBudgetScreen("dashboard")
+    data object Main: MoinoBudgetScreen("main")
     @Serializable
     data class AddEditExpense(
         val styleId: Int,
@@ -14,8 +14,5 @@ sealed class MoinoBudgetScreen(val route: String) {
     ): MoinoBudgetScreen("add_edit_expense")
     @Serializable
     data object Settings: MoinoBudgetScreen("setting")
-    @Serializable
-    data class Savings(
-        val styleId: Int
-    ): MoinoBudgetScreen("savings")
+
 }

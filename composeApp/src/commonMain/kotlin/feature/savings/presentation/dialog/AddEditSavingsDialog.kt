@@ -92,8 +92,8 @@ fun AddEditSavingsDialog(
     val primary = MaterialTheme.colorScheme.primary
     val colorProgress = remember { Animatable(labels.find { savings?.label?.id == it.id }?.color ?: primary) }
 
-    LaunchedEffect(key1 = true) {
-        savings?.let {
+    savings?.goal?.let {
+        LaunchedEffect(key1 = true) {
             delay(150)
             currentProgress.animateTo(
                 targetValue = (savings.amount.toFloat() / savings.goal.toFloat()),
@@ -256,14 +256,14 @@ fun AddEditSavingsDialog(
                             onClick = {
                                 if (savingsTitle.isBlank()) titleError = true
                                 else if (savingsAmount.toIntOrNull() == null) amountError = true
-                                else if (savingsGoal.toIntOrNull() == null) goalError = true
+                                else if (savingsGoal.isNotBlank() && savingsGoal.toIntOrNull() == null) goalError = true
                                 else {
                                     saveSavings(AddEditSavings(
                                         id = savings?.id,
                                         title = savingsTitle,
                                         subtitle = savingsSubtitle,
                                         amount = savingsAmount.toInt(),
-                                        goal = savingsGoal.toInt(),
+                                        goal = savingsGoal.toIntOrNull(),
                                         autoIncrement = 0,
                                         lastMonthAutoIncrement = null,
                                         labelId = savingsLabel

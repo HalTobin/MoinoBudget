@@ -1,6 +1,5 @@
 package feature.dashboard.presentation
 
-import androidx.compose.animation.Animatable
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.core.tween
@@ -40,10 +39,7 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowDownward
 import androidx.compose.material.icons.filled.ArrowUpward
 import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.Savings
-import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.SwapVert
-import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -57,6 +53,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -64,13 +61,11 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.semantics.Role.Companion.Button
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -95,7 +90,6 @@ import moinobudget.composeapp.generated.resources.create_budget_description
 import moinobudget.composeapp.generated.resources.disposable_dd
 import moinobudget.composeapp.generated.resources.due_in
 import moinobudget.composeapp.generated.resources.edit_label_description
-import moinobudget.composeapp.generated.resources.go_to_settings_help
 import moinobudget.composeapp.generated.resources.month
 import moinobudget.composeapp.generated.resources.new_operation
 import moinobudget.composeapp.generated.resources.payments_dd
@@ -122,9 +116,9 @@ fun DashboardScreen(
     state: DashboardState,
     onEvent: (DashboardEvent) -> Unit,
     uiEvent: SharedFlow<DashboardViewModel.UiEvent>,
+    setStyle: (BudgetStyle) -> Unit,
     goTo: (MoinoBudgetScreen) -> Unit
 ) = Box {
-    val scope = rememberCoroutineScope()
     val snackBarHostState = remember { SnackbarHostState() }
     val budgetState = rememberPagerState(initialPage = 1, pageCount = { state.budgets.size + 1 })
 
@@ -144,11 +138,6 @@ fun DashboardScreen(
         deleteBudget = { onEvent(DashboardEvent.DeleteBudget(it)) }
     )
 
-    val themePrimary = MaterialTheme.colorScheme.primary
-    val themeOnPrimary = MaterialTheme.colorScheme.onPrimary
-    val primary = remember { Animatable(themePrimary) }
-    val onPrimary = remember { Animatable(themeOnPrimary) }
-
     LaunchedEffect(true) {
         uiEvent.collectLatest { event ->
             when (event) {
@@ -159,137 +148,106 @@ fun DashboardScreen(
         }
     }
 
-    MaterialTheme(
-        colorScheme = MaterialTheme.colorScheme.copy(
-            primary = primary.value,
-            onPrimary = onPrimary.value
-        )
+    Scaffold(
+        snackbarHost = { SnackbarHost(snackBarHostState, snackbar = { MoinoSnackBar(it) }) },
+        floatingActionButton = {
+            ExtendedFloatingActionButton(onClick = {
+                val budget = state.budgets.getOrNull(budgetState.currentPage-1)
+                val style = budget?.style ?: BudgetStyle.CitrusJuice
+                val labels = budget?.labels?.map { it.id } ?: emptyList()
+                goTo(MoinoBudgetScreen.AddEditExpense(styleId = style.id, labelIds = labels))
+            },
+                containerColor = MaterialTheme.colorScheme.primary,
+                contentColor = MaterialTheme.colorScheme.onPrimary,
+                content = {
+                    Icon(Icons.Default.Add, contentDescription = stringResource(Res.string.new_operation))
+                    Text(stringResource(Res.string.new_operation), Modifier.padding(start = 8.dp))
+                })
+        }
     ) {
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Spacer(Modifier.height(12.dp))
+            YearMonthSwitch(year, onChange = { year = it })
+            Spacer(Modifier.height(12.dp))
 
-        Scaffold(
-            snackbarHost = { SnackbarHost(snackBarHostState, snackbar = { MoinoSnackBar(it) }) },
-            floatingActionButton = {
-                ExtendedFloatingActionButton(onClick = {
-                    val budget = state.budgets.getOrNull(budgetState.currentPage-1)
+            LaunchedEffect(key1 = budgetState.currentPage, key2 = state.budgets) {
+                if (state.budgets.isNotEmpty()) {
+                    val style = state.budgets.getOrNull(budgetState.currentPage-1)?.style ?: BudgetStyle.CitrusJuice
+                    setStyle(style)
+                }
+            }
+
+            LaunchedEffect(key1 = state.budgets.size) {
+                if (budgetState.currentPage == 0 && budgetState.pageCount > 1) {
+                    if (!started) {
+                        budgetState.scrollToPage(1)
+                        started = true
+                    }
+                    else budgetState.animateScrollToPage(budgetState.pageCount-1)
+                }
+            }
+
+            HorizontalPager(
+                modifier = Modifier.fillMaxWidth(),
+                state = budgetState,
+                contentPadding = PaddingValues(horizontal = 32.dp),
+            ) { page ->
+                if (page == 0) {
+                    Box(modifier = Modifier.fillMaxWidth()
+                        .padding(horizontal = 16.dp)
+                        .height(164.dp)
+                        .aspectRatio(1.9f)
+                        .clip(RoundedCornerShape(24.dp))
+                        .dashedBorder(4.dp, BudgetStyle.CitrusJuice.getPrimary(preferences), 24.dp)
+                        .clickable(enabled = budgetState.currentPage == 0) { addEditBudgetDialog = true }
+                        .pagerStateOpacity(budgetState, page),
+                        contentAlignment = Alignment.Center) {
+                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                            Icon(modifier = Modifier.size(80.dp)
+                                .clip(CircleShape)
+                                .background(MaterialTheme.colorScheme.surface)
+                                .padding(16.dp),
+                                imageVector = Icons.Default.Add,
+                                contentDescription = stringResource(Res.string.create_budget_description))
+                            Text(stringResource(Res.string.create_budget_description).uppercase(),
+                                modifier = Modifier.padding(top = 16.dp),
+                                style = MaterialTheme.typography.titleMedium,
+                                fontWeight = FontWeight.SemiBold)
+                        }
+                    }
+                }
+                else {
+                    state.budgets.getOrNull(page-1)?.let { budget ->
+                        FinancialSummary(
+                            modifier = Modifier.pagerStateOpacity(budgetState, page)
+                                .fillMaxWidth()
+                                .padding(horizontal = 16.dp),
+                            preferences = preferences,
+                            edit = { budgetForDialog = budget
+                                addEditBudgetDialog = true},
+                            year = year,
+                            budget = budget)
+                    }
+                }
+            }
+
+            Spacer(Modifier.height(8.dp))
+            val budgetPage = budgetState.currentPage
+
+            val budget = state.budgets.getOrNull(budgetPage-1)
+            PaymentsSection(preferences = preferences,
+                incomes = budget?.rawIncomes?.first ?: state.expenses.filter { it.type == IncomeOrOutcome.Income }.sumOf { it.amount.toDouble() }.toFloat(),
+                outcomes = budget?.upcomingPayments?.first ?: state.expenses.filter { it.type == IncomeOrOutcome.Outcome }.sumOf { it.amount.toDouble() }.toFloat(),
+                editExpense = {
                     val style = budget?.style ?: BudgetStyle.CitrusJuice
                     val labels = budget?.labels?.map { it.id } ?: emptyList()
-                    goTo(MoinoBudgetScreen.AddEditExpense(styleId = style.id, labelIds = labels))
-                },
-                    containerColor = MaterialTheme.colorScheme.primary,
-                    contentColor = MaterialTheme.colorScheme.onPrimary,
-                    content = {
-                        Icon(Icons.Default.Add, contentDescription = stringResource(Res.string.new_operation))
-                        Text(stringResource(Res.string.new_operation), Modifier.padding(start = 8.dp))
-                    })
-            }
-        ) {
-            Column {
-                Row(modifier = Modifier.fillMaxWidth().padding(8.dp),
-                    verticalAlignment = Alignment.CenterVertically) {
-                    IconButton(modifier = Modifier
-                        .clip(CircleShape)
-                        .background(MaterialTheme.colorScheme.surface),
-                        onClick = {
-                            val budget = state.budgets.getOrNull(budgetState.currentPage-1)
-                            val style = budget?.style ?: BudgetStyle.CitrusJuice
-                            goTo(MoinoBudgetScreen.Savings(styleId = style.id))
-                        }) {
-                        Icon(modifier = Modifier.size(32.dp),
-                            imageVector = Icons.Default.Savings, contentDescription = stringResource(Res.string.go_to_settings_help))
-                    }
-                    Spacer(Modifier.weight(1f))
-                    YearMonthSwitch(year, onChange = { year = it })
-                    Spacer(Modifier.weight(1f))
-                    IconButton(modifier = Modifier
-                        .clip(CircleShape)
-                        .background(MaterialTheme.colorScheme.surface),
-                        onClick = { goTo(MoinoBudgetScreen.Settings) }) {
-                        Icon(modifier = Modifier.size(32.dp),
-                            imageVector = Icons.Default.Settings, contentDescription = stringResource(Res.string.go_to_settings_help))
-                    }
-                }
-                Spacer(modifier = Modifier.height(8.dp))
-
-                LaunchedEffect(key1 = budgetState.currentPage, key2 = state.budgets) {
-                    if (state.budgets.isNotEmpty()) {
-                        val style = state.budgets.getOrNull(budgetState.currentPage-1)?.style ?: BudgetStyle.CitrusJuice
-                        primary.animateTo(style.getPrimary(preferences))
-                        onPrimary.animateTo(style.getOnPrimary(preferences))
-                    }
-                }
-
-                LaunchedEffect(key1 = state.budgets.size) {
-                    if (budgetState.currentPage == 0 && budgetState.pageCount > 1) {
-                        if (!started) {
-                            budgetState.scrollToPage(1)
-                            started = true
-                        }
-                        else budgetState.animateScrollToPage(budgetState.pageCount-1)
-                    }
-                }
-
-                HorizontalPager(
-                    modifier = Modifier.fillMaxWidth(),
-                    state = budgetState,
-                    contentPadding = PaddingValues(horizontal = 32.dp),
-                ) { page ->
-                    if (page == 0) {
-                        Box(modifier = Modifier.fillMaxWidth()
-                            .padding(horizontal = 16.dp)
-                            .height(164.dp)
-                            .aspectRatio(1.9f)
-                            .clip(RoundedCornerShape(24.dp))
-                            .dashedBorder(4.dp, BudgetStyle.CitrusJuice.getPrimary(preferences), 24.dp)
-                            .clickable(enabled = budgetState.currentPage == 0) { addEditBudgetDialog = true }
-                            .pagerStateOpacity(budgetState, page),
-                            contentAlignment = Alignment.Center) {
-                            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                                Icon(modifier = Modifier.size(80.dp)
-                                    .clip(CircleShape)
-                                    .background(MaterialTheme.colorScheme.surface)
-                                    .padding(16.dp),
-                                    imageVector = Icons.Default.Add,
-                                    contentDescription = stringResource(Res.string.create_budget_description))
-                                Text(stringResource(Res.string.create_budget_description).uppercase(),
-                                    modifier = Modifier.padding(top = 16.dp),
-                                    style = MaterialTheme.typography.titleMedium,
-                                    fontWeight = FontWeight.SemiBold)
-                            }
-                        }
-                    }
-                    else {
-                        state.budgets.getOrNull(page-1)?.let { budget ->
-                            FinancialSummary(
-                                modifier = Modifier.pagerStateOpacity(budgetState, page)
-                                    .fillMaxWidth()
-                                    .padding(horizontal = 16.dp),
-                                preferences = preferences,
-                                edit = { budgetForDialog = budget
-                                    addEditBudgetDialog = true},
-                                year = year,
-                                budget = budget)
-                        }
-                    }
-                }
-
-                Spacer(Modifier.height(8.dp))
-                val budgetPage = budgetState.currentPage
-
-                val budget = state.budgets.getOrNull(budgetPage-1)
-                PaymentsSection(preferences = preferences,
-                    incomes = budget?.rawIncomes?.first ?: state.expenses.filter { it.type == IncomeOrOutcome.Income }.sumOf { it.amount.toDouble() }.toFloat(),
-                    outcomes = budget?.upcomingPayments?.first ?: state.expenses.filter { it.type == IncomeOrOutcome.Outcome }.sumOf { it.amount.toDouble() }.toFloat(),
-                    editExpense = {
-                        val style = budget?.style ?: BudgetStyle.CitrusJuice
-                        val labels = budget?.labels?.map { it.id } ?: emptyList()
-                        goTo(MoinoBudgetScreen.AddEditExpense(
-                            styleId = style.id,
-                            labelIds = labels,
-                            expenseId = it
-                        ))
-                                  },
-                    expenses = budget?.expenses ?: state.expenses)
-            }
+                    goTo(MoinoBudgetScreen.AddEditExpense(
+                        styleId = style.id,
+                        labelIds = labels,
+                        expenseId = it
+                    ))
+                              },
+                expenses = budget?.expenses ?: state.expenses)
         }
     }
 }
@@ -318,71 +276,73 @@ fun FinancialSummary(
     shape = RoundedCornerShape(24.dp),
     elevation = CardDefaults.cardElevation(32.dp)
 ) {
-    Box {
-        BudgetBackground(modifier = Modifier.fillMaxSize(), background = budget.style.background)
-        Column(Modifier.fillMaxSize().padding(8.dp)) {
-            Box(modifier
-                .fillMaxWidth()
-                .offset(y = (-8).dp)) {
-                Text(budget.title.uppercase(),
-                    style = MaterialTheme.typography.titleLarge,
-                    textAlign = TextAlign.Center,
-                    fontWeight = FontWeight.SemiBold,
-                    modifier = Modifier.fillMaxWidth().align(Alignment.Center))
-                IconButton(onClick = edit,
-                    modifier = Modifier.offset(x = -(24).dp).align(Alignment.CenterStart)) {
-                    Icon(Icons.Default.Edit, contentDescription = stringResource(Res.string.edit_label_description))
-                }
-            }
-            Column(Modifier.fillMaxSize().padding(horizontal = 16.dp)) {
-                Text(stringResource(Res.string.disposable_dd))
-                MonthYearText(
-                    preferences = preferences,
-                    isYear = year,
-                    values = budget.disposableIncomes,
-                    textStyle = MaterialTheme.typography.titleLarge,
-                    incomeOrOutcome = IncomeOrOutcome.Income)
-                Spacer(Modifier.height(8.dp))
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Column {
-                        Text(stringResource(Res.string.payments_dd),
-                            style = MaterialTheme.typography.titleSmall)
-                        MonthYearText(
-                            preferences = preferences,
-                            isYear = year,
-                            values = budget.monthPayments,
-                            textStyle = MaterialTheme.typography.titleSmall,
-                            incomeOrOutcome = IncomeOrOutcome.Outcome)
-                    }
-                    Spacer(Modifier.width(16.dp))
-                    Column {
-                        Text(stringResource(Res.string.to_put_aside_dd),
-                            style = MaterialTheme.typography.titleSmall)
-                        MonthYearText(
-                            preferences = preferences,
-                            isYear = year,
-                            values = budget.toPutAside,
-                            textStyle = MaterialTheme.typography.titleSmall,
-                            incomeOrOutcome = IncomeOrOutcome.Outcome)
+    Surface(contentColor = Color.White) {
+        Box {
+            BudgetBackground(modifier = Modifier.fillMaxSize(), background = budget.style.background)
+            Column(Modifier.fillMaxSize().padding(8.dp)) {
+                Box(modifier
+                    .fillMaxWidth()
+                    .offset(y = (-8).dp)) {
+                    Text(budget.title.uppercase(),
+                        style = MaterialTheme.typography.titleLarge,
+                        textAlign = TextAlign.Center,
+                        fontWeight = FontWeight.SemiBold,
+                        modifier = Modifier.fillMaxWidth().align(Alignment.Center))
+                    IconButton(onClick = edit,
+                        modifier = Modifier.offset(x = -(24).dp).align(Alignment.CenterStart)) {
+                        Icon(Icons.Default.Edit, contentDescription = stringResource(Res.string.edit_label_description))
                     }
                 }
+                Column(Modifier.fillMaxSize().padding(horizontal = 16.dp)) {
+                    Text(stringResource(Res.string.disposable_dd))
+                    MonthYearText(
+                        preferences = preferences,
+                        isYear = year,
+                        values = budget.disposableIncomes,
+                        textStyle = MaterialTheme.typography.titleLarge,
+                        incomeOrOutcome = IncomeOrOutcome.Income)
+                    Spacer(Modifier.height(8.dp))
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Column {
+                            Text(stringResource(Res.string.payments_dd),
+                                style = MaterialTheme.typography.titleSmall)
+                            MonthYearText(
+                                preferences = preferences,
+                                isYear = year,
+                                values = budget.monthPayments,
+                                textStyle = MaterialTheme.typography.titleSmall,
+                                incomeOrOutcome = IncomeOrOutcome.Outcome)
+                        }
+                        Spacer(Modifier.width(16.dp))
+                        Column {
+                            Text(stringResource(Res.string.to_put_aside_dd),
+                                style = MaterialTheme.typography.titleSmall)
+                            MonthYearText(
+                                preferences = preferences,
+                                isYear = year,
+                                values = budget.toPutAside,
+                                textStyle = MaterialTheme.typography.titleSmall,
+                                incomeOrOutcome = IncomeOrOutcome.Outcome)
+                        }
+                    }
+                }
             }
-        }
-        if (budget.labels.isNotEmpty()) LazyVerticalGrid(
-            GridCells.Fixed(2),
-            horizontalArrangement = Arrangement.End,
-            modifier = Modifier
-                .width(68.dp)
-                .padding(horizontal = 8.dp, vertical = 24.dp)
-                .align(Alignment.CenterEnd)
-                .clip(RoundedCornerShape(16.dp))
-                .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.6f))
-                .padding(4.dp)
-        ) {
-            items(budget.labels) { label ->
-                Box(Modifier.padding(2.dp)
-                    .size(20.dp).aspectRatio(1f)
-                    .clip(CircleShape).background(label.color))
+            if (budget.labels.isNotEmpty()) LazyVerticalGrid(
+                GridCells.Fixed(2),
+                horizontalArrangement = Arrangement.End,
+                modifier = Modifier
+                    .width(68.dp)
+                    .padding(horizontal = 8.dp, vertical = 24.dp)
+                    .align(Alignment.CenterEnd)
+                    .clip(RoundedCornerShape(16.dp))
+                    .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.6f))
+                    .padding(4.dp)
+            ) {
+                items(budget.labels) { label ->
+                    Box(Modifier.padding(2.dp)
+                        .size(20.dp).aspectRatio(1f)
+                        .clip(CircleShape).background(label.color))
+                }
             }
         }
     }

@@ -1,7 +1,9 @@
 package ui
 
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -10,6 +12,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NamedNavArgument
+import androidx.navigation.NavHost
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -21,6 +24,7 @@ import feature.add_edit_expense.presentation.AddEditExpenseScreen
 import feature.add_edit_expense.presentation.AddEditExpenseViewModel
 import feature.dashboard.presentation.DashboardScreen
 import feature.dashboard.presentation.DashboardViewModel
+import feature.hub.HubScreen
 import feature.savings.presentation.SavingsScreen
 import feature.savings.presentation.SavingsViewModel
 import feature.settings.SettingsScreen
@@ -44,17 +48,20 @@ fun MainScreen(
     ) {
         NavHost(
             navController = navController,
-            startDestination = MoinoBudgetScreen.Dashboard,
+            startDestination = MoinoBudgetScreen.Main,
         ) {
-            composable<MoinoBudgetScreen.Dashboard> {
-                val viewModel = koinViewModel<DashboardViewModel>()
-                val state by viewModel.state.collectAsStateWithLifecycle()
-                DashboardScreen(
+            composable<MoinoBudgetScreen.Main> {
+                HubScreen(
                     preferences = preferences,
-                    state = state,
-                    onEvent = viewModel::onEvent,
-                    uiEvent = viewModel.eventFlow,
-                    goTo = { navController.navigate(it) })
+                    goToScreen = { navController.navigate(it) }
+                )
+            }
+            composable<MoinoBudgetScreen.Settings> {
+                val viewModel = koinViewModel<SettingsViewModel>()
+                SettingsScreen(
+                    goBack = { navController.popBackStack() },
+                    preferences = preferences,
+                    onEvent = viewModel::onEvent)
             }
             composable<MoinoBudgetScreen.AddEditExpense>{
                 val args = it.toRoute<MoinoBudgetScreen.AddEditExpense>()
@@ -80,27 +87,7 @@ fun MainScreen(
                     goBack = { navController.popBackStack() }
                 )
             }
-            composable<MoinoBudgetScreen.Settings> {
-                val viewModel = koinViewModel<SettingsViewModel>()
-                SettingsScreen(
-                    goBack = { navController.popBackStack() },
-                    preferences = preferences,
-                    onEvent = viewModel::onEvent)
-            }
-            composable<MoinoBudgetScreen.Savings> {
-                val args = it.toRoute<MoinoBudgetScreen.Savings>()
-                val style = BudgetStyle.findById(args.styleId)
 
-                val viewModel = koinViewModel<SavingsViewModel>()
-                val state by viewModel.state.collectAsStateWithLifecycle()
-                SavingsScreen(
-                    state = state,
-                    preferences = preferences,
-                    style = style,
-                    onEvent = viewModel::onEvent,
-                    goBack = { navController.popBackStack() }
-                )
-            }
         }
     }
 }
