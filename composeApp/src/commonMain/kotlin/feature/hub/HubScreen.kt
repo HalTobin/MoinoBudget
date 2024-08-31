@@ -88,7 +88,11 @@ fun HubScreen(
                         val selected = (selectedTab == tab)
                         NavigationBarItem(
                             selected = selected,
-                            onClick = { selectedTab = tab; navController.navigate(tab.route) },
+                            onClick = {
+                                if (selectedTab != tab) {
+                                    selectedTab = tab
+                                    navController.navigate(tab.route)
+                                } },
                             icon = {
                                 Crossfade(targetState = selected) { selected ->
                                     Icon(imageVector = if (selected) tab.icon.first else tab.icon.second, contentDescription = null)
