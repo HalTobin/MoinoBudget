@@ -25,7 +25,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -37,8 +36,11 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavDestination.Companion.hierarchy
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import data.repository.AppPreferences
 import feature.dashboard.presentation.DashboardScreen
@@ -54,11 +56,9 @@ import moinobudget.composeapp.generated.resources.savings_tab
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
-import org.koin.core.annotation.KoinExperimentalAPI
 import presentation.data.BudgetStyle
 import ui.MoinoBudgetScreen
 
-@OptIn(KoinExperimentalAPI::class)
 @Composable
 fun HubScreen(
     preferences: AppPreferences,
@@ -69,12 +69,8 @@ fun HubScreen(
     val navController = rememberNavController()
     var style by remember { mutableStateOf(BudgetStyle.CitrusJuice) }
 
-    val basePrimary = MaterialTheme.colorScheme.primary
-    val baseOnPrimary = MaterialTheme.colorScheme.onPrimary
-    var primary = remember { Animatable(style.getPrimary(preferences)) }
-    var onPrimary = remember { Animatable(style.getOnPrimary(preferences)) }
-
-    var selectedTab by remember { mutableStateOf(HubScreenTab.Budget) }
+    val primary = remember { Animatable(style.getPrimary(preferences)) }
+    val onPrimary = remember { Animatable(style.getOnPrimary(preferences)) }
 
     MaterialTheme(
         colorScheme = MaterialTheme.colorScheme.copy(
@@ -83,16 +79,25 @@ fun HubScreen(
     ) {
         Scaffold(
             bottomBar = {
+                val navBackStackEntry by navController.currentBackStackEntryAsState()
+                val currentDestination = navBackStackEntry?.destination
                 NavigationBar {
                     HubScreenTab.entries.forEach { tab ->
-                        val selected = (selectedTab == tab)
+                        val selected = currentDestination?.hierarchy?.any { it.route == tab.route } == true
                         NavigationBarItem(
                             selected = selected,
                             onClick = {
-                                if (selectedTab != tab) {
-                                    selectedTab = tab
-                                    navController.navigate(tab.route)
-                                } },
+                                if (!selected) navController.navigate(tab.route) {
+                                    popUpTo(navController.graph.findStartDestination().id) {
+                                        saveState = true
+                                    }
+                                    // Avoid multiple copies of the same destination when
+                                    // reselecting the same item
+                                    launchSingleTop = true
+                                    // Restore state when reselecting a previously selected item
+                                    restoreState = true
+                                }
+                            },
                             icon = {
                                 Crossfade(targetState = selected) { selected ->
                                     Icon(imageVector = if (selected) tab.icon.first else tab.icon.second, contentDescription = null)
