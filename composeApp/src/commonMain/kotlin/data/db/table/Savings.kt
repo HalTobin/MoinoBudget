@@ -9,8 +9,9 @@ data class Savings(
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "savings_id") val id: Int = 0,
     val title: String,
-    @ColumnInfo(defaultValue = "") val subtitle: String,
+    val subtitle: String,
     val amount: Int,
+    val type: Int, // 0 Accounts, 1 Savings, 2 Investments
     val goal: Int?,
     val autoIncrement: Int,
     val lastMonthAutoIncrement: Long,

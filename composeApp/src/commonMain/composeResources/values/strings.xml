@@ -22,6 +22,9 @@
     <string name="month">Month</string>
     <string name="day">Day</string>
 
+    <!-- General purposes -->
+    <string name="all">All</string>
+
     <!-- Dashboard -->
     <string name="new_budget">New budget</string>
     <string name="operation">Operation</string>
@@ -126,4 +129,9 @@
     <string name="edit_savings">Edit savings</string>
     <string name="delete_savings">Delete savings</string>
     <string name="subtitle">Label</string>
+
+    <!-- Savings Type -->
+    <string name="savings_type_account">Accounts</string>
+    <string name="savings_type_savings_books">Savings books</string>
+    <string name="savings_type_investments">Investments</string>
 </resources>

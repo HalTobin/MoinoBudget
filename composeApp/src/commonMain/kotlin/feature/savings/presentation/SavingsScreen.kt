@@ -18,6 +18,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -45,6 +47,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import data.repository.AppPreferences
+import feature.savings.presentation.component.SavingsTabRow
 import feature.savings.presentation.dialog.AddEditSavingsDialog
 import kotlinx.coroutines.delay
 import moinobudget.composeapp.generated.resources.Res
@@ -55,6 +58,7 @@ import moinobudget.composeapp.generated.resources.total_savings
 import org.jetbrains.compose.resources.stringResource
 import presentation.dashedBorder
 import presentation.data.IncomeOrOutcome
+import presentation.data.SavingsType
 import presentation.data.SavingsUI
 import presentation.formatCurrency
 
@@ -93,45 +97,50 @@ fun SavingsScreen(
                 style = MaterialTheme.typography.titleMedium)
         }
 
+        SavingsTabRow()
+
         val listState = rememberLazyListState()
         Box(Modifier.weight(1f)) {
-            LazyColumn(state = listState,
-                modifier = Modifier.padding(horizontal = 16.dp)) {
-                items(state.savings) { savings ->
-                    SavingsItem(modifier = Modifier.animateItem(),
-                        savings = savings,
-                        preferences = preferences,
-                        onClick = { savingsForDialog = savings; addSavingsDialog = true })
-                }
-                item {
-                    Row(Modifier
-                        .fillMaxWidth()
-                        .padding(top = 20.dp, bottom = 24.dp)
-                        .dashedBorder(4.dp, MaterialTheme.colorScheme.primary, 16.dp)
-                        .clip(RoundedCornerShape(16.dp))
-                        .background(MaterialTheme.colorScheme.surface)
-                        .clickable { addSavingsDialog = true }
-                        .padding(16.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Icon(modifier = Modifier
-                            .size(40.dp)
-                            .clip(CircleShape)
-                            .background(MaterialTheme.colorScheme.surfaceContainerHigh.copy(alpha = 0.3f)),
-                            tint = MaterialTheme.colorScheme.primary,
-                            imageVector = Icons.Default.Add,
-                            contentDescription = stringResource(Res.string.register_savings_details))
-                        Column(Modifier.padding(start = 16.dp)) {
-                            Text(stringResource(Res.string.register_savings),
-                                fontWeight = FontWeight.SemiBold,
-                                style = MaterialTheme.typography.titleMedium)
-                            Text(stringResource(Res.string.register_savings_details),
-                                fontWeight = FontWeight.Normal,
-                                style = MaterialTheme.typography.titleSmall)
+            val pagerState = rememberPagerState(initialPage = 1, pageCount = { SavingsType.entries.size })
+            HorizontalPager(pagerState) {
+                LazyColumn(state = listState,
+                    modifier = Modifier.padding(horizontal = 16.dp)) {
+                    items(state.savings) { savings ->
+                        SavingsItem(modifier = Modifier.animateItem(),
+                            savings = savings,
+                            preferences = preferences,
+                            onClick = { savingsForDialog = savings; addSavingsDialog = true })
+                    }
+                    item {
+                        Row(Modifier
+                            .fillMaxWidth()
+                            .padding(top = 20.dp, bottom = 24.dp)
+                            .dashedBorder(4.dp, MaterialTheme.colorScheme.primary, 16.dp)
+                            .clip(RoundedCornerShape(16.dp))
+                            .background(MaterialTheme.colorScheme.surface)
+                            .clickable { addSavingsDialog = true }
+                            .padding(16.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Icon(modifier = Modifier
+                                .size(40.dp)
+                                .clip(CircleShape)
+                                .background(MaterialTheme.colorScheme.surfaceContainerHigh.copy(alpha = 0.3f)),
+                                tint = MaterialTheme.colorScheme.primary,
+                                imageVector = Icons.Default.Add,
+                                contentDescription = stringResource(Res.string.register_savings_details))
+                            Column(Modifier.padding(start = 16.dp)) {
+                                Text(stringResource(Res.string.register_savings),
+                                    fontWeight = FontWeight.SemiBold,
+                                    style = MaterialTheme.typography.titleMedium)
+                                Text(stringResource(Res.string.register_savings_details),
+                                    fontWeight = FontWeight.Normal,
+                                    style = MaterialTheme.typography.titleSmall)
+                            }
                         }
                     }
+                }
             }
-        }
             Crossfade(modifier = Modifier.align(Alignment.TopCenter).fillMaxWidth(),
                 targetState = listState.canScrollBackward) { displayDivider ->
                 if (displayDivider) HorizontalDivider(Modifier.fillMaxWidth(),

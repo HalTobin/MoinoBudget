@@ -29,12 +29,6 @@ class SavingsViewModel(
     private var savingsJob: Job? = null
     private var labels: List<LabelUI> = emptyList()
 
-    private val dummySavings = listOf(
-        Savings(1, "Livret A", "Fortuneo", 575, 22950, 0, 0, labelId = 0),
-        Savings(2, "LEP", "Hello Bank", 750, 10000, 0, 0, labelId = 2),
-        Savings(3, "LDD", "Crédit Agricole", 2000, 12000, 0, 0, labelId = 3)
-    )
-
     init {
         setUpSavingsJob()
         viewModelScope.launch(Dispatchers.IO) {

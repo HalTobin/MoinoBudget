@@ -65,6 +65,7 @@ import moinobudget.composeapp.generated.resources.subtitle
 import moinobudget.composeapp.generated.resources.title
 import org.jetbrains.compose.resources.stringResource
 import presentation.data.LabelUI
+import presentation.data.SavingsType
 import presentation.data.SavingsUI
 import presentation.shake
 
@@ -261,6 +262,7 @@ fun AddEditSavingsDialog(
                                     saveSavings(AddEditSavings(
                                         id = savings?.id,
                                         title = savingsTitle,
+                                        type = SavingsType.Accounts,
                                         subtitle = savingsSubtitle,
                                         amount = savingsAmount.toInt(),
                                         goal = savingsGoal.toIntOrNull(),
