@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 7,
-    "identityHash": "6707470e8be06afe1daeb2be65310740",
+    "identityHash": "84e4730ae8b242065ce9d78321df3a37",
     "entities": [
       {
         "tableName": "expenses",
@@ -181,7 +181,7 @@
       },
       {
         "tableName": "savings",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`savings_id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `title` TEXT NOT NULL, `subtitle` TEXT NOT NULL DEFAULT '', `amount` INTEGER NOT NULL, `type` INTEGER NOT NULL DEFAULT 1, `goal` INTEGER, `autoIncrement` INTEGER NOT NULL, `lastMonthAutoIncrement` INTEGER NOT NULL, `labelId` INTEGER NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`savings_id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `title` TEXT NOT NULL, `subtitle` TEXT NOT NULL, `amount` INTEGER NOT NULL, `type` INTEGER NOT NULL, `goal` INTEGER, `autoIncrement` INTEGER NOT NULL, `lastMonthAutoIncrement` INTEGER NOT NULL, `color` INTEGER)",
         "fields": [
           {
             "fieldPath": "id",
@@ -199,8 +199,7 @@
             "fieldPath": "subtitle",
             "columnName": "subtitle",
             "affinity": "TEXT",
-            "notNull": true,
-            "defaultValue": "''"
+            "notNull": true
           },
           {
             "fieldPath": "amount",
@@ -212,8 +211,7 @@
             "fieldPath": "type",
             "columnName": "type",
             "affinity": "INTEGER",
-            "notNull": true,
-            "defaultValue": "1"
+            "notNull": true
           },
           {
             "fieldPath": "goal",
@@ -233,10 +231,9 @@
             "notNull": true
           },
           {
-            "fieldPath": "labelId",
-            "columnName": "labelId",
-            "affinity": "INTEGER",
-            "notNull": true
+            "fieldPath": "color",
+            "columnName": "color",
+            "affinity": "INTEGER"
           }
         ],
         "primaryKey": {
@@ -249,7 +246,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '6707470e8be06afe1daeb2be65310740')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '84e4730ae8b242065ce9d78321df3a37')"
     ]
   }
 }

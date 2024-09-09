@@ -1,5 +1,6 @@
 package presentation.data
 
+import androidx.compose.ui.graphics.Color
 import kotlinx.datetime.LocalDate
 
 data class SavingsUI(
@@ -11,5 +12,5 @@ data class SavingsUI(
     val goal: Int?,
     val autoIncrement: Int,
     val lastMonthAutoIncrement: LocalDate,
-    val label: LabelUI?
+    val color: Color?
 )

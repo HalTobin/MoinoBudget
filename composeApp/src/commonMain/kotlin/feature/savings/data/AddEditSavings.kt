@@ -1,5 +1,6 @@
 package feature.savings.data
 
+import androidx.compose.ui.graphics.Color
 import kotlinx.datetime.LocalDate
 import presentation.data.SavingsType
 
@@ -12,5 +13,5 @@ data class AddEditSavings(
     val goal: Int?,
     val autoIncrement: Int,
     val lastMonthAutoIncrement: LocalDate?,
-    val labelId: Int?
+    val color: Color?
 )

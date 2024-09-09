@@ -24,6 +24,7 @@
 
     <!-- General purposes -->
     <string name="all">All</string>
+    <string name="color">Color</string>
 
     <!-- Dashboard -->
     <string name="new_budget">New budget</string>

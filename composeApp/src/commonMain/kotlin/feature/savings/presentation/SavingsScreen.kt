@@ -81,7 +81,6 @@ fun SavingsScreen(
     if (addSavingsDialog) AddEditSavingsDialog(
         savings = savingsForDialog,
         preferences = preferences,
-        labels = state.labels,
         saveSavings = { onEvent(SavingsEvent.UpsertSavings(it)) },
         deleteSavings = { onEvent(SavingsEvent.DeleteSavings(it)) },
         defaultSavings = SavingsType.entries.getOrElse(pagerState.currentPage-1) { SavingsType.SavingsBooks },
@@ -184,12 +183,12 @@ fun SavingsItem(
     .clip(RoundedCornerShape(16.dp))
     .background(MaterialTheme.colorScheme.surface)
     .then(
-        if (savings.goal != null && savings.amount >= savings.goal) Modifier.completeShimmer(savings.label?.color ?: IncomeOrOutcome.Income.color)
+        if (savings.goal != null && savings.amount >= savings.goal) Modifier.completeShimmer(savings.color ?: IncomeOrOutcome.Income.color)
         else Modifier)
     .clickable { onClick() }
     .padding(16.dp)
 ) {
-    val savingPrimary = savings.label?.color ?: MaterialTheme.colorScheme.primary
+    val savingPrimary = savings.color ?: MaterialTheme.colorScheme.primary
 
     Column(Modifier.padding(horizontal = 8.dp)) {
         Row {

@@ -15,5 +15,5 @@ data class Savings(
     val goal: Int?,
     val autoIncrement: Int,
     val lastMonthAutoIncrement: Long,
-    val labelId: Int
+    val color: Int?
 )

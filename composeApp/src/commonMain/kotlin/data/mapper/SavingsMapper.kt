@@ -1,9 +1,10 @@
 package data.mapper
 
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import data.db.table.Savings
 import feature.savings.data.AddEditSavings
 import kotlinx.datetime.Clock
-import presentation.data.LabelUI
 import presentation.data.SavingsType
 import presentation.data.SavingsUI
 import util.toLocalDate
@@ -20,11 +21,11 @@ fun AddEditSavings.toSavingsEntity(): Savings {
         goal = this.goal,
         autoIncrement = this.autoIncrement,
         lastMonthAutoIncrement = lastAutoIncrement ?: currentDate,
-        labelId = this.labelId ?: 0
+        color = this.color?.toArgb()
     )
 }
 
-fun Savings.toSavingsUI(labels: List<LabelUI>): SavingsUI {
+fun Savings.toSavingsUI(): SavingsUI {
     return SavingsUI(
         id = this.id,
         title = this.title,
@@ -34,6 +35,6 @@ fun Savings.toSavingsUI(labels: List<LabelUI>): SavingsUI {
         goal = this.goal,
         autoIncrement = this.autoIncrement,
         lastMonthAutoIncrement = this.lastMonthAutoIncrement.toLocalDate(),
-        label = if (this.labelId != 0) labels.find { it.id == this.labelId } else null
+        color = this.color?.let { Color(it) }
     )
 }

@@ -59,6 +59,7 @@ import androidx.compose.ui.window.Dialog
 import data.repository.AppPreferences
 import feature.dashboard.presentation.component.LabelSelection
 import feature.savings.data.AddEditSavings
+import feature.savings.presentation.component.ColorSection
 import kotlinx.coroutines.delay
 import moinobudget.composeapp.generated.resources.Res
 import moinobudget.composeapp.generated.resources.amount
@@ -81,7 +82,6 @@ import presentation.shake
 fun AddEditSavingsDialog(
     savings: SavingsUI?,
     preferences: AppPreferences,
-    labels: List<LabelUI>,
     onDismiss: () -> Unit,
     defaultSavings: SavingsType,
     saveSavings: (AddEditSavings) -> Unit,
@@ -97,11 +97,11 @@ fun AddEditSavingsDialog(
     var savingsType by remember { mutableStateOf(savings?.type ?: defaultSavings) }
     var savingsAmount by remember { mutableStateOf(savings?.amount?.toString() ?: "") }
     var savingsGoal by remember { mutableStateOf(savings?.goal?.toString() ?: "") }
-    var savingsLabel by remember { mutableStateOf(savings?.label?.id) }
+    var savingsColor by remember { mutableStateOf(savings?.color) }
 
     val currentProgress = remember { androidx.compose.animation.core.Animatable(0f) }
     val primary = MaterialTheme.colorScheme.primary
-    val colorProgress = remember { Animatable(labels.find { savings?.label?.id == it.id }?.color ?: primary) }
+    val colorProgress = remember { Animatable(savingsColor ?: primary) }
 
     savings?.goal?.let {
         LaunchedEffect(key1 = true) {
@@ -122,9 +122,8 @@ fun AddEditSavingsDialog(
         )
     }
 
-    LaunchedEffect(key1 = savingsLabel) {
-        val targetColor = labels.find { savingsLabel == it.id }?.color
-        colorProgress.animateTo(targetValue = targetColor ?: primary, animationSpec = tween(1000))
+    LaunchedEffect(key1 = savingsColor) {
+        colorProgress.animateTo(targetValue = savingsColor ?: primary, animationSpec = tween(1000))
     }
 
     Surface(
@@ -280,14 +279,9 @@ fun AddEditSavingsDialog(
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.primary
                 )
-                LabelSelection(
-                    labels = labels,
-                    selected = listOf(savingsLabel ?: -1),
-                    onSelect = { labelId ->
-                        savingsLabel = if (savingsLabel == labelId) null else labelId
-                    },
-                    deleteMode = deleteMode
-                )
+                ColorSection(
+                    selection = savingsColor,
+                    colorSelect = { savingsColor = it })
                 AnimatedContent(modifier = Modifier.fillMaxWidth(),
                     targetState = deleteMode,
                     transitionSpec = {
@@ -311,7 +305,7 @@ fun AddEditSavingsDialog(
                                         goal = savingsGoal.toIntOrNull(),
                                         autoIncrement = 0,
                                         lastMonthAutoIncrement = null,
-                                        labelId = savingsLabel
+                                        color = savingsColor
                                     ))
                                     onDismiss() } }
                         ) {

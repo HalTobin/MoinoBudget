@@ -29,7 +29,7 @@ import kotlinx.coroutines.IO
         BudgetLabelCrossRef::class,
         Savings::class
     ],
-    version = 6
+    version = 7
 )
 @ConstructedBy(ExpenseDbCtor::class) // NEW
 abstract class ExpenseDatabase: RoomDatabase() {
