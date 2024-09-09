@@ -281,7 +281,7 @@ fun AddEditSavingsDialog(
                 )
                 ColorSection(
                     selection = savingsColor,
-                    colorSelect = { savingsColor = it })
+                    colorSelect = { savingsColor = if (savingsColor == it) null else it })
                 AnimatedContent(modifier = Modifier.fillMaxWidth(),
                     targetState = deleteMode,
                     transitionSpec = {
