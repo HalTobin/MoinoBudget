@@ -1,5 +1,6 @@
 package feature.savings.presentation.component
 
+import androidx.compose.animation.Crossfade
 import androidx.compose.animation.core.AnimationSpec
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.animateDpAsState
@@ -26,10 +27,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
@@ -48,19 +48,35 @@ import org.jetbrains.compose.resources.stringResource
 import presentation.data.SavingsType
 
 @Composable
-fun SavingsTabRow() {
-    var selectedTabPosition by remember { mutableStateOf(0) }
-
+fun SavingsTabRow(
+    selectedTabPosition: Int,
+    selectTab: (Int) -> Unit
+) {
     val scrollState = rememberScrollState()
+
+    LaunchedEffect(selectedTabPosition) {
+        val scrollPosition = selectedTabPosition * (scrollState.maxValue / 3)
+        scrollState.animateScrollTo(
+            scrollPosition,
+            animationSpec = tween(350)
+        )
+    }
+
     Row(Modifier.horizontalScroll(scrollState)) {
         TabRow(
             paddingValues = PaddingValues(16.dp),
             fixedSize = false,
             selectedTabPosition = selectedTabPosition,
             tabItem = {
-                TabTitle(stringResource(Res.string.all), position = 0, onClick = { selectedTabPosition = 0 })
+                TabTitle(stringResource(Res.string.all),
+                    selected = selectedTabPosition == 0,
+                    position = 0,
+                    onClick = { selectTab(0) })
                 SavingsType.entries.forEachIndexed { index, type ->
-                    TabTitle(stringResource(type.text), position = index+1, onClick = { selectedTabPosition = it })
+                    TabTitle(stringResource(type.text),
+                        selected = index+1 == selectedTabPosition,
+                        position = index+1,
+                        onClick = { (selectTab(it)) })
                 }
             }
         )
@@ -149,19 +165,22 @@ fun TabRow(
 fun TabTitle(
     title: String,
     position: Int,
+    selected: Boolean,
     onClick: (Int) -> Unit
-) = Text(title,
-    modifier = Modifier
-        .wrapContentWidth(Alignment.CenterHorizontally)
-        .padding(horizontal = 8.dp, vertical = 4.dp)
-        .clickable(
-            interactionSource = remember { MutableInteractionSource() },
-            indication = null
-        ) { onClick(position) },
-    color = MaterialTheme.colorScheme.onPrimary,
-    style = MaterialTheme.typography.titleLarge,
-    fontWeight = FontWeight.SemiBold
-)
+) = Crossfade(targetState = selected) { on ->
+    Text(title,
+        modifier = Modifier
+            .wrapContentWidth(Alignment.CenterHorizontally)
+            .padding(horizontal = 24.dp, vertical = 8.dp)
+            .clickable(
+                interactionSource = remember { MutableInteractionSource() },
+                indication = null
+            ) { onClick(position) },
+        color = if (on) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onBackground,
+        style = MaterialTheme.typography.titleMedium,
+        fontWeight = FontWeight.SemiBold
+    )
+}
 
 fun Modifier.tabIndicator(
     tabPosition: TabPosition,

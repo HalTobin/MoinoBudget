@@ -11,6 +11,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -34,6 +35,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -50,6 +52,7 @@ import data.repository.AppPreferences
 import feature.savings.presentation.component.SavingsTabRow
 import feature.savings.presentation.dialog.AddEditSavingsDialog
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import moinobudget.composeapp.generated.resources.Res
 import moinobudget.composeapp.generated.resources.goal_with_value
 import moinobudget.composeapp.generated.resources.register_savings
@@ -67,10 +70,11 @@ fun SavingsScreen(
     state: SavingsState,
     preferences: AppPreferences,
     onEvent: (SavingsEvent) -> Unit,
-    //style: BudgetStyle,
-    goBack: () -> Unit
-    //onEvent
 ) {
+    val scope = rememberCoroutineScope()
+
+    val pagerState = rememberPagerState(initialPage = 1, pageCount = { SavingsType.entries.size+1 })
+
     var addSavingsDialog by remember { mutableStateOf(false) }
     var savingsForDialog by remember { mutableStateOf<SavingsUI?>(null) }
 
@@ -80,14 +84,19 @@ fun SavingsScreen(
         labels = state.labels,
         saveSavings = { onEvent(SavingsEvent.UpsertSavings(it)) },
         deleteSavings = { onEvent(SavingsEvent.DeleteSavings(it)) },
+        defaultSavings = SavingsType.entries.getOrElse(pagerState.currentPage-1) { SavingsType.SavingsBooks },
         onDismiss = { addSavingsDialog = false; savingsForDialog = null }
     )
 
     Column {
-        Column(Modifier.padding(start = 24.dp, top = 16.dp, bottom = 8.dp)) {
+        Column(Modifier.padding(start = 24.dp, top = 16.dp)) {
             Crossfade(modifier = Modifier.fillMaxWidth(),
-                targetState = state.total) { total ->
-                Text(formatCurrency(total, preferences.copy(decimalMode = true)),
+                targetState =
+                    (if (pagerState.currentPage == 0) state.savings
+                    else state.savings.filter { it.type.id == pagerState.currentPage-1 })
+                        .sumOf { it.amount }
+            ) { total ->
+                Text(formatCurrency(total.toFloat(), preferences.copy(decimalMode = true)),
                     fontWeight = FontWeight.Bold,
                     style = MaterialTheme.typography.headlineMedium,
                     color = IncomeOrOutcome.Income.color)
@@ -97,54 +106,67 @@ fun SavingsScreen(
                 style = MaterialTheme.typography.titleMedium)
         }
 
-        SavingsTabRow()
+        var selectedTabIndex by remember { mutableStateOf(1) }
 
-        val listState = rememberLazyListState()
-        Box(Modifier.weight(1f)) {
-            val pagerState = rememberPagerState(initialPage = 1, pageCount = { SavingsType.entries.size })
-            HorizontalPager(pagerState) {
-                LazyColumn(state = listState,
-                    modifier = Modifier.padding(horizontal = 16.dp)) {
-                    items(state.savings) { savings ->
-                        SavingsItem(modifier = Modifier.animateItem(),
-                            savings = savings,
-                            preferences = preferences,
-                            onClick = { savingsForDialog = savings; addSavingsDialog = true })
-                    }
-                    item {
-                        Row(Modifier
-                            .fillMaxWidth()
-                            .padding(top = 20.dp, bottom = 24.dp)
-                            .dashedBorder(4.dp, MaterialTheme.colorScheme.primary, 16.dp)
-                            .clip(RoundedCornerShape(16.dp))
-                            .background(MaterialTheme.colorScheme.surface)
-                            .clickable { addSavingsDialog = true }
-                            .padding(16.dp),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Icon(modifier = Modifier
-                                .size(40.dp)
-                                .clip(CircleShape)
-                                .background(MaterialTheme.colorScheme.surfaceContainerHigh.copy(alpha = 0.3f)),
-                                tint = MaterialTheme.colorScheme.primary,
-                                imageVector = Icons.Default.Add,
-                                contentDescription = stringResource(Res.string.register_savings_details))
-                            Column(Modifier.padding(start = 16.dp)) {
-                                Text(stringResource(Res.string.register_savings),
-                                    fontWeight = FontWeight.SemiBold,
-                                    style = MaterialTheme.typography.titleMedium)
-                                Text(stringResource(Res.string.register_savings_details),
-                                    fontWeight = FontWeight.Normal,
-                                    style = MaterialTheme.typography.titleSmall)
+        LaunchedEffect(pagerState.currentPage) { selectedTabIndex = pagerState.currentPage }
+
+        SavingsTabRow(
+            selectedTabPosition = selectedTabIndex,
+            selectTab = {
+                selectedTabIndex = it
+                scope.launch { pagerState.animateScrollToPage(it) }
+            }
+        )
+
+
+        HorizontalPager(pagerState,
+            modifier = Modifier.weight(1f)) { page ->
+                val listState = rememberLazyListState()
+                Box(Modifier.fillMaxSize()) {
+                    LazyColumn(state = listState,
+                        modifier = Modifier
+                            //.matchParentSize()
+                            .padding(horizontal = 16.dp)) {
+                        items(if (page == 0) state.savings else state.savings.filter { it.type.id == page-1 }) { savings ->
+                            SavingsItem(modifier = Modifier,
+                                savings = savings,
+                                preferences = preferences,
+                                onClick = { savingsForDialog = savings; addSavingsDialog = true })
+                        }
+                        item {
+                            Row(Modifier
+                                .fillMaxWidth()
+                                .padding(top = 12.dp, bottom = 24.dp)
+                                .dashedBorder(4.dp, MaterialTheme.colorScheme.primary, 16.dp)
+                                .clip(RoundedCornerShape(16.dp))
+                                .background(MaterialTheme.colorScheme.surface)
+                                .clickable { addSavingsDialog = true }
+                                .padding(16.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Icon(modifier = Modifier
+                                    .size(40.dp)
+                                    .clip(CircleShape)
+                                    .background(MaterialTheme.colorScheme.surfaceContainerHigh.copy(alpha = 0.3f)),
+                                    tint = MaterialTheme.colorScheme.primary,
+                                    imageVector = Icons.Default.Add,
+                                    contentDescription = stringResource(Res.string.register_savings_details))
+                                Column(Modifier.padding(start = 16.dp)) {
+                                    Text(stringResource(Res.string.register_savings),
+                                        fontWeight = FontWeight.SemiBold,
+                                        style = MaterialTheme.typography.titleMedium)
+                                    Text(stringResource(Res.string.register_savings_details),
+                                        fontWeight = FontWeight.Normal,
+                                        style = MaterialTheme.typography.titleSmall)
+                                }
                             }
                         }
                     }
+                    Crossfade(modifier = Modifier.align(Alignment.TopCenter).fillMaxWidth(),
+                        targetState = listState.canScrollBackward) { displayDivider ->
+                        if (displayDivider) HorizontalDivider(Modifier.fillMaxWidth(),
+                            thickness = 2.dp)
                 }
-            }
-            Crossfade(modifier = Modifier.align(Alignment.TopCenter).fillMaxWidth(),
-                targetState = listState.canScrollBackward) { displayDivider ->
-                if (displayDivider) HorizontalDivider(Modifier.fillMaxWidth(),
-                    thickness = 2.dp)
             }
         }
     }

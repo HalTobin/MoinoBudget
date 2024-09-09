@@ -4,7 +4,11 @@ import androidx.compose.animation.Animatable
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.BorderStroke
@@ -21,6 +25,9 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowLeft
+import androidx.compose.material.icons.automirrored.filled.ArrowRight
+import androidx.compose.material.icons.filled.ArrowLeft
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
@@ -46,6 +53,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import data.repository.AppPreferences
@@ -75,6 +83,7 @@ fun AddEditSavingsDialog(
     preferences: AppPreferences,
     labels: List<LabelUI>,
     onDismiss: () -> Unit,
+    defaultSavings: SavingsType,
     saveSavings: (AddEditSavings) -> Unit,
     deleteSavings: (Int) -> Unit
 ) = Dialog(onDismissRequest = onDismiss) {
@@ -85,6 +94,7 @@ fun AddEditSavingsDialog(
 
     var savingsTitle by remember { mutableStateOf(savings?.title ?: "") }
     var savingsSubtitle by remember { mutableStateOf(savings?.subtitle ?: "") }
+    var savingsType by remember { mutableStateOf(savings?.type ?: defaultSavings) }
     var savingsAmount by remember { mutableStateOf(savings?.amount?.toString() ?: "") }
     var savingsGoal by remember { mutableStateOf(savings?.goal?.toString() ?: "") }
     var savingsLabel by remember { mutableStateOf(savings?.label?.id) }
@@ -183,6 +193,39 @@ fun AddEditSavingsDialog(
                 )
 
                 Spacer(Modifier.height(8.dp))
+
+                Row(Modifier.padding(horizontal = 16.dp),
+                    verticalAlignment = Alignment.CenterVertically) {
+                    var animationDirection by remember { mutableStateOf(AnimationDirection.Left) }
+                    IconButton(onClick = {
+                        animationDirection = AnimationDirection.Left
+                        savingsType = SavingsType.entries.getOrElse(savingsType.id-1) { SavingsType.entries.last() }
+                    }) {
+                        Icon(Icons.AutoMirrored.Filled.ArrowLeft, contentDescription = null)
+                    }
+                    AnimatedContent(targetState = savingsType,
+                        transitionSpec = {
+                            when (animationDirection) {
+                                AnimationDirection.Left -> slideInHorizontally(initialOffsetX = { it / 2 }) + fadeIn() togetherWith slideOutHorizontally() + fadeOut()
+                                AnimationDirection.Right -> slideInHorizontally() + fadeIn() togetherWith slideOutHorizontally(targetOffsetX = { it / 2 }) + fadeOut()
+                            }
+                        },
+                        modifier = Modifier.weight(1f),
+                    ) { type ->
+                        Text(stringResource(type.text),
+                            modifier = Modifier.weight(1f),
+                            textAlign = TextAlign.Center,
+                            style = MaterialTheme.typography.titleMedium)
+                    }
+                    IconButton(onClick = {
+                        animationDirection = AnimationDirection.Right
+                        savingsType = SavingsType.entries.getOrElse(savingsType.id+1) { SavingsType.entries.first() }
+                    }) {
+                        Icon(Icons.AutoMirrored.Filled.ArrowRight, contentDescription = null)
+                    }
+                }
+
+                Spacer(Modifier.height(8.dp))
                 LinearProgressIndicator(
                     modifier = Modifier.shake(deleteMode).fillMaxWidth().padding(vertical = 8.dp, horizontal = 16.dp).height(6.dp),
                     progress = { currentProgress.value },
@@ -262,7 +305,7 @@ fun AddEditSavingsDialog(
                                     saveSavings(AddEditSavings(
                                         id = savings?.id,
                                         title = savingsTitle,
-                                        type = SavingsType.Accounts,
+                                        type = savingsType,
                                         subtitle = savingsSubtitle,
                                         amount = savingsAmount.toInt(),
                                         goal = savingsGoal.toIntOrNull(),
@@ -290,3 +333,5 @@ fun AddEditSavingsDialog(
         }
     }
 }
+
+enum class AnimationDirection { Left, Right }

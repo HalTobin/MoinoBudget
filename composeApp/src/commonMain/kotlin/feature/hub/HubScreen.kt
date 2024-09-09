@@ -141,7 +141,6 @@ fun HubScreen(
                                 state = state,
                                 preferences = preferences,
                                 onEvent = viewModel::onEvent,
-                                goBack = { navController.popBackStack() }
                             )
                         }
                         composable(HubScreenTab.Budget.route) {
