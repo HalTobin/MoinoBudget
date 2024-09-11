@@ -3,8 +3,9 @@ package data.mapper
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import data.db.table.Savings
-import feature.savings.data.AddEditSavings
+import feature.savings.feature.add_edit_savings.data.AddEditSavings
 import kotlinx.datetime.Clock
+import presentation.data.ExpenseIcon
 import presentation.data.SavingsType
 import presentation.data.SavingsUI
 import util.toLocalDate
@@ -17,6 +18,7 @@ fun AddEditSavings.toSavingsEntity(): Savings {
         title = this.title,
         type = this.type.id,
         subtitle = this.subtitle,
+        iconId = this.iconId,
         amount = this.amount,
         goal = this.goal,
         autoIncrement = this.autoIncrement,
@@ -31,6 +33,7 @@ fun Savings.toSavingsUI(): SavingsUI {
         title = this.title,
         type = SavingsType.findById(this.type),
         subtitle = this.subtitle,
+        icon = this.iconId?.let { ExpenseIcon.findById(it) },
         amount = this.amount,
         goal = this.goal,
         autoIncrement = this.autoIncrement,

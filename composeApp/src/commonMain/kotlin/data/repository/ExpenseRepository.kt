@@ -5,14 +5,10 @@ import data.db.dao.ExpenseLabelDao
 import data.db.table.ExpenseLabelCrossRef
 import data.mapper.toExpenseEntity
 import data.mapper.toExpenseUI
-import feature.add_edit_expense.data.AddEditExpense
+import feature.expenses.add_edit_expense.data.AddEditExpense
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import presentation.data.ExpenseFrequency
-import presentation.data.ExpenseIcon
 import presentation.data.ExpenseUI
-import presentation.data.IncomeOrOutcome
-import kotlin.math.exp
 
 class ExpenseRepositoryImpl(
     private val expenseDao: ExpenseDao,

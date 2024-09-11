@@ -1,7 +1,7 @@
 package data.mapper
 
 import data.db.table.Budget
-import feature.dashboard.presentation.data.AddEditBudget
+import feature.expenses.expenses_list.presentation.data.AddEditBudget
 
 fun AddEditBudget.toBudgetEntity(nextOrder: Int): Budget =
     Budget(

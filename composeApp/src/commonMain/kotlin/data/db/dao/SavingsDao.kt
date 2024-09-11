@@ -20,4 +20,7 @@ interface SavingsDao {
 
     @Query("SELECT * FROM savings")
     fun getAll(): Flow<List<Savings>>
+
+    @Query("SELECT * FROM savings WHERE savings_id = :savingsId")
+    suspend fun getById(savingsId: Int): Savings
 }

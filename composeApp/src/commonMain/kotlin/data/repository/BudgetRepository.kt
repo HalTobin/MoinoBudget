@@ -9,11 +9,10 @@ import data.db.table.BudgetLabelCrossRef
 import data.mapper.toBudgetEntity
 import data.mapper.toExpenseUI
 import data.mapper.toLabelUI
-import feature.dashboard.data.MonthYearPair
-import feature.dashboard.presentation.data.AddEditBudget
+import feature.expenses.expenses_list.data.MonthYearPair
+import feature.expenses.expenses_list.presentation.data.AddEditBudget
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.map
 import presentation.data.BudgetStyle
 import presentation.data.BudgetUI
 import presentation.data.ExpenseFrequency

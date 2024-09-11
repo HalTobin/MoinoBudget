@@ -43,10 +43,10 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import data.repository.AppPreferences
-import feature.dashboard.presentation.DashboardScreen
-import feature.dashboard.presentation.DashboardViewModel
-import feature.savings.presentation.SavingsScreen
-import feature.savings.presentation.SavingsViewModel
+import feature.expenses.expenses_list.presentation.DashboardScreen
+import feature.expenses.expenses_list.presentation.DashboardViewModel
+import feature.savings.feature.savings_list.presentation.SavingsScreen
+import feature.savings.feature.savings_list.presentation.SavingsViewModel
 import kotlinx.coroutines.launch
 import moinobudget.composeapp.generated.resources.Res
 import moinobudget.composeapp.generated.resources.budgets_tab
@@ -140,6 +140,12 @@ fun HubScreen(
                             SavingsScreen(
                                 state = state,
                                 preferences = preferences,
+                                addEditSavings = { savingsId, savingsType ->
+                                    goToScreen(MoinoBudgetScreen.AddEditSavings(
+                                        styleId = 1,
+                                        savingsId = savingsId ?: -1,
+                                        defaultSavingsTypeId = savingsType.id
+                                    )) },
                                 onEvent = viewModel::onEvent,
                             )
                         }

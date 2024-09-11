@@ -2,7 +2,7 @@ package data.mapper
 
 import data.db.relation.ExpenseWithLabels
 import data.db.table.Expense
-import feature.add_edit_expense.data.AddEditExpense
+import feature.expenses.add_edit_expense.data.AddEditExpense
 import kotlinx.datetime.Clock
 import kotlinx.datetime.daysUntil
 import presentation.data.ExpenseFrequency

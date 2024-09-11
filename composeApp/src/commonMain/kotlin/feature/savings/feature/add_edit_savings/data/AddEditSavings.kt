@@ -1,17 +1,18 @@
-package presentation.data
+package feature.savings.feature.add_edit_savings.data
 
 import androidx.compose.ui.graphics.Color
 import kotlinx.datetime.LocalDate
+import presentation.data.SavingsType
 
-data class SavingsUI(
-    val id: Int,
+data class AddEditSavings(
+    val id: Int?,
     val title: String,
+    val iconId: Int?,
     val type: SavingsType,
     val subtitle: String,
-    val icon: ExpenseIcon?,
     val amount: Int,
     val goal: Int?,
     val autoIncrement: Int,
-    val lastMonthAutoIncrement: LocalDate,
+    val lastMonthAutoIncrement: LocalDate?,
     val color: Color?
 )

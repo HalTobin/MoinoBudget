@@ -15,9 +15,10 @@ import data.repository.LabelRepository
 import data.repository.LabelRepositoryImpl
 import data.repository.SavingsRepository
 import data.repository.SavingsRepositoryImpl
-import feature.add_edit_expense.presentation.AddEditExpenseViewModel
-import feature.dashboard.presentation.DashboardViewModel
-import feature.savings.presentation.SavingsViewModel
+import feature.expenses.add_edit_expense.presentation.AddEditExpenseViewModel
+import feature.expenses.expenses_list.presentation.DashboardViewModel
+import feature.savings.feature.add_edit_savings.presentation.AddEditSavingsViewModel
+import feature.savings.feature.savings_list.presentation.SavingsViewModel
 import feature.settings.SettingsViewModel
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.viewModelOf
@@ -36,6 +37,7 @@ object ModuleVM {
         viewModelOf(::AddEditExpenseViewModel)
         viewModelOf(::SettingsViewModel)
         viewModelOf(::SavingsViewModel)
+        viewModelOf(::AddEditSavingsViewModel)
     }
 }
 

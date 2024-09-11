@@ -10,6 +10,7 @@ data class Savings(
     @ColumnInfo(name = "savings_id") val id: Int = 0,
     val title: String,
     val subtitle: String,
+    val iconId: Int?,
     val amount: Int,
     val type: Int, // 0 Accounts, 1 Savings, 2 Investments
     val goal: Int?,
