@@ -38,6 +38,10 @@ class AddEditSavingsViewModel(
             is AddEditSavingsEvent.UpdateGoal -> _state.update { it.copy(savingsGoal = event.goal) }
             is AddEditSavingsEvent.UpdateType -> _state.update { it.copy(savingsType = event.type) }
             is AddEditSavingsEvent.UpdateColor -> _state.update { it.copy(savingsColor = event.color) }
+            is AddEditSavingsEvent.UpdateIcon -> _state.update {
+                it.copy(savingsIconId =
+                    if (event.iconId == _state.value.savingsIconId) null
+                    else event.iconId) }
         }
     }
 

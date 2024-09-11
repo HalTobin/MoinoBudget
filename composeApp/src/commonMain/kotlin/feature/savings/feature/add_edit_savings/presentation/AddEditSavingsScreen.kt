@@ -70,6 +70,7 @@ import moinobudget.composeapp.generated.resources.save
 import moinobudget.composeapp.generated.resources.subtitle
 import moinobudget.composeapp.generated.resources.title
 import org.jetbrains.compose.resources.stringResource
+import presentation.component.IconSelector
 import presentation.data.SavingsType
 import presentation.shake
 
@@ -182,7 +183,7 @@ fun AddEditSavingsScreen(
 
                 Spacer(Modifier.height(8.dp))
 
-                Row(Modifier.padding(horizontal = 16.dp),
+                Row(Modifier.padding(horizontal = 48.dp),
                     verticalAlignment = Alignment.CenterVertically) {
                     var animationDirection by remember { mutableStateOf(AnimationDirection.Left) }
                     IconButton(onClick = {
@@ -214,7 +215,10 @@ fun AddEditSavingsScreen(
                         Icon(Icons.AutoMirrored.Filled.ArrowRight, contentDescription = null)
                     }
                 }
-
+                ColorSection(
+                    modifier = Modifier.shake(deleteMode),
+                    selection = state.savingsColor,
+                    colorSelect = { onEvent(AddEditSavingsEvent.UpdateColor(if (state.savingsColor == it) null else it)) })
                 Spacer(Modifier.height(8.dp))
                 LinearProgressIndicator(
                     modifier = Modifier.shake(deleteMode).fillMaxWidth().padding(vertical = 8.dp, horizontal = 16.dp).height(6.dp),
@@ -270,10 +274,12 @@ fun AddEditSavingsScreen(
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.primary
                 )
-                ColorSection(
-                    modifier = Modifier.shake(deleteMode),
-                    selection = state.savingsColor,
-                    colorSelect = { onEvent(AddEditSavingsEvent.UpdateColor(if (state.savingsColor == it) null else it)) })
+
+                IconSelector(Modifier,
+                    selectedIcon = state.savingsIconId,
+                    onSelect = { onEvent(AddEditSavingsEvent.UpdateIcon(it)) },
+                    deleteMode = deleteMode)
+
                 Spacer(Modifier.weight(1f))
                 AnimatedContent(modifier = Modifier.fillMaxWidth(),
                     targetState = deleteMode,

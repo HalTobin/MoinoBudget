@@ -1,6 +1,8 @@
 package feature.savings.feature.savings_list.presentation.component
 
 import androidx.compose.animation.Crossfade
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
@@ -15,6 +17,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -30,10 +33,19 @@ fun ColorSection(
     selection: Color?,
     colorSelect: (Color?) -> Unit
 ) = BoxWithConstraints {
-    val offSet = maxWidth / 5
+    val offSet = maxWidth / 6
 
     val colors = DefaultColors.entries
     val colorPager = rememberPagerState(initialPage = colors.size / 2, pageCount = { colors.size })
+
+    LaunchedEffect(key1 = colorSelect) {
+        selection?.let { color ->
+            val current = colors.find { it.color == color }
+            val currentIndex = colors.indexOf(current)
+            colorPager.animateScrollToPage(currentIndex, animationSpec = tween(500))
+        }
+    }
+
     HorizontalPager(colorPager,
         modifier.fillMaxWidth()
             .padding(vertical = 8.dp),

@@ -67,6 +67,7 @@ import moinobudget.composeapp.generated.resources.labels
 import moinobudget.composeapp.generated.resources.save
 import moinobudget.composeapp.generated.resources.title
 import org.jetbrains.compose.resources.stringResource
+import presentation.component.IconSelector
 import presentation.data.BudgetStyle
 import presentation.data.ExpenseFrequency
 import presentation.data.ExpenseIcon
@@ -218,7 +219,7 @@ fun AddEditExpenseScreen(
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.primary
                     )
-                    LazyHorizontalGrid(GridCells.Fixed(2),
+                    /*LazyHorizontalGrid(GridCells.Fixed(2),
                         contentPadding = PaddingValues(horizontal = 24.dp),
                         modifier = Modifier.height(128.dp)) {
                         items(ExpenseIcon.list) { icon ->
@@ -228,7 +229,12 @@ fun AddEditExpenseScreen(
                                 deleteMode = deleteMode
                             )
                         }
-                    }
+                    }*/
+                    IconSelector(Modifier,
+                        selectedIcon = state.expenseIcon.id,
+                        onSelect = { onEvent(AddEditExpenseEvent.UpdateIcon(ExpenseIcon.findById(it))) },
+                        deleteMode = deleteMode
+                    )
                     Text(stringResource(Res.string.labels),
                         modifier = Modifier.padding(start = 64.dp, top = 8.dp).fillMaxWidth(),
                         fontWeight = FontWeight.Bold,
@@ -281,31 +287,5 @@ fun AddEditExpenseScreen(
                 }
             }
         }
-    }
-}
-
-@Composable
-fun IconEntry(
-    icon: ExpenseIcon,
-    selectedIcon: ExpenseIcon,
-    deleteMode: Boolean,
-    onClick: () -> Unit,
-) {
-    val selected = selectedIcon == icon
-    Box(modifier = Modifier
-        .shake(deleteMode)
-        .aspectRatio(1f)
-        .padding(horizontal = 4.dp, vertical = 6.dp)
-        .clip(RoundedCornerShape(8.dp))
-        .background(
-            if (selected) MaterialTheme.colorScheme.primary
-            else MaterialTheme.colorScheme.surface)
-        .clickable { onClick() }
-        .padding(4.dp),
-        contentAlignment = Alignment.Center) {
-        Icon(modifier = Modifier.size(30.dp),
-            tint = if (selected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onBackground,
-            imageVector = icon.icon,
-            contentDescription = null)
     }
 }

@@ -197,20 +197,30 @@ fun SavingsItem(
     val savingPrimary = savings.color ?: MaterialTheme.colorScheme.primary
 
     Column(Modifier.padding(horizontal = 8.dp)) {
-        Row {
-            Text(savings.title,
-                style = MaterialTheme.typography.titleLarge,
-                modifier = Modifier.weight(1f),
-            fontWeight = FontWeight.SemiBold)
-            Text(
-                formatCurrency(savings.amount.toFloat(), preferences),
-                color = savingPrimary,
-                style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.Bold)
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            savings.icon?.let { icon ->
+                Icon(icon.icon,
+                    modifier = Modifier.padding(end = 16.dp).size(32.dp),
+                    contentDescription = null)
+            }
+            Column {
+                Row {
+                    Text(savings.title,
+                        style = MaterialTheme.typography.titleLarge,
+                        modifier = Modifier.weight(1f),
+                        fontWeight = FontWeight.SemiBold)
+                    Text(
+                        formatCurrency(savings.amount.toFloat(), preferences),
+                        color = savingPrimary,
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.Bold)
+                }
+                Text(savings.subtitle,
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.SemiBold)
+            }
         }
-        Text(savings.subtitle,
-            style = MaterialTheme.typography.titleMedium,
-            fontWeight = FontWeight.SemiBold)
+
         savings.goal?.let {
 
             val currentProgress = remember { Animatable(0f) }

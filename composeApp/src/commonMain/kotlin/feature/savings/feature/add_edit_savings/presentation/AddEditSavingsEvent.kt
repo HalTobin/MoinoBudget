@@ -11,6 +11,7 @@ sealed class AddEditSavingsEvent {
     data class UpdateAmount(val amount: String): AddEditSavingsEvent()
     data class UpdateGoal(val goal: String): AddEditSavingsEvent()
     data class UpdateColor(val color: Color?): AddEditSavingsEvent()
+    data class UpdateIcon(val iconId: Int?): AddEditSavingsEvent()
     data object UpsertSavings: AddEditSavingsEvent()
     data object DeleteSavings: AddEditSavingsEvent()
 }
