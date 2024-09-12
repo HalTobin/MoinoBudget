@@ -1,5 +1,6 @@
 package ui.theme
 
+import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
@@ -50,13 +51,21 @@ private val LightColorScheme = lightColorScheme(
 @Composable
 fun MoinoBudgetTheme(
     theme: Theme = Theme.Dark,
+    primary: Color? = null,
+    onPrimary: Color? = null,
     content: @Composable () -> Unit
 ) = MaterialTheme(
-    colorScheme = when (theme) {
-        Theme.Dark -> DarkColorScheme
-        Theme.Light -> LightColorScheme
-        Theme.DarkOled -> DarkOledColorScheme
-    },
+    colorScheme = getColorScheme(theme, primary, onPrimary),
     typography = Typography,
     content = content
 )
+
+fun getColorScheme(theme: Theme, primary: Color?, onPrimary: Color?): ColorScheme {
+    val colors = when (theme) {
+        Theme.Dark -> DarkColorScheme
+        Theme.Light -> LightColorScheme
+        Theme.DarkOled -> DarkOledColorScheme
+    }
+    return if (primary != null && onPrimary != null) colors.copy(primary = primary, onPrimary = onPrimary)
+    else colors
+}

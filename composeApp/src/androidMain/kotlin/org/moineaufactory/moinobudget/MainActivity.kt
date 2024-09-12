@@ -18,7 +18,6 @@ import ui.MainViewModel
 import ui.theme.MoinoBudgetTheme
 
 class MainActivity : ComponentActivity() {
-    @OptIn(KoinExperimentalAPI::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 

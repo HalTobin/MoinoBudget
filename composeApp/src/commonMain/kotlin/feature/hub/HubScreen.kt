@@ -1,6 +1,5 @@
 package feature.hub
 
-import androidx.compose.animation.Animatable
 import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -26,10 +25,6 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -47,7 +42,6 @@ import feature.expenses.expenses_list.presentation.DashboardScreen
 import feature.expenses.expenses_list.presentation.DashboardViewModel
 import feature.savings.feature.savings_list.presentation.SavingsScreen
 import feature.savings.feature.savings_list.presentation.SavingsViewModel
-import kotlinx.coroutines.launch
 import moinobudget.composeapp.generated.resources.Res
 import moinobudget.composeapp.generated.resources.budgets_tab
 import moinobudget.composeapp.generated.resources.expenses_tab
@@ -62,114 +56,97 @@ import ui.MoinoBudgetScreen
 @Composable
 fun HubScreen(
     preferences: AppPreferences,
-    goToScreen: (MoinoBudgetScreen) -> Unit
+    goToScreen: (MoinoBudgetScreen) -> Unit,
+    setStyle: (BudgetStyle) -> Unit
 ) {
-    val scope = rememberCoroutineScope()
-
     val navController = rememberNavController()
-    var style by remember { mutableStateOf(BudgetStyle.CitrusJuice) }
 
-    val primary = remember { Animatable(style.getPrimary(preferences)) }
-    val onPrimary = remember { Animatable(style.getOnPrimary(preferences)) }
-
-    MaterialTheme(
-        colorScheme = MaterialTheme.colorScheme.copy(
-            primary = primary.value, onPrimary = onPrimary.value
-        )
-    ) {
-        Scaffold(
-            bottomBar = {
-                val navBackStackEntry by navController.currentBackStackEntryAsState()
-                val currentDestination = navBackStackEntry?.destination
-                NavigationBar {
-                    HubScreenTab.entries.forEach { tab ->
-                        val selected = currentDestination?.hierarchy?.any { it.route == tab.route } == true
-                        NavigationBarItem(
-                            selected = selected,
-                            onClick = {
-                                if (!selected) navController.navigate(tab.route) {
-                                    popUpTo(navController.graph.findStartDestination().id) {
-                                        saveState = true
-                                    }
-                                    // Avoid multiple copies of the same destination when
-                                    // reselecting the same item
-                                    launchSingleTop = true
-                                    // Restore state when reselecting a previously selected item
-                                    restoreState = true
+    Scaffold(
+        bottomBar = {
+            val navBackStackEntry by navController.currentBackStackEntryAsState()
+            val currentDestination = navBackStackEntry?.destination
+            NavigationBar {
+                HubScreenTab.entries.forEach { tab ->
+                    val selected = currentDestination?.hierarchy?.any { it.route == tab.route } == true
+                    NavigationBarItem(
+                        selected = selected,
+                        onClick = {
+                            if (!selected) navController.navigate(tab.route) {
+                                popUpTo(navController.graph.findStartDestination().id) {
+                                    saveState = true
                                 }
-                            },
-                            icon = {
-                                Crossfade(targetState = selected) { selected ->
-                                    Icon(imageVector = if (selected) tab.icon.first else tab.icon.second, contentDescription = null)
-                                }
-                            },
-                            colors = NavigationBarItemDefaults.colors(
-                                selectedIconColor = primary.value,
-                                selectedTextColor = primary.value,
-                                indicatorColor = primary.value.copy(alpha = 0.2f)
-                            ),
-                            label = { Text(stringResource(tab.title)) }
-                        )
-                    }
+                                // Avoid multiple copies of the same destination when
+                                // reselecting the same item
+                                launchSingleTop = true
+                                // Restore state when reselecting a previously selected item
+                                restoreState = true
+                            }
+                        },
+                        icon = {
+                            Crossfade(targetState = selected) { selected ->
+                                Icon(imageVector = if (selected) tab.icon.first else tab.icon.second, contentDescription = null)
+                            }
+                        },
+                        colors = NavigationBarItemDefaults.colors(
+                            selectedIconColor = MaterialTheme.colorScheme.primary,
+                            selectedTextColor = MaterialTheme.colorScheme.primary,
+                            indicatorColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.2f)
+                        ),
+                        label = { Text(stringResource(tab.title)) }
+                    )
                 }
             }
-        ) { innerPadding ->
-            Surface(
-                modifier = Modifier.fillMaxSize().padding(innerPadding),
-                color = MaterialTheme.colorScheme.background,
-                contentColor = MaterialTheme.colorScheme.onBackground
-            ) {
-                Box {
-                    FloatingActionButton(
-                        modifier = Modifier.align(Alignment.TopEnd).padding(8.dp).zIndex(2f).size(44.dp),
-                        shape = CircleShape,
-                        containerColor = MaterialTheme.colorScheme.surface,
-                        contentColor = MaterialTheme.colorScheme.onSurface,
-                        onClick = { goToScreen(MoinoBudgetScreen.Settings) }
-                    ) {
-                        Icon(modifier = Modifier.size(32.dp),
-                            imageVector = Icons.Default.Settings,
-                            contentDescription = stringResource(Res.string.go_to_settings_help))
+        }
+    ) { innerPadding ->
+        Surface(
+            modifier = Modifier.fillMaxSize().padding(innerPadding),
+            color = MaterialTheme.colorScheme.background,
+            contentColor = MaterialTheme.colorScheme.onBackground
+        ) {
+            Box {
+                FloatingActionButton(
+                    modifier = Modifier.align(Alignment.TopEnd).padding(8.dp).zIndex(2f).size(44.dp),
+                    shape = CircleShape,
+                    containerColor = MaterialTheme.colorScheme.surface,
+                    contentColor = MaterialTheme.colorScheme.onSurface,
+                    onClick = { goToScreen(MoinoBudgetScreen.Settings) }
+                ) {
+                    Icon(modifier = Modifier.size(32.dp),
+                        imageVector = Icons.Default.Settings,
+                        contentDescription = stringResource(Res.string.go_to_settings_help))
+                }
+                NavHost(modifier = Modifier.fillMaxSize(),
+                    startDestination = HubScreenTab.Budget.route,
+                    navController = navController) {
+                    composable(HubScreenTab.Savings.route) {
+                        val viewModel = koinViewModel<SavingsViewModel>()
+                        val state by viewModel.state.collectAsStateWithLifecycle()
+                        SavingsScreen(
+                            state = state,
+                            preferences = preferences,
+                            addEditSavings = { savingsId, savingsType ->
+                                goToScreen(MoinoBudgetScreen.AddEditSavings(
+                                    savingsId = savingsId ?: -1,
+                                    defaultSavingsTypeId = savingsType.id
+                                )) },
+                            onEvent = viewModel::onEvent,
+                        )
                     }
-                    NavHost(modifier = Modifier.fillMaxSize(),
-                        startDestination = HubScreenTab.Budget.route,
-                        navController = navController) {
-                        composable(HubScreenTab.Savings.route) {
-                            val viewModel = koinViewModel<SavingsViewModel>()
-                            val state by viewModel.state.collectAsStateWithLifecycle()
-                            SavingsScreen(
-                                state = state,
-                                preferences = preferences,
-                                addEditSavings = { savingsId, savingsType ->
-                                    goToScreen(MoinoBudgetScreen.AddEditSavings(
-                                        styleId = 1,
-                                        savingsId = savingsId ?: -1,
-                                        defaultSavingsTypeId = savingsType.id
-                                    )) },
-                                onEvent = viewModel::onEvent,
-                            )
-                        }
-                        composable(HubScreenTab.Budget.route) {
-                            val viewModel = koinViewModel<DashboardViewModel>()
-                            val state by viewModel.state.collectAsStateWithLifecycle()
-                            DashboardScreen(
-                                preferences = preferences,
-                                state = state,
-                                onEvent = viewModel::onEvent,
-                                uiEvent = viewModel.eventFlow,
-                                setStyle = { style = it
-                                    scope.launch {
-                                        primary.animateTo(it.getPrimary(preferences))
-                                        onPrimary.animateTo(it.getOnPrimary(preferences))
-                                    }
-                                },
-                                goTo = { goToScreen(it) })
-                        }
-                        composable(HubScreenTab.Expenses.route) {
-                            Box(Modifier.fillMaxSize()) {
-                                Text("Expenses screen coming soon...",
-                                    modifier = Modifier.align(Alignment.Center))
-                            }
+                    composable(HubScreenTab.Budget.route) {
+                        val viewModel = koinViewModel<DashboardViewModel>()
+                        val state by viewModel.state.collectAsStateWithLifecycle()
+                        DashboardScreen(
+                            preferences = preferences,
+                            state = state,
+                            onEvent = viewModel::onEvent,
+                            uiEvent = viewModel.eventFlow,
+                            setStyle = { setStyle(it) },
+                            goTo = { goToScreen(it) })
+                    }
+                    composable(HubScreenTab.Expenses.route) {
+                        Box(Modifier.fillMaxSize()) {
+                            Text("Expenses screen coming soon...",
+                                modifier = Modifier.align(Alignment.Center))
                         }
                     }
                 }

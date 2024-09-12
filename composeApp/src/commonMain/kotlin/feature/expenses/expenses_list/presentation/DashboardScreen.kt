@@ -155,7 +155,7 @@ fun DashboardScreen(
                 val budget = state.budgets.getOrNull(budgetState.currentPage-1)
                 val style = budget?.style ?: BudgetStyle.CitrusJuice
                 val labels = budget?.labels?.map { it.id } ?: emptyList()
-                goTo(MoinoBudgetScreen.AddEditExpense(styleId = style.id, labelIds = labels))
+                goTo(MoinoBudgetScreen.AddEditExpense(labelIds = labels))
             },
                 containerColor = MaterialTheme.colorScheme.primary,
                 contentColor = MaterialTheme.colorScheme.onPrimary,
@@ -239,15 +239,13 @@ fun DashboardScreen(
                 incomes = budget?.rawIncomes?.first ?: state.expenses.filter { it.type == IncomeOrOutcome.Income }.sumOf { it.amount.toDouble() }.toFloat(),
                 outcomes = budget?.upcomingPayments?.first ?: state.expenses.filter { it.type == IncomeOrOutcome.Outcome }.sumOf { it.amount.toDouble() }.toFloat(),
                 editExpense = {
-                    val style = budget?.style ?: BudgetStyle.CitrusJuice
-                    val labels = budget?.labels?.map { it.id } ?: emptyList()
+                    val labels = budget?.labels?.map { label -> label.id } ?: emptyList()
                     goTo(MoinoBudgetScreen.AddEditExpense(
-                        styleId = style.id,
                         labelIds = labels,
                         expenseId = it
-                    ))
-                              },
-                expenses = budget?.expenses ?: state.expenses)
+                    )) },
+                expenses = budget?.expenses ?: state.expenses,
+                isYear = year)
         }
     }
 }
@@ -383,6 +381,7 @@ fun PaymentsSection(
     preferences: AppPreferences,
     incomes: Float,
     outcomes: Float,
+    isYear: Boolean,
     expenses: List<ExpenseUI>
 ) = Column(modifier = Modifier.fillMaxWidth(),
     horizontalAlignment = Alignment.CenterHorizontally) {
@@ -410,11 +409,12 @@ fun PaymentsSection(
                     Icon(Icons.Default.ArrowUpward,
                         tint = MaterialTheme.colorScheme.onBackground,
                         contentDescription = null)
-                    Text(formatCurrency(values.first, preferences.copy(decimalMode = false)),
+                    MonthYearText(preferences = preferences.copy(decimalMode = false),
                         modifier = Modifier.padding(start = 4.dp, end = 8.dp),
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.SemiBold,
-                        color = IncomeOrOutcome.Income.color)
+                        values = Pair(incomes, incomes * 12),
+                        isYear = isYear,
+                        textStyle = MaterialTheme.typography.titleMedium,
+                        incomeOrOutcome = IncomeOrOutcome.Income)
                 }
             }
 
@@ -431,11 +431,12 @@ fun PaymentsSection(
                     Icon(Icons.Default.ArrowDownward,
                         tint = MaterialTheme.colorScheme.onBackground,
                         contentDescription = null)
-                    Text(formatCurrency(values.second, preferences.copy(decimalMode = false)),
+                    MonthYearText(preferences = preferences.copy(decimalMode = false),
                         modifier = Modifier.padding(start = 4.dp, end = 8.dp),
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.SemiBold,
-                        color = IncomeOrOutcome.Outcome.color)
+                        values = Pair(outcomes, outcomes * 12),
+                        isYear = isYear,
+                        textStyle = MaterialTheme.typography.titleMedium,
+                        incomeOrOutcome = IncomeOrOutcome.Outcome)
                 }
             }
 

@@ -30,7 +30,8 @@ import ui.theme.MoinoBudgetTheme
 
 @Composable
 fun MainScreen(
-    preferences: AppPreferences
+    preferences: AppPreferences,
+    setStyle: (BudgetStyle) -> Unit
 ) {
     val navController = rememberNavController()
     Surface(
@@ -45,7 +46,8 @@ fun MainScreen(
             composable<MoinoBudgetScreen.Main> {
                 HubScreen(
                     preferences = preferences,
-                    goToScreen = { navController.navigate(it) }
+                    goToScreen = { navController.navigate(it) },
+                    setStyle = { setStyle(it) }
                 )
             }
             composable<MoinoBudgetScreen.Settings> {
@@ -57,7 +59,6 @@ fun MainScreen(
             }
             composable<MoinoBudgetScreen.AddEditExpense>{
                 val args = it.toRoute<MoinoBudgetScreen.AddEditExpense>()
-                val style = BudgetStyle.findById(args.styleId)
                 val expenseId = args.expenseId
                 val labels = args.labelIds
 
@@ -73,7 +74,6 @@ fun MainScreen(
                 }
 
                 AddEditExpenseScreen(
-                    style = style,
                     preferences = preferences,
                     state = state,
                     onEvent = viewModel::onEvent,
@@ -82,7 +82,6 @@ fun MainScreen(
             }
             composable<MoinoBudgetScreen.AddEditSavings> {
                 val args = it.toRoute<MoinoBudgetScreen.AddEditSavings>()
-                val style = BudgetStyle.findById(args.styleId)
                 val savingsId = args.savingsId
                 val savingsType = SavingsType.findById(args.defaultSavingsTypeId)
 
@@ -107,4 +106,7 @@ fun MainScreen(
 
 @Preview
 @Composable
-fun MainScreenPreview() = MoinoBudgetTheme { MainScreen(AppPreferences()) }
+fun MainScreenPreview() = MoinoBudgetTheme { MainScreen(
+    preferences = AppPreferences(),
+    setStyle = {}
+) }

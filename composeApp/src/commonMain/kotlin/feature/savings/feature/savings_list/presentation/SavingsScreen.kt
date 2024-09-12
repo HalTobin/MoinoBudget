@@ -117,7 +117,6 @@ fun SavingsScreen(
             }
         )
 
-
         HorizontalPager(pagerState,
             modifier = Modifier.weight(1f)) { page ->
                 val listState = rememberLazyListState()
