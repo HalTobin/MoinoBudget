@@ -12,7 +12,7 @@ data class Savings(
     val subtitle: String,
     val iconId: Int?,
     val amount: Int,
-    val type: Int, // 0 Accounts, 1 Savings, 2 Investments
+    val type: Int, // 0 Accounts, 1 Savings, 2 Envelope, 3 Investments
     val goal: Int?,
     val autoIncrement: Int,
     val lastMonthAutoIncrement: Long,

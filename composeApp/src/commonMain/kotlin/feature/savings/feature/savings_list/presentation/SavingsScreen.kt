@@ -6,11 +6,13 @@ import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -18,6 +20,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
@@ -64,6 +67,7 @@ import presentation.data.SavingsType
 import presentation.data.SavingsUI
 import presentation.formatCurrency
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun SavingsScreen(
     state: SavingsState,
@@ -121,23 +125,53 @@ fun SavingsScreen(
             modifier = Modifier.weight(1f)) { page ->
                 val listState = rememberLazyListState()
                 Box(Modifier.fillMaxSize()) {
-                    LazyColumn(state = listState,
-                        modifier = Modifier
-                            //.matchParentSize()
-                            .padding(horizontal = 16.dp)) {
-                        items(if (page == 0) state.savings else state.savings.filter { it.type.id == page-1 }) { savings ->
-                            SavingsItem(modifier = Modifier,
+                    LazyColumn(state = listState) {
+                        if (page != 0) items(state.savings.filter { it.type.id == page-1 }) { savings ->
+                            SavingsItem(modifier = Modifier.padding(horizontal = 16.dp),
                                 savings = savings,
                                 preferences = preferences,
                                 onClick = { addEditSavings(
                                     savings.id,
                                     SavingsType.entries.getOrElse(pagerState.currentPage-1) { SavingsType.SavingsBooks }) }
                             )
+                        } else {
+                            SavingsType.entries.forEach { type ->
+                                val savingsByType = state.savings.filter { it.type == type }
+                                if (savingsByType.isNotEmpty()) stickyHeader {
+                                    Row(Modifier
+                                        .fillMaxWidth()
+                                        .background(MaterialTheme.colorScheme.onPrimary)
+                                        .padding(vertical = 8.dp, horizontal = 16.dp),
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        Icon(type.icon,
+                                            modifier = Modifier.size(32.dp),
+                                            tint = MaterialTheme.colorScheme.primary,
+                                            contentDescription = stringResource(type.text))
+                                        Text(stringResource(type.text),
+                                            modifier = Modifier.padding(start = 16.dp),
+                                            color = MaterialTheme.colorScheme.primary,
+                                            fontWeight = FontWeight.SemiBold,
+                                            style = MaterialTheme.typography.titleLarge)
+                                } }
+                                itemsIndexed(savingsByType) { index, savings ->
+                                    if (index == 0) Spacer(Modifier.height(16.dp))
+                                    SavingsItem(modifier = Modifier.padding(horizontal = 16.dp),
+                                        savings = savings,
+                                        preferences = preferences,
+                                        onClick = { addEditSavings(
+                                            savings.id,
+                                            SavingsType.entries.getOrElse(pagerState.currentPage-1) { SavingsType.SavingsBooks }) }
+                                    )
+                                    if (index == savingsByType.lastIndex) Spacer(Modifier.height(16.dp))
+                                }
+                            }
                         }
                         item {
                             Row(Modifier
                                 .fillMaxWidth()
                                 .padding(top = 12.dp, bottom = 24.dp)
+                                .padding(horizontal = 16.dp)
                                 .dashedBorder(4.dp, MaterialTheme.colorScheme.primary, 16.dp)
                                 .clip(RoundedCornerShape(16.dp))
                                 .background(MaterialTheme.colorScheme.surface)
@@ -167,7 +201,7 @@ fun SavingsScreen(
                         }
                     }
                     Crossfade(modifier = Modifier.align(Alignment.TopCenter).fillMaxWidth(),
-                        targetState = listState.canScrollBackward) { displayDivider ->
+                        targetState = (listState.canScrollBackward && pagerState.currentPage != 0)) { displayDivider ->
                         if (displayDivider) HorizontalDivider(Modifier.fillMaxWidth(),
                             thickness = 2.dp)
                 }

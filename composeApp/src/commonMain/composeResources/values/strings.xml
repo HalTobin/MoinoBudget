@@ -133,6 +133,7 @@
 
     <!-- Savings Type -->
     <string name="savings_type_account">Accounts</string>
+    <string name="savings_type_envelope">Envelope</string>
     <string name="savings_type_savings_books">Savings books</string>
     <string name="savings_type_investments">Investments</string>
 </resources>

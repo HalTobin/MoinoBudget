@@ -4,10 +4,12 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.TrendingDown
 import androidx.compose.material.icons.automirrored.filled.TrendingUp
 import androidx.compose.material.icons.filled.AccountBalance
+import androidx.compose.material.icons.filled.Apartment
 import androidx.compose.material.icons.filled.Bolt
 import androidx.compose.material.icons.filled.Celebration
 import androidx.compose.material.icons.filled.Class
 import androidx.compose.material.icons.filled.Cloud
+import androidx.compose.material.icons.filled.CurrencyBitcoin
 import androidx.compose.material.icons.filled.Diversity3
 import androidx.compose.material.icons.filled.Flight
 import androidx.compose.material.icons.filled.Home
@@ -20,10 +22,9 @@ import androidx.compose.material.icons.filled.Receipt
 import androidx.compose.material.icons.filled.Savings
 import androidx.compose.material.icons.filled.School
 import androidx.compose.material.icons.filled.SmokingRooms
+import androidx.compose.material.icons.filled.SsidChart
 import androidx.compose.material.icons.filled.Storefront
 import androidx.compose.material.icons.filled.Train
-import androidx.compose.material.icons.filled.TrendingDown
-import androidx.compose.material.icons.filled.TrendingUp
 import androidx.compose.material.icons.filled.VapingRooms
 import androidx.compose.material.icons.filled.VideoLibrary
 import androidx.compose.material.icons.filled.VideogameAsset
@@ -57,7 +58,10 @@ enum class ExpenseIcon(val id: Int, val keywords: String, val icon: ImageVector)
     Vape(23, "smoke, vape, liquids, cigarettes", Icons.Default.VapingRooms),
     Plane(24, "transport, plane", Icons.Default.Flight),
     Music(25, "music, art", Icons.Default.MusicNote),
-    Taxes(26, "taxes", Icons.Default.Receipt);
+    Taxes(26, "taxes", Icons.Default.Receipt),
+    Crypto(27, "crypto, crypto currency, bitcoin", Icons.Default.CurrencyBitcoin),
+    Apartment(28, "housing, apartment", Icons.Default.Apartment),
+    Investment(29, "investment", Icons.Default.SsidChart);
 
     companion object {
         val list = ExpenseIcon.entries.map { it }.sortedBy { it.id }

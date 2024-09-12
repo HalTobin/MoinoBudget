@@ -91,6 +91,10 @@ fun AddEditSavingsScreen(
     val primary = MaterialTheme.colorScheme.primary
     val colorProgress = remember { Animatable(state.savingsColor ?: primary) }
 
+    LaunchedEffect(key1 = true) {
+        if (state.savingsId == null) onEvent(AddEditSavingsEvent.UpdateType(defaultSavings))
+    }
+
     state.savingsGoal.toIntOrNull()?.let { goal ->
         state.savingsAmount.toIntOrNull()?.let { amount ->
             LaunchedEffect(key1 = true) {
@@ -118,9 +122,7 @@ fun AddEditSavingsScreen(
 
     Surface(
         color = MaterialTheme.colorScheme.background,
-        border = BorderStroke(2.dp, MaterialTheme.colorScheme.surfaceVariant),
         contentColor = MaterialTheme.colorScheme.onBackground,
-        shape = RoundedCornerShape(32.dp)
     ) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Box(Modifier.fillMaxWidth().padding(start = 8.dp, end = 8.dp, top = 8.dp)) {

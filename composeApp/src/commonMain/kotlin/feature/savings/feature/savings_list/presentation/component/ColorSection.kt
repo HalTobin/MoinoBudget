@@ -26,6 +26,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import ui.theme.Cyan80
+import ui.theme.Green80
+import ui.theme.Orange80
+import ui.theme.Red80
 
 @Composable
 fun ColorSection(
@@ -35,12 +39,12 @@ fun ColorSection(
 ) = BoxWithConstraints {
     val offSet = maxWidth / 6
 
-    val colors = DefaultColors.entries
+    val colors = DefaultColors.colors
     val colorPager = rememberPagerState(initialPage = colors.size / 2, pageCount = { colors.size })
 
     LaunchedEffect(key1 = colorSelect) {
         selection?.let { color ->
-            val current = colors.find { it.color == color }
+            val current = colors.find { it == color }
             val currentIndex = colors.indexOf(current)
             colorPager.animateScrollToPage(currentIndex, animationSpec = tween(500))
         }
@@ -54,13 +58,13 @@ fun ColorSection(
     ) { page ->
         IconButton(onClick = {
             //selection = if (selection == page) null else page
-            colorSelect(colors.getOrNull(page)?.color)
+            colorSelect(colors.getOrNull(page))
         }) {
-            Crossfade(targetState = colors[page].color == selection) { selected ->
+            Crossfade(targetState = colors[page] == selection) { selected ->
                 Box(Modifier
                     .size(40.dp)
                     .clip(CircleShape)
-                    .background(colors[page].color, CircleShape)
+                    .background(colors[page], CircleShape)
                     .then(
                         if (selected) Modifier.border(4.dp, MaterialTheme.colorScheme.primary, CircleShape)
                         else Modifier.border(2.dp, Color.Black, CircleShape)
@@ -71,17 +75,23 @@ fun ColorSection(
     }
 }
 
-enum class DefaultColors(val color: Color) {
-    White(Color(0xFFFFFFFF)),
-    Black(Color(0xFF000000)),
+object DefaultColors {
 
-    Cyan(Color(0xFF0FBAD5)),
-    SkyBlue(Color(0xFF0052FF)),
+    val colors = listOf(
+        Color(0xFFFFFFFF), // White
+        Color(0xFF000000), // Black
 
-    Purple(Color(0xFFD10073)),
-    Violet(Color(0xFF9E68B5)),
+        Color(0xFF5FA025), // ForestGreen
+        Green80,
+        Color(0xFF84fb7f), // LightGreen
 
-    LightGreen(Color(0xFF84fb7f)),
-    ForestGreen(Color(0xFF5FA025)),
+        Color(0xFF0FBAD5), // Cyan
+        Cyan80,
+        Color(0xFF0052FF), // SkyBlue
 
+        Color(0xFF9E68B5), // Violet
+        Color(0xFFD10073), // Purple
+        Red80,
+        Orange80,
+    )
 }
