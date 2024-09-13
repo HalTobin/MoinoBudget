@@ -22,7 +22,6 @@ object PrefKey {
 
 object PrefDefault {
     const val CURRENCY = "€"
-    const val CARD_STYLE = 3
 
     // Values for themes
     const val THEME_DARK = "dark"
@@ -61,9 +60,9 @@ enum class Currency(val key: String, val sign: String, val position: CurrencyPos
     Euro(key = "eur", sign = "€", decimalMode = true),
     Dollar(key = "usd", sign = "$", position = CurrencyPosition.Start, decimalMode = true),
     Ruble(key = "rub", sign = "₽", decimalMode = true),
-    YenYuan(key = "yen/yuan", sign = "¥", decimalMode = true),
+    YenYuan(key = "yen / yuan", sign = "¥", decimalMode = true),
     Pound(key = "pound", sign = "£", decimalMode = true),
-    Lira(key = "pound", sign = "₺", decimalMode = true);
+    Lira(key = "lira", sign = "₺", decimalMode = true);
     companion object {
         val list = listOf(Euro, Dollar, Ruble, YenYuan, Pound, Lira)
     }

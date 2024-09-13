@@ -26,3 +26,6 @@ val Cyan80 = Color(0xFF4CCFFF) // Vivid Cyan
 val CyanGrey80 = Color(0xFF00384C) // Darker, muted Cyan
 val Cyan40 = Color(0xFF00A3B5) // Lighter, less vivid Cyan
 val CyanGrey40 = Color(0xFF99EFFF) // Lightened, muted Cyan
+
+val CoinBorder = Color(0xFFd69b24)
+val Coin = Color(0xFFFFCE00)

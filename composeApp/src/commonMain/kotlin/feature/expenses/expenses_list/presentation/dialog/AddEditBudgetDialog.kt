@@ -63,7 +63,7 @@ import moinobudget.composeapp.generated.resources.new_budget
 import moinobudget.composeapp.generated.resources.save
 import moinobudget.composeapp.generated.resources.title
 import org.jetbrains.compose.resources.stringResource
-import presentation.BudgetBackground
+import presentation.component.BudgetBackground
 import presentation.data.BudgetStyle
 import presentation.data.BudgetUI
 import presentation.data.LabelUI

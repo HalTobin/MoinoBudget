@@ -59,7 +59,7 @@ import moinobudget.composeapp.generated.resources.Res
 import moinobudget.composeapp.generated.resources.goal_with_value
 import moinobudget.composeapp.generated.resources.register_savings
 import moinobudget.composeapp.generated.resources.register_savings_details
-import moinobudget.composeapp.generated.resources.total_savings
+import moinobudget.composeapp.generated.resources.total
 import org.jetbrains.compose.resources.stringResource
 import presentation.dashedBorder
 import presentation.data.IncomeOrOutcome
@@ -104,7 +104,7 @@ fun SavingsScreen(
                     style = MaterialTheme.typography.headlineMedium,
                     color = IncomeOrOutcome.Income.color)
             }
-            Text(stringResource(Res.string.total_savings),
+            Text(stringResource(Res.string.total),
                 fontWeight = FontWeight.SemiBold,
                 style = MaterialTheme.typography.titleMedium)
         }
@@ -140,7 +140,8 @@ fun SavingsScreen(
                                 if (savingsByType.isNotEmpty()) stickyHeader {
                                     Row(Modifier
                                         .fillMaxWidth()
-                                        .background(MaterialTheme.colorScheme.onPrimary)
+                                        .background(MaterialTheme.colorScheme.background)
+                                        .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.7f))
                                         .padding(vertical = 8.dp, horizontal = 16.dp),
                                         verticalAlignment = Alignment.CenterVertically
                                     ) {

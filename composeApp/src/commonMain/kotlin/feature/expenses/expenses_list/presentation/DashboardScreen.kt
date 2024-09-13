@@ -98,7 +98,7 @@ import moinobudget.composeapp.generated.resources.year
 import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
-import presentation.BudgetBackground
+import presentation.component.BudgetBackground
 import presentation.MoinoSnackBar
 import presentation.dashedBorder
 import presentation.data.BudgetStyle
