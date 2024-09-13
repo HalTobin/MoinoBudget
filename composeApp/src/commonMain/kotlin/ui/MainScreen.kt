@@ -1,5 +1,7 @@
 package ui
 
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.core.Transition
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -126,7 +128,8 @@ fun MainScreen(
             }
             composable<MoinoBudgetScreen.SavingsDetails>(
                 enterTransition = { slideInVertically(initialOffsetY = { it }) },
-                exitTransition = { slideOutVertically(targetOffsetY = { it }) }
+                popExitTransition = { slideOutVertically(targetOffsetY = { it }) },
+                popEnterTransition = { EnterTransition.None }
             ) {
                 val args = it.toRoute<MoinoBudgetScreen.SavingsDetails>()
                 val savingsId = args.savingsId
