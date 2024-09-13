@@ -44,6 +44,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import moinobudget.composeapp.generated.resources.Res
 import moinobudget.composeapp.generated.resources.all
+import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 import presentation.data.SavingsType
 
@@ -73,7 +74,7 @@ fun SavingsTabRow(
                     position = 0,
                     onClick = { selectTab(0) })
                 SavingsType.entries.forEachIndexed { index, type ->
-                    TabTitle(stringResource(type.text),
+                    TabTitle(pluralStringResource(type.text, 2),
                         selected = index+1 == selectedTabPosition,
                         position = index+1,
                         onClick = { (selectTab(it)) })

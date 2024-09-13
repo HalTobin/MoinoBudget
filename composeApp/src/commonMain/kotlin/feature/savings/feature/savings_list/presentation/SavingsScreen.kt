@@ -60,6 +60,7 @@ import moinobudget.composeapp.generated.resources.goal_with_value
 import moinobudget.composeapp.generated.resources.register_savings
 import moinobudget.composeapp.generated.resources.register_savings_details
 import moinobudget.composeapp.generated.resources.total
+import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 import presentation.component.AmountWithText
 import presentation.dashedBorder
@@ -128,8 +129,8 @@ fun SavingsScreen(
                                         Icon(type.icon,
                                             modifier = Modifier.size(32.dp),
                                             tint = MaterialTheme.colorScheme.primary,
-                                            contentDescription = stringResource(type.text))
-                                        Text(stringResource(type.text),
+                                            contentDescription = pluralStringResource(type.text, 2))
+                                        Text(pluralStringResource(type.text, 2),
                                             modifier = Modifier.padding(start = 16.dp),
                                             color = MaterialTheme.colorScheme.primary,
                                             fontWeight = FontWeight.SemiBold,

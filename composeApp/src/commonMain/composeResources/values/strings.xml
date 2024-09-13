@@ -135,10 +135,22 @@
     <string name="subtitle">Label</string>
 
     <!-- Savings Type -->
-    <string name="savings_type_account">Accounts</string>
-    <string name="savings_type_envelope">Envelope</string>
-    <string name="savings_type_savings_books">Savings books</string>
-    <string name="savings_type_investments">Investments</string>
+    <plurals name="savings_type_accounts">
+        <item quantity="one">Account</item>
+        <item quantity="other">Accounts</item>
+    </plurals>
+    <plurals name="savings_type_envelopes">
+        <item quantity="one">Enveloppe</item>
+        <item quantity="other">Envelopes</item>
+    </plurals>
+    <plurals name="savings_type_savings_books">
+        <item quantity="one">Saving book</item>
+        <item quantity="other">Saving books</item>
+    </plurals>
+    <plurals name="savings_type_investments">
+        <item quantity="one">Investment</item>
+        <item quantity="other">Investments</item>
+    </plurals>
 
     <!-- Savings Details -->
     <string name="close_savings_details">Close savings details</string>

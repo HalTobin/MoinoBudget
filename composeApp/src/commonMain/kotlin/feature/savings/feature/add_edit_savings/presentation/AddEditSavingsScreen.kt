@@ -69,6 +69,7 @@ import moinobudget.composeapp.generated.resources.new_savings
 import moinobudget.composeapp.generated.resources.save
 import moinobudget.composeapp.generated.resources.subtitle
 import moinobudget.composeapp.generated.resources.title
+import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 import presentation.component.IconSelector
 import presentation.data.SavingsType
@@ -204,7 +205,7 @@ fun AddEditSavingsScreen(
                         },
                         modifier = Modifier.weight(1f),
                     ) { type ->
-                        Text(stringResource(type.text),
+                        Text(pluralStringResource(type.text, 2),
                             modifier = Modifier.weight(1f),
                             textAlign = TextAlign.Center,
                             style = MaterialTheme.typography.titleMedium)

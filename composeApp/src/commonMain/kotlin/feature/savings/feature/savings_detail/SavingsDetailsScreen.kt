@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -54,6 +55,7 @@ import moinobudget.composeapp.generated.resources.current_goal
 import moinobudget.composeapp.generated.resources.edit
 import moinobudget.composeapp.generated.resources.operation_amount
 import moinobudget.composeapp.generated.resources.subtract
+import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 import presentation.component.AmountAnimation
 import presentation.component.AmountWithText
@@ -108,12 +110,21 @@ fun SavingsDetailsScreen(
                             )
                             Spacer(Modifier.height(32.dp))
                             Column(Modifier.padding(horizontal = 16.dp)) {
-                                Text(savings.title,
-                                    style = MaterialTheme.typography.titleLarge,
-                                    fontWeight = FontWeight.SemiBold)
-                                Text(savings.subtitle,
-                                    Modifier.padding(top = 8.dp),
-                                    style = MaterialTheme.typography.titleMedium)
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    savings.icon?.let { Icon(it.icon,
+                                        modifier = Modifier.size(40.dp),
+                                        contentDescription = null) }
+                                    Column(Modifier.padding(horizontal = 16.dp)) {
+                                        Text(savings.title,
+                                            style = MaterialTheme.typography.titleLarge,
+                                            fontWeight = FontWeight.SemiBold)
+                                        Text(savings.subtitle,
+                                            Modifier.padding(top = 4.dp),
+                                            style = MaterialTheme.typography.titleMedium)
+                                    }
+                                }
+                                Text(pluralStringResource(savings.type.text, 1),
+                                    Modifier.padding(horizontal = 16.dp))
                                 savings.goal?.let { goal ->
                                     val progress = savings.amount.toFloat() / goal
 
