@@ -61,6 +61,7 @@ import moinobudget.composeapp.generated.resources.register_savings
 import moinobudget.composeapp.generated.resources.register_savings_details
 import moinobudget.composeapp.generated.resources.total
 import org.jetbrains.compose.resources.stringResource
+import presentation.component.AmountWithText
 import presentation.dashedBorder
 import presentation.data.IncomeOrOutcome
 import presentation.data.SavingsType
@@ -72,44 +73,25 @@ import presentation.formatCurrency
 fun SavingsScreen(
     state: SavingsState,
     preferences: AppPreferences,
+    goToDetails: (Int) -> Unit,
     addEditSavings: (Int?, SavingsType) -> Unit,
     onEvent: (SavingsEvent) -> Unit,
 ) {
     val scope = rememberCoroutineScope()
 
-    val pagerState = rememberPagerState(initialPage = 1, pageCount = { SavingsType.entries.size+1 })
-
-    var addSavingsDialog by remember { mutableStateOf(false) }
-    var savingsForDialog by remember { mutableStateOf<SavingsUI?>(null) }
-
-    /*if (addSavingsDialog) AddEditSavingsDialog(
-        savings = savingsForDialog,
-        preferences = preferences,
-        saveSavings = { onEvent(SavingsEvent.UpsertSavings(it)) },
-        deleteSavings = { onEvent(SavingsEvent.DeleteSavings(it)) },
-        defaultSavings = SavingsType.entries.getOrElse(pagerState.currentPage-1) { SavingsType.SavingsBooks },
-        onDismiss = { addSavingsDialog = false; savingsForDialog = null }
-    )*/
+    val pagerState = rememberPagerState(initialPage = 0, pageCount = { SavingsType.entries.size+1 })
 
     Column {
-        Column(Modifier.padding(start = 24.dp, top = 16.dp)) {
-            Crossfade(modifier = Modifier.fillMaxWidth(),
-                targetState =
-                    (if (pagerState.currentPage == 0) state.savings
-                    else state.savings.filter { it.type.id == pagerState.currentPage-1 })
-                        .sumOf { it.amount }
-            ) { total ->
-                Text(formatCurrency(total.toFloat(), preferences.copy(decimalMode = true)),
-                    fontWeight = FontWeight.Bold,
-                    style = MaterialTheme.typography.headlineMedium,
-                    color = IncomeOrOutcome.Income.color)
-            }
-            Text(stringResource(Res.string.total),
-                fontWeight = FontWeight.SemiBold,
-                style = MaterialTheme.typography.titleMedium)
-        }
+        AmountWithText(
+            modifier = Modifier.padding(start = 24.dp, top = 16.dp),
+            preferences = preferences,
+            amount = (if (pagerState.currentPage == 0) state.savings
+            else state.savings.filter { it.type.id == pagerState.currentPage-1 })
+                .sumOf { it.amount },
+            text = stringResource(Res.string.total)
+        )
 
-        var selectedTabIndex by remember { mutableStateOf(1) }
+        var selectedTabIndex by remember { mutableStateOf(0) }
 
         LaunchedEffect(pagerState.currentPage) { selectedTabIndex = pagerState.currentPage }
 
@@ -130,9 +112,7 @@ fun SavingsScreen(
                             SavingsItem(modifier = Modifier.padding(horizontal = 16.dp),
                                 savings = savings,
                                 preferences = preferences,
-                                onClick = { addEditSavings(
-                                    savings.id,
-                                    SavingsType.entries.getOrElse(pagerState.currentPage-1) { SavingsType.SavingsBooks }) }
+                                onClick = { goToDetails(savings.id) }
                             )
                         } else {
                             SavingsType.entries.forEach { type ->
@@ -160,9 +140,7 @@ fun SavingsScreen(
                                     SavingsItem(modifier = Modifier.padding(horizontal = 16.dp),
                                         savings = savings,
                                         preferences = preferences,
-                                        onClick = { addEditSavings(
-                                            savings.id,
-                                            SavingsType.entries.getOrElse(pagerState.currentPage-1) { SavingsType.SavingsBooks }) }
+                                        onClick = { goToDetails(savings.id) }
                                     )
                                     if (index == savingsByType.lastIndex) Spacer(Modifier.height(16.dp))
                                 }

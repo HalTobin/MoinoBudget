@@ -129,6 +129,7 @@ fun HubScreen(
                                     savingsId = savingsId ?: -1,
                                     defaultSavingsTypeId = savingsType.id
                                 )) },
+                            goToDetails = { goToScreen(MoinoBudgetScreen.SavingsDetails(it)) },
                             onEvent = viewModel::onEvent,
                         )
                     }

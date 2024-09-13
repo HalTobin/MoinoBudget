@@ -18,6 +18,7 @@ import data.repository.SavingsRepositoryImpl
 import feature.expenses.add_edit_expense.presentation.AddEditExpenseViewModel
 import feature.expenses.expenses_list.presentation.DashboardViewModel
 import feature.savings.feature.add_edit_savings.presentation.AddEditSavingsViewModel
+import feature.savings.feature.savings_detail.SavingsDetailsViewModel
 import feature.savings.feature.savings_list.presentation.SavingsViewModel
 import feature.settings.SettingsViewModel
 import org.koin.core.module.Module
@@ -38,6 +39,7 @@ object ModuleVM {
         viewModelOf(::SettingsViewModel)
         viewModelOf(::SavingsViewModel)
         viewModelOf(::AddEditSavingsViewModel)
+        viewModelOf(::SavingsDetailsViewModel)
     }
 }
 

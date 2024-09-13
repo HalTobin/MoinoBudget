@@ -1,5 +1,12 @@
 package ui
 
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -20,6 +27,9 @@ import feature.hub.HubScreen
 import feature.savings.feature.add_edit_savings.presentation.AddEditSavingsEvent
 import feature.savings.feature.add_edit_savings.presentation.AddEditSavingsScreen
 import feature.savings.feature.add_edit_savings.presentation.AddEditSavingsViewModel
+import feature.savings.feature.savings_detail.SavingsDetailsEvent
+import feature.savings.feature.savings_detail.SavingsDetailsScreen
+import feature.savings.feature.savings_detail.SavingsDetailsViewModel
 import feature.settings.SettingsScreen
 import feature.settings.SettingsViewModel
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -41,8 +51,9 @@ fun MainScreen(
     ) {
         NavHost(
             navController = navController,
-            startDestination = MoinoBudgetScreen.Main,
+            startDestination = MoinoBudgetScreen.Main
         ) {
+            /** Main Screens **/
             composable<MoinoBudgetScreen.Main> {
                 HubScreen(
                     preferences = preferences,
@@ -50,14 +61,22 @@ fun MainScreen(
                     setStyle = { setStyle(it) }
                 )
             }
-            composable<MoinoBudgetScreen.Settings> {
+            composable<MoinoBudgetScreen.Settings>(
+                enterTransition = { slideInHorizontally(initialOffsetX = { it }) },
+                exitTransition = { slideOutHorizontally(targetOffsetX = { it }) }
+            ) {
                 val viewModel = koinViewModel<SettingsViewModel>()
                 SettingsScreen(
                     goBack = { navController.popBackStack() },
                     preferences = preferences,
                     onEvent = viewModel::onEvent)
             }
-            composable<MoinoBudgetScreen.AddEditExpense>{
+
+            /** Regular Expenses **/
+            composable<MoinoBudgetScreen.AddEditExpense>(
+                enterTransition = { slideInVertically(initialOffsetY = { it }) },
+                exitTransition = { slideOutVertically(targetOffsetY = { it }) }
+            ) {
                 val args = it.toRoute<MoinoBudgetScreen.AddEditExpense>()
                 val expenseId = args.expenseId
                 val labels = args.labelIds
@@ -80,7 +99,12 @@ fun MainScreen(
                     goBack = { navController.popBackStack() }
                 )
             }
-            composable<MoinoBudgetScreen.AddEditSavings> {
+
+            /** Savings **/
+            composable<MoinoBudgetScreen.AddEditSavings>(
+                enterTransition = { slideInVertically(initialOffsetY = { it }) },
+                exitTransition = { slideOutVertically(targetOffsetY = { it }) }
+            ) {
                 val args = it.toRoute<MoinoBudgetScreen.AddEditSavings>()
                 val savingsId = args.savingsId
                 val savingsType = SavingsType.findById(args.defaultSavingsTypeId)
@@ -97,6 +121,30 @@ fun MainScreen(
                     preferences = preferences,
                     onEvent = viewModel::onEvent,
                     defaultSavings = savingsType,
+                    goBack = { navController.popBackStack() }
+                )
+            }
+            composable<MoinoBudgetScreen.SavingsDetails>(
+                enterTransition = { slideInVertically(initialOffsetY = { it }) },
+                exitTransition = { slideOutVertically(targetOffsetY = { it }) }
+            ) {
+                val args = it.toRoute<MoinoBudgetScreen.SavingsDetails>()
+                val savingsId = args.savingsId
+
+                val viewModel = koinViewModel<SavingsDetailsViewModel>()
+                val state by viewModel.state.collectAsStateWithLifecycle()
+
+                LaunchedEffect(true) {
+                    viewModel.onEvent(SavingsDetailsEvent.Init(savingsId))
+                }
+
+                SavingsDetailsScreen(
+                    state = state,
+                    preferences = preferences,
+                    onEvent = viewModel::onEvent,
+                    goToEdit = { id, type -> navController.navigate(
+                        MoinoBudgetScreen.AddEditSavings(savingsId = id, defaultSavingsTypeId = type.id)
+                    ) },
                     goBack = { navController.popBackStack() }
                 )
             }

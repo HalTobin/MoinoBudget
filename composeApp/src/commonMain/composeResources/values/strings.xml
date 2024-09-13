@@ -85,7 +85,7 @@
     <string name="cant_delete">Can't delete this budget, you should have at least one.</string>
 
     <!-- AddEdit Operation -->
-    <string name="new_operation">Register an operation</string>
+    <string name="new_operation">Register a regular operation</string>
     <string name="create_operation">New operation</string>
     <string name="edit_operation">Edit operation</string>
     <string name="delete_operation">Delete operation</string>
@@ -105,6 +105,9 @@
     <string name="close_dialog_description">Close dialog</string>
     <string name="dismiss_message">Dismiss message</string>
     <string name="total">Total</string>
+    <string name="edit">Edit</string>
+    <string name="add">Add</string>
+    <string name="subtract">Subtract</string>
 
     <!-- Months -->
     <string name="january">January</string>
@@ -136,4 +139,10 @@
     <string name="savings_type_envelope">Envelope</string>
     <string name="savings_type_savings_books">Savings books</string>
     <string name="savings_type_investments">Investments</string>
+
+    <!-- Savings Details -->
+    <string name="close_savings_details">Close savings details</string>
+    <string name="current_balance">Current balance</string>
+    <string name="current_goal">Current goal</string>
+    <string name="operation_amount">Operation's amount</string>
 </resources>

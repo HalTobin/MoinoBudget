@@ -131,7 +131,7 @@ fun AddEditExpenseScreen(
                 var titleError by remember { mutableStateOf(false) }
                 var amountError by remember { mutableStateOf(false) }
                 Row(Modifier.padding(horizontal = 16.dp)) {
-                    TextField(modifier = Modifier.shake(deleteMode).weight(2f).clip(RoundedCornerShape(16.dp)),
+                    TextField(modifier = Modifier.shake(deleteMode).weight(3f).clip(RoundedCornerShape(16.dp)),
                         isError = titleError,
                         value = state.expenseTitle,
                         onValueChange = {
@@ -148,9 +148,11 @@ fun AddEditExpenseScreen(
                     Spacer(Modifier.width(16.dp))
 
                     // Element - Amount
-                    TextField(modifier = Modifier.shake(deleteMode).weight(1f).clip(RoundedCornerShape(16.dp)),
+                    TextField(modifier = Modifier.shake(deleteMode).weight(2f).clip(RoundedCornerShape(16.dp)),
                         isError = amountError,
                         value = state.expenseAmount,
+                        trailingIcon = { Text(preferences.currency.sign,
+                            fontWeight = FontWeight.Bold) },
                         onValueChange = {
                             if (amountError) amountError = false
                             onEvent(AddEditExpenseEvent.UpdateAmount(it))
