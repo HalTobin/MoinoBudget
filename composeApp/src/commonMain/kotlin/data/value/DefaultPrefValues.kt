@@ -2,10 +2,13 @@ package data.value
 
 import androidx.compose.ui.graphics.Color
 import moinobudget.composeapp.generated.resources.Res
+import moinobudget.composeapp.generated.resources.flag_de
 import moinobudget.composeapp.generated.resources.flag_en
 import moinobudget.composeapp.generated.resources.flag_es
 import moinobudget.composeapp.generated.resources.flag_fr
+import moinobudget.composeapp.generated.resources.flag_it
 import moinobudget.composeapp.generated.resources.flag_ru
+import moinobudget.composeapp.generated.resources.flag_ua
 import moinobudget.composeapp.generated.resources.theme_dark
 import moinobudget.composeapp.generated.resources.theme_dark_oled
 import moinobudget.composeapp.generated.resources.theme_light
@@ -32,8 +35,11 @@ object PrefDefault {
     // Values for languages
     const val LANGUAGE_EN = "en"
     const val LANGUAGE_FR = "fr"
-    const val LANGUAGE_RU = "ru"
     const val LANGUAGE_ES = "es"
+    const val LANGUAGE_IT = "eit"
+    const val LANGUAGE_DE = "de"
+    const val LANGUAGE_RU = "ru"
+    const val LANGUAGE_UA = "ua"
     const val LANGUAGE = LANGUAGE_EN
 }
 
@@ -41,19 +47,16 @@ enum class Theme(val color: Color, val key: String, val title: StringResource, v
     Dark(color = Color.DarkGray, key = PrefDefault.THEME_DARK, title = Res.string.theme_dark, isDark = true),
     DarkOled(color = Color.Black, key = PrefDefault.THEME_DARK_OLED, title = Res.string.theme_dark_oled, isDark = true),
     Light(color = Color.White, key = PrefDefault.THEME_LIGHT, title = Res.string.theme_light, isDark = false);
-    companion object {
-        val list = listOf(Light, Dark, DarkOled)
-    }
 }
 
 enum class Language(val key: String, val title: String, val flag: DrawableResource) {
     English(key = PrefDefault.LANGUAGE_EN, title = "English", flag = Res.drawable.flag_en),
     French(key = PrefDefault.LANGUAGE_FR, title = "Français", flag = Res.drawable.flag_fr),
     Spanish(key = PrefDefault.LANGUAGE_ES, title = "Español", flag = Res.drawable.flag_es),
-    Russian(key = PrefDefault.LANGUAGE_RU, title = "Русский", flag = Res.drawable.flag_ru);
-    companion object {
-        val list = listOf(English, French, Spanish, Russian)
-    }
+    Italian(key = PrefDefault.LANGUAGE_IT, title = "Italiano", flag = Res.drawable.flag_it),
+    German(key = PrefDefault.LANGUAGE_DE, title = "Deutsch", flag = Res.drawable.flag_de),
+    Russian(key = PrefDefault.LANGUAGE_RU, title = "Русский", flag = Res.drawable.flag_ru),
+    Ukrainian(key = PrefDefault.LANGUAGE_UA, title = "Українська", flag = Res.drawable.flag_ua),
 }
 
 enum class Currency(val key: String, val sign: String, val position: CurrencyPosition = CurrencyPosition.End, val decimalMode: Boolean) {
@@ -63,9 +66,6 @@ enum class Currency(val key: String, val sign: String, val position: CurrencyPos
     YenYuan(key = "yen / yuan", sign = "¥", decimalMode = true),
     Pound(key = "pound", sign = "£", decimalMode = true),
     Lira(key = "lira", sign = "₺", decimalMode = true);
-    companion object {
-        val list = listOf(Euro, Dollar, Ruble, YenYuan, Pound, Lira)
-    }
 }
 
 enum class CurrencyPosition { Start, End }

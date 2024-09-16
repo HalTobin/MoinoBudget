@@ -1,10 +1,6 @@
 package ui
 
 import androidx.compose.animation.EnterTransition
-import androidx.compose.animation.core.Transition
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutHorizontally
@@ -22,9 +18,9 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import data.repository.AppPreferences
-import feature.expenses.add_edit_expense.presentation.AddEditExpenseEvent
-import feature.expenses.add_edit_expense.presentation.AddEditExpenseScreen
-import feature.expenses.add_edit_expense.presentation.AddEditExpenseViewModel
+import feature.budgets.feature.add_edit_budgets.presentation.AddEditExpenseEvent
+import feature.budgets.feature.add_edit_budgets.presentation.AddEditExpenseScreen
+import feature.budgets.feature.add_edit_budgets.presentation.AddEditExpenseViewModel
 import feature.hub.HubScreen
 import feature.savings.feature.add_edit_savings.presentation.AddEditSavingsEvent
 import feature.savings.feature.add_edit_savings.presentation.AddEditSavingsScreen
@@ -36,8 +32,8 @@ import feature.settings.SettingsScreen
 import feature.settings.SettingsViewModel
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
-import presentation.data.BudgetStyle
-import presentation.data.SavingsType
+import feature.budgets.data.BudgetStyle
+import feature.savings.data.SavingsType
 import ui.theme.MoinoBudgetTheme
 
 @Composable

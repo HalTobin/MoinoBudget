@@ -1,20 +1,20 @@
 package data.mapper
 
 import data.db.relation.ExpenseWithLabels
-import data.db.table.Expense
-import feature.expenses.add_edit_expense.data.AddEditExpense
+import data.db.table.BudgetOperation
+import feature.budgets.feature.add_edit_budgets.data.AddEditExpense
 import kotlinx.datetime.Clock
 import kotlinx.datetime.daysUntil
 import presentation.data.ExpenseFrequency
 import presentation.data.ExpenseIcon
-import presentation.data.ExpenseUI
+import feature.budgets.data.BudgetOperationUI
 import presentation.data.IncomeOrOutcome
 import presentation.data.MonthOption
 import util.calculateNextPayment
 import util.toLocalDate
 
-fun AddEditExpense.toExpenseEntity(): Expense =
-    Expense(
+fun AddEditExpense.toExpenseEntity(): BudgetOperation =
+    BudgetOperation(
         id = this.id ?: 0,
         title = this.title,
         amount = this.amount,
@@ -25,23 +25,23 @@ fun AddEditExpense.toExpenseEntity(): Expense =
         day = this.day,
     )
 
-fun ExpenseWithLabels.toExpenseUI(): ExpenseUI {
-    val frequency = ExpenseFrequency.findById(this.expense.frequency)
+fun ExpenseWithLabels.toExpenseUI(): BudgetOperationUI {
+    val frequency = ExpenseFrequency.findById(this.budgetOperation.frequency)
     val currentDate = Clock.System.now().toEpochMilliseconds().toLocalDate()
-    val nextPayment = calculateNextPayment(this.expense)
+    val nextPayment = calculateNextPayment(this.budgetOperation)
     val dueIn = currentDate.daysUntil(nextPayment)
-    return ExpenseUI(
-        id = this.expense.id,
-        amount = this.expense.amount,
-        type = IncomeOrOutcome.getByDbId(this.expense.isIncome),
-        title = this.expense.title,
-        icon = ExpenseIcon.findById(this.expense.iconId),
+    return BudgetOperationUI(
+        id = this.budgetOperation.id,
+        amount = this.budgetOperation.amount,
+        type = IncomeOrOutcome.getByDbId(this.budgetOperation.isIncome),
+        title = this.budgetOperation.title,
+        icon = ExpenseIcon.findById(this.budgetOperation.iconId),
         frequency = frequency,
         payed = false,
         dueIn = dueIn,
         nextPayment = nextPayment,
-        day = this.expense.day,
-        monthOption = MonthOption.findByOffsetAndFrequency(frequency, this.expense.monthOffset),
+        day = this.budgetOperation.day,
+        monthOption = MonthOption.findByOffsetAndFrequency(frequency, this.budgetOperation.monthOffset),
         labels = this.labels.map { it.toLabelUI() }
     )
 }

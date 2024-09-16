@@ -6,7 +6,7 @@ import data.mapper.toSavingsUI
 import feature.savings.feature.add_edit_savings.data.AddEditSavings
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import presentation.data.SavingsUI
+import feature.savings.data.SavingsUI
 
 class SavingsRepositoryImpl(
     private val savingsDao: SavingsDao

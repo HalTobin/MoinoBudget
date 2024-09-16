@@ -19,7 +19,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
-import feature.expenses.add_edit_expense.presentation.AddEditExpenseEvent
 import presentation.data.ExpenseIcon
 import presentation.shake
 

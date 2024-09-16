@@ -6,7 +6,7 @@ import data.repository.AppPreferences
 import data.repository.BudgetRepository
 import data.repository.LabelRepository
 import data.repository.PreferenceRepository
-import feature.expenses.expenses_list.presentation.data.AddEditBudget
+import feature.budgets.feature.budgets_list.presentation.data.AddEditBudget
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.Job
@@ -17,8 +17,8 @@ import kotlinx.coroutines.launch
 import moinobudget.composeapp.generated.resources.Res
 import moinobudget.composeapp.generated.resources.default_budget
 import org.jetbrains.compose.resources.getString
-import presentation.data.BudgetStyle
-import presentation.data.LabelUI
+import feature.budgets.data.BudgetStyle
+import feature.budgets.data.LabelUI
 
 class MainViewModel(
     preferenceRepository: PreferenceRepository,

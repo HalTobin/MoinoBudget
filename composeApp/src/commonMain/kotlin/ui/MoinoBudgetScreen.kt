@@ -10,15 +10,8 @@ sealed class MoinoBudgetScreen(val route: String) {
     @Serializable
     data object Settings: MoinoBudgetScreen("setting")
 
-    /** Related To Budgets **/
-    @Serializable
-    data class AddEditExpense(
-        val labelIds: List<Int>,
-        val expenseId: Int = -1
-    ): MoinoBudgetScreen("add_edit_expense")
-    @Serializable
-
     /** Related To Savings **/
+    @Serializable
     data class AddEditSavings(
         val defaultSavingsTypeId: Int,
         val savingsId: Int = -1
@@ -27,4 +20,21 @@ sealed class MoinoBudgetScreen(val route: String) {
     data class SavingsDetails(
         val savingsId: Int = -1
     ): MoinoBudgetScreen("savings_details")
+
+    /** Related To Budgets **/
+    @Serializable
+    data class AddEditExpense(
+        val labelIds: List<Int>,
+        val expenseId: Int = -1
+    ): MoinoBudgetScreen("add_edit_expense")
+
+    /** Related To Expenses **/
+    @Serializable
+    data class EnvelopeDetails(
+        val envelopeId: Int
+    ): MoinoBudgetScreen("envelope_details")
+    @Serializable
+    data class AddEditEnvelope(
+        val envelopeId: Int = -1
+    ): MoinoBudgetScreen("add_edit_envelope")
 }

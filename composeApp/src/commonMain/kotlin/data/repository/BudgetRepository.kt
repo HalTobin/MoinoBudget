@@ -2,19 +2,19 @@ package data.repository
 
 import data.db.dao.BudgetDao
 import data.db.dao.BudgetLabelDao
-import data.db.dao.ExpenseLabelDao
+import data.db.dao.BudgetOperationLabelDao
 import data.db.relation.BudgetWithLabels
 import data.db.relation.ExpenseWithLabels
 import data.db.table.BudgetLabelCrossRef
 import data.mapper.toBudgetEntity
 import data.mapper.toExpenseUI
 import data.mapper.toLabelUI
-import feature.expenses.expenses_list.data.MonthYearPair
-import feature.expenses.expenses_list.presentation.data.AddEditBudget
+import feature.budgets.feature.budgets_list.data.MonthYearPair
+import feature.budgets.feature.budgets_list.presentation.data.AddEditBudget
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
-import presentation.data.BudgetStyle
-import presentation.data.BudgetUI
+import feature.budgets.data.BudgetStyle
+import feature.budgets.data.BudgetUI
 import presentation.data.ExpenseFrequency
 import presentation.data.IncomeOrOutcome
 import kotlin.coroutines.cancellation.CancellationException
@@ -22,7 +22,7 @@ import kotlin.coroutines.cancellation.CancellationException
 class BudgetRepositoryImpl(
     private val budgetDao: BudgetDao,
     private val budgetLabelDao: BudgetLabelDao,
-    private val expenseLabelDao: ExpenseLabelDao,
+    private val budgetOperationLabelDao: BudgetOperationLabelDao,
 ): BudgetRepository {
 
     override suspend fun upsertBudget(budget: AddEditBudget): Int {
@@ -51,12 +51,12 @@ class BudgetRepositoryImpl(
     }
 
     override suspend fun getBudgets(): List<BudgetUI> =
-        budgetDao.getAllWithLabels().mapToBudgetUI(expenseLabelDao.getAllExpensesWithLabels())
+        budgetDao.getAllWithLabels().mapToBudgetUI(budgetOperationLabelDao.getAllExpensesWithLabels())
 
     override suspend fun getBudgetsFlow(): Flow<List<BudgetUI>> =
         combine(
             budgetDao.getAllWithLabelsFlow(), // Flow from budgetDao
-            expenseLabelDao.getAllExpensesWithLabelsFlow() // Flow from expenseLabelDao
+            budgetOperationLabelDao.getAllExpensesWithLabelsFlow() // Flow from expenseLabelDao
         ) { budgetsWithLabels, expensesWithLabels ->
             budgetsWithLabels.mapToBudgetUI(expensesWithLabels)
         }
@@ -65,7 +65,7 @@ class BudgetRepositoryImpl(
         val expenses = expensesWithLabels
             //expenseLabelDao.getExpensesWithLabelsLabelIds(budget.labels.map { it.id })
             .filter { it.labels.any { label -> budget.labels.any { budgetLabel -> budgetLabel.id == label.id } } }
-            .distinctBy { it.expense.id }
+            .distinctBy { it.budgetOperation.id }
             //.map { expenseLabelDao.getExpenseWithLabels(it.expense.id) }
             .map { it.toExpenseUI() }
 

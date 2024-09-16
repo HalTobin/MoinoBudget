@@ -3,7 +3,7 @@ package data.mapper
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import data.db.table.Label
-import presentation.data.LabelUI
+import feature.budgets.data.LabelUI
 
 fun Label.toLabelUI(): LabelUI =
     LabelUI(

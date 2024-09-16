@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Edit
@@ -42,6 +43,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import data.repository.AppPreferences
@@ -60,7 +62,7 @@ import org.jetbrains.compose.resources.stringResource
 import presentation.component.AmountAnimation
 import presentation.component.AmountWithText
 import presentation.component.ShimmerAmountWithText
-import presentation.data.SavingsType
+import feature.savings.data.SavingsType
 import presentation.formatCurrency
 import kotlin.math.roundToInt
 
@@ -193,7 +195,8 @@ fun SavingsDetailsScreen(
                         trailingIcon = { Text(preferences.currency.sign,
                             fontWeight = FontWeight.Bold) },
                         isError = isAmountError,
-                        onValueChange = {
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                            onValueChange = {
                             if (isAmountError) isAmountError = false
                             onEvent(SavingsDetailsEvent.UpdateAmountField(it))
                         }

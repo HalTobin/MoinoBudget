@@ -19,6 +19,7 @@ import androidx.compose.material.icons.filled.MusicNote
 import androidx.compose.material.icons.filled.Payments
 import androidx.compose.material.icons.filled.Phone
 import androidx.compose.material.icons.filled.Receipt
+import androidx.compose.material.icons.filled.Restaurant
 import androidx.compose.material.icons.filled.Savings
 import androidx.compose.material.icons.filled.School
 import androidx.compose.material.icons.filled.SmokingRooms
@@ -61,13 +62,11 @@ enum class ExpenseIcon(val id: Int, val keywords: String, val icon: ImageVector)
     Taxes(26, "taxes", Icons.Default.Receipt),
     Crypto(27, "crypto, crypto currency, bitcoin", Icons.Default.CurrencyBitcoin),
     Apartment(28, "housing, apartment", Icons.Default.Apartment),
-    Investment(29, "investment", Icons.Default.SsidChart);
+    Investment(29, "investment", Icons.Default.SsidChart),
+    Restaurant(30, "restaurant", Icons.Default.Restaurant);
 
     companion object {
         val list = ExpenseIcon.entries.map { it }.sortedBy { it.id }
-        /*listOf(DefaultIncome, DefaultOutcome,
-            Transport, Housing, Grocery, Phone, Help, Savings, Bank, Incomes,
-            Store, Party, Film, Internet, Class, VideoGame, Health, Electricity, Cloud)*/
 
         fun findById(id: Int): ExpenseIcon = list.find { it.id == id } ?: Transport
     }

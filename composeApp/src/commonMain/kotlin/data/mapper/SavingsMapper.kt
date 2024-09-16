@@ -6,8 +6,8 @@ import data.db.table.Savings
 import feature.savings.feature.add_edit_savings.data.AddEditSavings
 import kotlinx.datetime.Clock
 import presentation.data.ExpenseIcon
-import presentation.data.SavingsType
-import presentation.data.SavingsUI
+import feature.savings.data.SavingsType
+import feature.savings.data.SavingsUI
 import util.toLocalDate
 
 fun AddEditSavings.toSavingsEntity(): Savings {

@@ -1,8 +1,8 @@
 package data.db
 
 import androidx.room.RoomDatabase
-import data.db.dao.ExpenseDao
-import data.db.dao.ExpenseLabelDao
+import data.db.dao.BudgetOperationDao
+import data.db.dao.BudgetOperationLabelDao
 import data.db.dao.LabelDao
 import data.db.table.Label
 import kotlinx.coroutines.CoroutineDispatcher
@@ -10,16 +10,15 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.runBlocking
 import kotlin.test.AfterTest
-import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class DaoTests {
 
     private lateinit var db: ExpenseDatabase
-    private lateinit var expenseDao: ExpenseDao
+    private lateinit var budgetOperationDao: BudgetOperationDao
     private lateinit var labelDao: LabelDao
-    private lateinit var expenseLabelDao: ExpenseLabelDao
+    private lateinit var budgetOperationLabelDao: BudgetOperationLabelDao
 
     /*@BeforeTest
     fun setup() {

@@ -14,7 +14,6 @@ import data.value.Theme
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
-import presentation.data.BudgetStyle
 
 class PreferenceRepositoryImpl(
     private val prefs: DataStore<Preferences>
@@ -70,30 +69,14 @@ val DataStore<Preferences>.appPreferences get() = this.data.map { dataStore ->
     )
 }
 
-fun String.toCurrency(): Currency = when (this) {
-    Currency.Euro.key -> Currency.Euro
-    Currency.Dollar.key -> Currency.Dollar
-    Currency.Ruble.key -> Currency.Ruble
-    Currency.YenYuan.key -> Currency.YenYuan
-    Currency.Pound.key -> Currency.Pound
-    Currency.Lira.key -> Currency.Lira
-    else -> Currency.Euro
-}
+fun String.toCurrency(): Currency =
+    Currency.entries.find { it.key == this } ?: Currency.Euro
 
-fun String.toTheme(): Theme = when (this) {
-    Theme.Dark.key -> Theme.Dark
-    Theme.Light.key -> Theme.Light
-    Theme.DarkOled.key -> Theme.DarkOled
-    else -> Theme.Dark
-}
+fun String.toTheme(): Theme =
+    Theme.entries.find { it.key == this } ?: Theme.Dark
 
-fun String.toLanguage(): Language = when (this) {
-    Language.English.key -> Language.English
-    Language.French.key -> Language.French
-    Language.Spanish.key -> Language.Spanish
-    Language.Russian.key -> Language.Russian
-    else -> Language.English
-}
+fun String.toLanguage(): Language =
+    Language.entries.find { it.key == this } ?: Language.English
 
 fun Preferences.getBooleanPreference(key: String, default: Boolean): Boolean {
     val dataStoreKey = booleanPreferencesKey(key)

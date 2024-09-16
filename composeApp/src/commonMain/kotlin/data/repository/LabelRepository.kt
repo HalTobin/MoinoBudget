@@ -5,7 +5,7 @@ import data.mapper.toLabelEntity
 import data.mapper.toLabelUI
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import presentation.data.LabelUI
+import feature.budgets.data.LabelUI
 
 class LabelRepositoryImpl(
     private val labelDao: LabelDao

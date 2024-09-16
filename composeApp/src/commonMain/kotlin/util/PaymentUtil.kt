@@ -1,16 +1,16 @@
 package util
 
-import data.db.table.Expense
+import data.db.table.BudgetOperation
 import kotlinx.datetime.*
 import presentation.data.ExpenseFrequency
 
-fun calculateNextPayment(expense: Expense): LocalDate {
+fun calculateNextPayment(budgetOperation: BudgetOperation): LocalDate {
     val currentDate = Clock.System.now().toEpochMilliseconds().toLocalDate()
 
-    return when (expense.frequency) {
+    return when (budgetOperation.frequency) {
         ExpenseFrequency.Monthly.id -> { // Monthly
             // Determine the next occurrence this month or next month
-            val thisMonthPayment = safeLocalDate(currentDate.year, currentDate.monthNumber, expense.day)
+            val thisMonthPayment = safeLocalDate(currentDate.year, currentDate.monthNumber, budgetOperation.day)
             if (thisMonthPayment >= currentDate) {
                 thisMonthPayment
             } else {
@@ -18,17 +18,17 @@ fun calculateNextPayment(expense: Expense): LocalDate {
             }
         }
         ExpenseFrequency.Quarterly.id -> { // Quarterly
-            val quarterMonths = listOf(1, 4, 7, 10).map { it + expense.monthOffset!! }
-            return calculateNextPaymentForMultipleMonths(quarterMonths, expense, currentDate)
+            val quarterMonths = listOf(1, 4, 7, 10).map { it + budgetOperation.monthOffset!! }
+            return calculateNextPaymentForMultipleMonths(quarterMonths, budgetOperation, currentDate)
         }
         ExpenseFrequency.Biannually.id -> { // Biannual
-            val biannualMonths = listOf(1, 7).map { it + expense.monthOffset!! }
-            return calculateNextPaymentForMultipleMonths(biannualMonths, expense, currentDate)
+            val biannualMonths = listOf(1, 7).map { it + budgetOperation.monthOffset!! }
+            return calculateNextPaymentForMultipleMonths(biannualMonths, budgetOperation, currentDate)
         }
         ExpenseFrequency.Annually.id -> { // Annually
             // Determine the month from the monthOffset
-            val targetMonth = expense.monthOffset?.plus(1) ?: 1 // Default to January if no monthOffset is provided
-            var annualPayment = safeLocalDate(currentDate.year, targetMonth, expense.day)
+            val targetMonth = budgetOperation.monthOffset?.plus(1) ?: 1 // Default to January if no monthOffset is provided
+            var annualPayment = safeLocalDate(currentDate.year, targetMonth, budgetOperation.day)
 
             // If this year's payment has passed, move to the next year
             if (annualPayment < currentDate) {
@@ -38,16 +38,16 @@ fun calculateNextPayment(expense: Expense): LocalDate {
             annualPayment
         }
 
-        else -> throw IllegalArgumentException("Unsupported frequency: ${expense.frequency}")
+        else -> throw IllegalArgumentException("Unsupported frequency: ${budgetOperation.frequency}")
     }
 }
 
-fun calculateNextPaymentForMultipleMonths(targetMonths: List<Int>, expense: Expense, currentDate: LocalDate): LocalDate {
+fun calculateNextPaymentForMultipleMonths(targetMonths: List<Int>, budgetOperation: BudgetOperation, currentDate: LocalDate): LocalDate {
     val year = currentDate.year
     for (month in targetMonths) {
         val adjustedMonth = (month - 1) % 12 + 1 // Adjust month to valid range (1-12)
         val adjustedYear = year + (month - 1) / 12 // Adjust year if month exceeds December
-        val validDay = getValidDayOfMonth(adjustedYear, adjustedMonth, expense.day)
+        val validDay = getValidDayOfMonth(adjustedYear, adjustedMonth, budgetOperation.day)
         val paymentDate = LocalDate(adjustedYear, adjustedMonth, validDay)
 
         if (paymentDate >= currentDate) {
@@ -59,7 +59,7 @@ fun calculateNextPaymentForMultipleMonths(targetMonths: List<Int>, expense: Expe
     val firstMonthNextYear = targetMonths.first()
     val adjustedMonth = (firstMonthNextYear - 1) % 12 + 1
     val adjustedYear = year + 1 + (firstMonthNextYear - 1) / 12
-    val validDay = getValidDayOfMonth(adjustedYear, adjustedMonth, expense.day)
+    val validDay = getValidDayOfMonth(adjustedYear, adjustedMonth, budgetOperation.day)
     return LocalDate(adjustedYear, adjustedMonth, validDay)
 }
 

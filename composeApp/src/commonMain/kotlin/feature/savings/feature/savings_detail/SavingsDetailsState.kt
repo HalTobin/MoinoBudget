@@ -1,6 +1,6 @@
 package feature.savings.feature.savings_detail
 
-import presentation.data.SavingsUI
+import feature.savings.data.SavingsUI
 
 data class SavingsDetailsState(
     val savings: SavingsUI? = null,

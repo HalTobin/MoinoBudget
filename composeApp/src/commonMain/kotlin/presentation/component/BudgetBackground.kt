@@ -8,11 +8,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.layout.ContentScale
 import org.jetbrains.compose.resources.painterResource
-import presentation.data.Background
+import feature.budgets.data.Background
 
 @Composable
 fun BudgetBackground(modifier: Modifier = Modifier,
-                    background: Background) = when (background) {
+                    background: Background
+) = when (background) {
     is Background.Gradient -> Box(modifier = modifier.background(Brush.linearGradient(background.colors)))
     is Background.Image -> Image(
         modifier = modifier,

@@ -2,8 +2,8 @@ package feature.savings.feature.add_edit_savings.presentation
 
 import androidx.compose.ui.graphics.Color
 import feature.savings.feature.add_edit_savings.data.AddEditSavings
-import presentation.data.SavingsType
-import presentation.data.SavingsUI
+import feature.savings.data.SavingsType
+import feature.savings.data.SavingsUI
 
 data class AddEditSavingsState(
     val savingsId: Int? = null,

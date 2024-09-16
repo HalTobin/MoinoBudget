@@ -38,8 +38,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import data.repository.AppPreferences
-import feature.expenses.expenses_list.presentation.DashboardScreen
-import feature.expenses.expenses_list.presentation.DashboardViewModel
+import feature.budgets.feature.budgets_list.presentation.DashboardScreen
+import feature.budgets.feature.budgets_list.presentation.DashboardViewModel
 import feature.savings.feature.savings_list.presentation.SavingsScreen
 import feature.savings.feature.savings_list.presentation.SavingsViewModel
 import moinobudget.composeapp.generated.resources.Res
@@ -50,7 +50,9 @@ import moinobudget.composeapp.generated.resources.savings_tab
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
-import presentation.data.BudgetStyle
+import feature.budgets.data.BudgetStyle
+import feature.expenses.feature.envelope_list.presentation.EnvelopeScreen
+import feature.expenses.feature.envelope_list.presentation.EnvelopeViewModel
 import ui.MoinoBudgetScreen
 
 @Composable
@@ -130,7 +132,6 @@ fun HubScreen(
                                     defaultSavingsTypeId = savingsType.id
                                 )) },
                             goToDetails = { goToScreen(MoinoBudgetScreen.SavingsDetails(it)) },
-                            onEvent = viewModel::onEvent,
                         )
                     }
                     composable(HubScreenTab.Budget.route) {
@@ -145,10 +146,12 @@ fun HubScreen(
                             goTo = { goToScreen(it) })
                     }
                     composable(HubScreenTab.Expenses.route) {
-                        Box(Modifier.fillMaxSize()) {
-                            Text("Expenses screen coming soon...",
-                                modifier = Modifier.align(Alignment.Center))
-                        }
+                        val viewModel = koinViewModel<EnvelopeViewModel>()
+                        val state by viewModel.state.collectAsStateWithLifecycle()
+                        EnvelopeScreen(
+                            state = state,
+                            preferences = preferences
+                        )
                     }
                 }
             }

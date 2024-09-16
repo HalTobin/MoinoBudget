@@ -60,7 +60,7 @@ fun SettingsScreen(
         ListEntry(title = stringResource(Res.string.currency),
             currentKey = preferences.currency.key,
             currentText = preferences.currency.sign,
-            items = Currency.list.map { Triple(
+            items = Currency.entries.map { Triple(
                 it.key,
                 it.key.uppercase()
             ) {
@@ -78,7 +78,7 @@ fun SettingsScreen(
         ListEntry(title = stringResource(Res.string.theme),
             currentKey = preferences.theme.key,
             currentText = stringResource(preferences.theme.title),
-            items = Theme.list.map { Triple(
+            items = Theme.entries.map { Triple(
                 it.key,
                 stringResource(it.title)
             ) {
@@ -94,7 +94,7 @@ fun SettingsScreen(
         ListEntry(title = stringResource(Res.string.language),
             currentKey = preferences.language.key,
             currentText = preferences.language.title,
-            items = Language.list.map { Triple(
+            items = Language.entries.map { Triple(
                 it.key,
                 it.title) {
                 Image(modifier = Modifier

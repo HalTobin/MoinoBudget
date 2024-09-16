@@ -1,51 +1,51 @@
 package data.repository
 
-import data.db.dao.ExpenseDao
-import data.db.dao.ExpenseLabelDao
-import data.db.table.ExpenseLabelCrossRef
+import data.db.dao.BudgetOperationDao
+import data.db.dao.BudgetOperationLabelDao
+import data.db.table.BudgetOperationLabelCrossRef
 import data.mapper.toExpenseEntity
 import data.mapper.toExpenseUI
-import feature.expenses.add_edit_expense.data.AddEditExpense
+import feature.budgets.feature.add_edit_budgets.data.AddEditExpense
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import presentation.data.ExpenseUI
+import feature.budgets.data.BudgetOperationUI
 
 class ExpenseRepositoryImpl(
-    private val expenseDao: ExpenseDao,
-    private val expenseLabelDao: ExpenseLabelDao
+    private val budgetOperationDao: BudgetOperationDao,
+    private val budgetOperationLabelDao: BudgetOperationLabelDao
 ): ExpenseRepository {
 
-    override suspend fun getExpense(id: Int): ExpenseUI =
-        expenseLabelDao.getExpenseWithLabels(id).toExpenseUI()
+    override suspend fun getExpense(id: Int): BudgetOperationUI =
+        budgetOperationLabelDao.getExpenseWithLabels(id).toExpenseUI()
 
-    override suspend fun getExpensesFlow(): Flow<List<ExpenseUI>> =
-        expenseLabelDao.getAllExpensesWithLabelsFlow().map { it.map { expenseWithLabel -> expenseWithLabel.toExpenseUI() } }
+    override suspend fun getExpensesFlow(): Flow<List<BudgetOperationUI>> =
+        budgetOperationLabelDao.getAllExpensesWithLabelsFlow().map { it.map { expenseWithLabel -> expenseWithLabel.toExpenseUI() } }
 
     override suspend fun upsertExpense(expense: AddEditExpense) {
         expense.id?.let { expenseId ->
-            expenseLabelDao.getCrossRefsByExpenseId(expenseId)
+            budgetOperationLabelDao.getCrossRefsByExpenseId(expenseId)
                 .filterNot { crossRef -> expense.labels.any { it == crossRef.labelId } }
-                .forEach { crossRef -> expenseLabelDao.deleteExpenseLabelCrossRef(crossRef) }
+                .forEach { crossRef -> budgetOperationLabelDao.deleteExpenseLabelCrossRef(crossRef) }
         }
 
-        val upsertedId = expenseDao.upsert(expense.toExpenseEntity())
+        val upsertedId = budgetOperationDao.upsert(expense.toExpenseEntity())
         val expenseId = expense.id ?: upsertedId.toInt()
 
-        expenseLabelDao.insertExpenseLabelCrossRefs(
-            expense.labels.map { ExpenseLabelCrossRef(
+        budgetOperationLabelDao.insertExpenseLabelCrossRefs(
+            expense.labels.map { BudgetOperationLabelCrossRef(
                 expenseId = expenseId,
                 labelId = it) }
         )
     }
 
     override suspend fun deleteExpense(expenseId: Int) =
-        expenseDao.deleteById(expenseId.toLong())
+        budgetOperationDao.deleteById(expenseId.toLong())
 
 }
 
 interface ExpenseRepository {
-    suspend fun getExpense(id: Int): ExpenseUI
-    suspend fun getExpensesFlow(): Flow<List<ExpenseUI>>
+    suspend fun getExpense(id: Int): BudgetOperationUI
+    suspend fun getExpensesFlow(): Flow<List<BudgetOperationUI>>
     suspend fun upsertExpense(expense: AddEditExpense)
     suspend fun deleteExpense(expenseId: Int)
 }

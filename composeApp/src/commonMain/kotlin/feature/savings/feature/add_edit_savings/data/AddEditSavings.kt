@@ -2,7 +2,7 @@ package feature.savings.feature.add_edit_savings.data
 
 import androidx.compose.ui.graphics.Color
 import kotlinx.datetime.LocalDate
-import presentation.data.SavingsType
+import feature.savings.data.SavingsType
 
 data class AddEditSavings(
     val id: Int?,

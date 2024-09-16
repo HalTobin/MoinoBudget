@@ -139,9 +139,9 @@
         <item quantity="one">Account</item>
         <item quantity="other">Accounts</item>
     </plurals>
-    <plurals name="savings_type_envelopes">
-        <item quantity="one">Enveloppe</item>
-        <item quantity="other">Envelopes</item>
+    <plurals name="savings_type_others">
+        <item quantity="one">Others</item>
+        <item quantity="other">Others</item>
     </plurals>
     <plurals name="savings_type_savings_books">
         <item quantity="one">Saving book</item>
@@ -157,4 +157,9 @@
     <string name="current_balance">Current balance</string>
     <string name="current_goal">Current goal</string>
     <string name="operation_amount">Operation's amount</string>
+
+    <!-- Expense List -->
+    <string name="create_envelope">Create an envelope</string>
+    <string name="create_envelope_details">Define an envelope to help you track your expenses</string>
+    <string name="max_with_value">Max: %1$s</string>
 </resources>

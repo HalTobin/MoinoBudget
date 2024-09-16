@@ -46,7 +46,7 @@ import moinobudget.composeapp.generated.resources.Res
 import moinobudget.composeapp.generated.resources.all
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
-import presentation.data.SavingsType
+import feature.savings.data.SavingsType
 
 @Composable
 fun SavingsTabRow(

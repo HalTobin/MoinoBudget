@@ -11,7 +11,6 @@ import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.animation.togetherWith
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -55,7 +54,6 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import data.repository.AppPreferences
-import feature.savings.feature.add_edit_savings.data.AddEditSavings
 import feature.savings.feature.savings_list.presentation.component.ColorSection
 import kotlinx.coroutines.delay
 import moinobudget.composeapp.generated.resources.Res
@@ -72,7 +70,7 @@ import moinobudget.composeapp.generated.resources.title
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 import presentation.component.IconSelector
-import presentation.data.SavingsType
+import feature.savings.data.SavingsType
 import presentation.shake
 
 @Composable

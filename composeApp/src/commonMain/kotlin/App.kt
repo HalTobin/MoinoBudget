@@ -1,14 +1,17 @@
 import androidx.compose.animation.Animatable
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.KoinContext
 import org.koin.compose.viewmodel.koinViewModel
-import presentation.data.BudgetStyle
+import feature.budgets.data.BudgetStyle
 import ui.MainScreen
 import ui.MainViewModel
 import ui.theme.MoinoBudgetTheme
@@ -21,9 +24,16 @@ fun App() = KoinContext {
     val viewModel = koinViewModel<MainViewModel>()
     val preferences by viewModel.preferences.collectAsState()
 
-    var style = BudgetStyle.CitrusJuice
+    var style by remember { mutableStateOf(BudgetStyle.CitrusJuice) }
     val primary = remember { Animatable(style.getPrimary(preferences)) }
     val onPrimary = remember { Animatable(style.getOnPrimary(preferences)) }
+
+    fun animateTheme() = scope.launch {
+        primary.animateTo(style.getPrimary(preferences))
+        onPrimary.animateTo(style.getOnPrimary(preferences))
+    }
+
+    LaunchedEffect(key1 = preferences.theme, key2 = style) { animateTheme() }
 
     MoinoBudgetTheme(
         primary = primary.value,
@@ -32,12 +42,7 @@ fun App() = KoinContext {
     ) {
         MainScreen(
             preferences = preferences,
-            setStyle = {
-                scope.launch {
-                    primary.animateTo(it.getPrimary(preferences))
-                    onPrimary.animateTo(it.getOnPrimary(preferences))
-                }
-            }
+            setStyle = { style = it }
         )
     }
 }

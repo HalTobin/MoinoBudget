@@ -24,10 +24,7 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
@@ -57,16 +54,15 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import moinobudget.composeapp.generated.resources.Res
 import moinobudget.composeapp.generated.resources.goal_with_value
-import moinobudget.composeapp.generated.resources.register_savings
 import moinobudget.composeapp.generated.resources.register_savings_details
 import moinobudget.composeapp.generated.resources.total
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
+import presentation.component.AddCard
 import presentation.component.AmountWithText
-import presentation.dashedBorder
 import presentation.data.IncomeOrOutcome
-import presentation.data.SavingsType
-import presentation.data.SavingsUI
+import feature.savings.data.SavingsType
+import feature.savings.data.SavingsUI
 import presentation.formatCurrency
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -76,7 +72,6 @@ fun SavingsScreen(
     preferences: AppPreferences,
     goToDetails: (Int) -> Unit,
     addEditSavings: (Int?, SavingsType) -> Unit,
-    onEvent: (SavingsEvent) -> Unit,
 ) {
     val scope = rememberCoroutineScope()
 
@@ -148,36 +143,16 @@ fun SavingsScreen(
                             }
                         }
                         item {
-                            Row(Modifier
-                                .fillMaxWidth()
-                                .padding(top = 12.dp, bottom = 24.dp)
-                                .padding(horizontal = 16.dp)
-                                .dashedBorder(4.dp, MaterialTheme.colorScheme.primary, 16.dp)
-                                .clip(RoundedCornerShape(16.dp))
-                                .background(MaterialTheme.colorScheme.surface)
-                                .clickable { addEditSavings(
-                                    null,
-                                    SavingsType.entries.getOrElse(pagerState.currentPage-1) { SavingsType.SavingsBooks }
-                                ) }
-                                .padding(16.dp),
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Icon(modifier = Modifier
-                                    .size(40.dp)
-                                    .clip(CircleShape)
-                                    .background(MaterialTheme.colorScheme.surfaceContainerHigh.copy(alpha = 0.3f)),
-                                    tint = MaterialTheme.colorScheme.primary,
-                                    imageVector = Icons.Default.Add,
-                                    contentDescription = stringResource(Res.string.register_savings_details))
-                                Column(Modifier.padding(start = 16.dp)) {
-                                    Text(stringResource(Res.string.register_savings),
-                                        fontWeight = FontWeight.SemiBold,
-                                        style = MaterialTheme.typography.titleMedium)
-                                    Text(stringResource(Res.string.register_savings_details),
-                                        fontWeight = FontWeight.Normal,
-                                        style = MaterialTheme.typography.titleSmall)
+                            AddCard(
+                                title = stringResource(Res.string.register_savings_details),
+                                description = stringResource(Res.string.register_savings_details),
+                                onClick = {
+                                    addEditSavings(
+                                        null,
+                                        SavingsType.entries.getOrElse(pagerState.currentPage-1) { SavingsType.SavingsBooks }
+                                    )
                                 }
-                            }
+                            )
                         }
                     }
                     Crossfade(modifier = Modifier.align(Alignment.TopCenter).fillMaxWidth(),
