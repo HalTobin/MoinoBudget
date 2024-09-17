@@ -150,7 +150,8 @@ fun HubScreen(
                         val state by viewModel.state.collectAsStateWithLifecycle()
                         EnvelopeScreen(
                             state = state,
-                            preferences = preferences
+                            preferences = preferences,
+                            addEnvelope = { goToScreen(MoinoBudgetScreen.AddEditEnvelope(-1)) }
                         )
                     }
                 }

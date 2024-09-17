@@ -1,13 +1,16 @@
 package data.repository
 
 import data.db.dao.EnvelopeDao
+import data.db.dao.ExpenseDao
+import data.mapper.toEnvelopeEntity
 import feature.expenses.data.EnvelopeUI
 import feature.expenses.feature.add_edit_envelope.data.AddEditEnvelope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
 class EnvelopeRepositoryImpl(
-    private val envelopeDao: EnvelopeDao
+    private val envelopeDao: EnvelopeDao,
+    private val expenseDao: ExpenseDao
 ): EnvelopeRepository {
     override suspend fun getEnvelopesFlow(): Flow<List<EnvelopeUI>> =
         envelopeDao.getAll().map { TODO() }
@@ -19,7 +22,7 @@ class EnvelopeRepositoryImpl(
         envelopeDao.getFlowById(envelopeId).map { TODO() }
 
     override suspend fun upsertEnvelope(envelope: AddEditEnvelope): Long =
-        envelopeDao.upsert(envelope.let { TODO() })
+        envelopeDao.upsert(envelope.toEnvelopeEntity())
 
     override suspend fun deleteEnvelope(envelopeId: Int) =
         envelopeDao.deleteById(envelopeId.toLong())

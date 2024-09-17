@@ -162,4 +162,8 @@
     <string name="create_envelope">Create an envelope</string>
     <string name="create_envelope_details">Define an envelope to help you track your expenses</string>
     <string name="max_with_value">Max: %1$s</string>
+
+    <!-- Add Edit Envelope -->
+    <string name="edit_envelope">Edit envelope</string>
+    <string name="save_envelope">Create envelope</string>
 </resources>

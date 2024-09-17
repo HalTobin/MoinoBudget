@@ -29,23 +29,23 @@ interface BudgetOperationLabelDao {
     suspend fun insertExpenseLabelCrossRefs(crossRefs: List<BudgetOperationLabelCrossRef>)
 
     @Transaction
-    @Query("SELECT * FROM expenses WHERE expense_id = :expenseId")
+    @Query("SELECT * FROM budget_operations WHERE operation_id = :expenseId")
     suspend fun getExpenseWithLabels(expenseId: Int): ExpenseWithLabels
 
     @Transaction
-    @Query("SELECT * FROM expenses")
+    @Query("SELECT * FROM budget_operations")
     suspend fun getAllExpensesWithLabels(): List<ExpenseWithLabels>
 
     @Transaction
-    @Query("SELECT * FROM expenses")
+    @Query("SELECT * FROM budget_operations")
     fun getAllExpensesWithLabelsFlow(): Flow<List<ExpenseWithLabels>>
 
     @Transaction
-    @Query("SELECT * FROM expense_label_crossref WHERE label_id IN (:labelIds)")
+    @Query("SELECT * FROM operation_label_crossref WHERE label_id IN (:labelIds)")
     suspend fun getExpensesWithLabelsLabelIds(labelIds: List<Int>): List<BudgetOperationLabelCrossRef>
 
     @Transaction
-    @Query("SELECT * FROM expense_label_crossref WHERE label_id IN (:labelIds)")
+    @Query("SELECT * FROM operation_label_crossref WHERE label_id IN (:labelIds)")
     fun getExpensesWithLabelsLabelIdsFlow(labelIds: List<Int>): Flow<List<BudgetOperationLabelCrossRef>>
 
     @Transaction
@@ -53,6 +53,6 @@ interface BudgetOperationLabelDao {
     suspend fun getLabelWithExpenses(labelId: Long): List<LabelWithExpenses>
 
     @Transaction
-    @Query("SELECT * FROM expense_label_crossref WHERE expense_id = :expenseId")
+    @Query("SELECT * FROM operation_label_crossref WHERE operation_id = :expenseId")
     suspend fun getCrossRefsByExpenseId(expenseId: Int): List<BudgetOperationLabelCrossRef>
 }

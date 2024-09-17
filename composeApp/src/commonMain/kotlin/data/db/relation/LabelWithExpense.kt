@@ -11,8 +11,8 @@ data class LabelWithExpenses(
     @Embedded val label: Label,
     @Relation(
         parentColumn = "label_id",
-        entityColumn = "expense_id",
+        entityColumn = "operation_id",
         associateBy = Junction(BudgetOperationLabelCrossRef::class)
     )
-    val expens: List<BudgetOperation>
+    val expense: List<BudgetOperation>
 )

@@ -104,6 +104,7 @@ import presentation.dashedBorder
 import feature.budgets.data.BudgetStyle
 import feature.budgets.data.BudgetUI
 import feature.budgets.data.BudgetOperationUI
+import presentation.component.YearMonthSwitch
 import presentation.data.IncomeOrOutcome
 import presentation.formatCurrency
 import presentation.pagerStateOpacity
@@ -155,7 +156,7 @@ fun DashboardScreen(
                 val budget = state.budgets.getOrNull(budgetState.currentPage-1)
                 val style = budget?.style ?: BudgetStyle.CitrusJuice
                 val labels = budget?.labels?.map { it.id } ?: emptyList()
-                goTo(MoinoBudgetScreen.AddEditExpense(labelIds = labels))
+                goTo(MoinoBudgetScreen.AddEditBudgetOperation(labelIds = labels))
             },
                 containerColor = MaterialTheme.colorScheme.primary,
                 contentColor = MaterialTheme.colorScheme.onPrimary,
@@ -167,7 +168,7 @@ fun DashboardScreen(
     ) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Spacer(Modifier.height(10.dp))
-            YearMonthSwitch(year, onChange = { year = it })
+            YearMonthSwitch(year = year, onChange = { year = it })
             Spacer(Modifier.height(10.dp))
 
             LaunchedEffect(key1 = budgetState.currentPage, key2 = state.budgets) {
@@ -240,7 +241,7 @@ fun DashboardScreen(
                 outcomes = budget?.upcomingPayments?.first ?: state.expenses.filter { it.type == IncomeOrOutcome.Outcome }.sumOf { it.amount.toDouble() }.toFloat(),
                 editExpense = {
                     val labels = budget?.labels?.map { label -> label.id } ?: emptyList()
-                    goTo(MoinoBudgetScreen.AddEditExpense(
+                    goTo(MoinoBudgetScreen.AddEditBudgetOperation(
                         labelIds = labels,
                         expenseId = it
                     )) },
@@ -249,17 +250,6 @@ fun DashboardScreen(
         }
     }
 }
-
-@Composable
-fun YearMonthSwitch(
-    year: Boolean,
-    onChange: (Boolean) -> Unit
-) = TextSwitch(
-    items = listOf(stringResource(Res.string.month), stringResource(Res.string.year)),
-    modifier = Modifier.width(256.dp),
-    selectedIndex = if (year) 1 else 0,
-    onSelectionChange = { onChange(!year) }
-)
 
 @Composable
 fun FinancialSummary(

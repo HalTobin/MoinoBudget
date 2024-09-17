@@ -16,13 +16,13 @@ interface BudgetOperationDao {
     @Delete
     suspend fun delete(budgetOperation: BudgetOperation)
 
-    @Query("DELETE FROM expenses WHERE expense_id = :expenseId")
+    @Query("DELETE FROM budget_operations WHERE operation_id = :expenseId")
     suspend fun deleteById(expenseId: Long)
 
-    @Query("SELECT * FROM expenses WHERE expense_id = :id")
+    @Query("SELECT * FROM budget_operations WHERE operation_id = :id")
     suspend fun getById(id: Int): BudgetOperation
 
-    @Query("SELECT * FROM expenses")
+    @Query("SELECT * FROM budget_operations")
     fun getAll(): Flow<List<BudgetOperation>>
 
 }

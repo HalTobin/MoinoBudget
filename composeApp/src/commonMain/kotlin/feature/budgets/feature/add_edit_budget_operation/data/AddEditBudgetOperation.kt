@@ -1,10 +1,10 @@
-package feature.budgets.feature.add_edit_budgets.data
+package feature.budgets.feature.add_edit_budget_operation.data
 
 import presentation.data.ExpenseFrequency
 import presentation.data.ExpenseIcon
 import presentation.data.IncomeOrOutcome
 
-data class AddEditExpense(
+data class AddEditBudgetOperation(
     val id: Int? = null,
     val incomeOrOutcome: IncomeOrOutcome = IncomeOrOutcome.Outcome,
     val title: String = "",

@@ -6,20 +6,22 @@ import data.db.dao.BudgetLabelDao
 import data.db.dao.BudgetOperationDao
 import data.db.dao.BudgetOperationLabelDao
 import data.db.dao.EnvelopeDao
+import data.db.dao.ExpenseDao
 import data.db.dao.LabelDao
 import data.db.dao.SavingsDao
+import data.repository.BudgetOperationRepository
+import data.repository.BudgetOperationRepositoryImpl
 import data.repository.BudgetRepository
 import data.repository.BudgetRepositoryImpl
 import data.repository.EnvelopeRepository
 import data.repository.EnvelopeRepositoryImpl
-import data.repository.ExpenseRepository
-import data.repository.ExpenseRepositoryImpl
 import data.repository.LabelRepository
 import data.repository.LabelRepositoryImpl
 import data.repository.SavingsRepository
 import data.repository.SavingsRepositoryImpl
-import feature.budgets.feature.add_edit_budgets.presentation.AddEditExpenseViewModel
+import feature.budgets.feature.add_edit_budget_operation.presentation.AddEditBudgetOperationViewModel
 import feature.budgets.feature.budgets_list.presentation.DashboardViewModel
+import feature.expenses.feature.add_edit_envelope.presentation.AddEditEnvelopeViewModel
 import feature.expenses.feature.envelope_list.presentation.EnvelopeViewModel
 import feature.savings.feature.add_edit_savings.presentation.AddEditSavingsViewModel
 import feature.savings.feature.savings_detail.SavingsDetailsViewModel
@@ -39,12 +41,13 @@ object ModuleVM {
     val viewModels = module {
         viewModelOf(::MainViewModel)
         viewModelOf(::DashboardViewModel)
-        viewModelOf(::AddEditExpenseViewModel)
+        viewModelOf(::AddEditBudgetOperationViewModel)
         viewModelOf(::SettingsViewModel)
         viewModelOf(::SavingsViewModel)
         viewModelOf(::AddEditSavingsViewModel)
         viewModelOf(::SavingsDetailsViewModel)
         viewModelOf(::EnvelopeViewModel)
+        viewModelOf(::AddEditEnvelopeViewModel)
     }
 }
 
@@ -52,9 +55,9 @@ object ModuleRepositories {
     val repositories = module {
         single { provideLabelRepository(get()) }.bind<LabelRepository>()
         single { provideBudgetRepository(get(), get(), get()) }.bind<BudgetRepository>()
-        single { provideExpenseRepository(get(), get()) }.bind<ExpenseRepository>()
+        single { provideBudgetOperationRepository(get(), get()) }.bind<BudgetOperationRepository>()
         single { provideSavingsRepository(get()) }.bind<SavingsRepository>()
-        single { provideEnvelopeRepository(get()) }.bind<EnvelopeRepository>()
+        single { provideEnvelopeRepository(get(), get()) }.bind<EnvelopeRepository>()
     }
 
     private fun provideLabelRepository(labelDao: LabelDao) = LabelRepositoryImpl(labelDao)
@@ -65,32 +68,37 @@ object ModuleRepositories {
         budgetOperationLabelDao: BudgetOperationLabelDao
     ): BudgetRepository = BudgetRepositoryImpl(budgetDao, budgetLabelDao, budgetOperationLabelDao)
 
-    private fun provideExpenseRepository(
+    private fun provideBudgetOperationRepository(
         budgetOperationDao: BudgetOperationDao,
         budgetOperationLabelDao: BudgetOperationLabelDao
-    ): ExpenseRepository = ExpenseRepositoryImpl(budgetOperationDao, budgetOperationLabelDao)
+    ): BudgetOperationRepository = BudgetOperationRepositoryImpl(budgetOperationDao, budgetOperationLabelDao)
 
     private fun provideSavingsRepository(savingsDao: SavingsDao): SavingsRepository = SavingsRepositoryImpl(savingsDao)
 
-    private fun provideEnvelopeRepository(envelopeDao: EnvelopeDao): EnvelopeRepository = EnvelopeRepositoryImpl(envelopeDao)
+    private fun provideEnvelopeRepository(
+        envelopeDao: EnvelopeDao,
+        expenseDao: ExpenseDao
+    ): EnvelopeRepository = EnvelopeRepositoryImpl(envelopeDao, expenseDao)
 }
 
 object ModuleDAO {
     val dao = module {
         single { provideLabelDao(get()) }
-        single { provideExpenseDao(get()) }
-        single { provideExpenseLabelDao(get()) }
+        single { provideBudgetOperationDao(get()) }
+        single { provideBudgetOperationLabelDao(get()) }
         single { provideBudgetDao(get()) }
         single { provideBudgetLabelDao(get()) }
         single { provideSavingsDao(get()) }
         single { provideEnvelopeDao(get()) }
+        single { provideExpenseDao(get()) }
     }
 
     private fun provideLabelDao(db: ExpenseDatabase) = db.labelDao()
-    private fun provideExpenseDao(db: ExpenseDatabase) = db.expenseDao()
-    private fun provideExpenseLabelDao(db: ExpenseDatabase) = db.expenseLabelDao()
+    private fun provideBudgetOperationDao(db: ExpenseDatabase) = db.budgetOperation()
+    private fun provideBudgetOperationLabelDao(db: ExpenseDatabase) = db.budgetOperationLabelDao()
     private fun provideBudgetDao(db: ExpenseDatabase) = db.budgetDao()
     private fun provideBudgetLabelDao(db: ExpenseDatabase) = db.budgetLabelDao()
     private fun provideSavingsDao(db: ExpenseDatabase) = db.savingsDao()
     private fun provideEnvelopeDao(db: ExpenseDatabase) = db.envelopeDao()
+    private fun provideExpenseDao(db: ExpenseDatabase) = db.expenseDao()
 }

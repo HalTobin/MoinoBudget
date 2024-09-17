@@ -18,9 +18,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import data.repository.AppPreferences
-import feature.budgets.feature.add_edit_budgets.presentation.AddEditExpenseEvent
-import feature.budgets.feature.add_edit_budgets.presentation.AddEditExpenseScreen
-import feature.budgets.feature.add_edit_budgets.presentation.AddEditExpenseViewModel
+import feature.budgets.feature.add_edit_budget_operation.presentation.AddEditBudgetOperationEvent
+import feature.budgets.feature.add_edit_budget_operation.presentation.AddEditBudgetOperationViewModel
 import feature.hub.HubScreen
 import feature.savings.feature.add_edit_savings.presentation.AddEditSavingsEvent
 import feature.savings.feature.add_edit_savings.presentation.AddEditSavingsScreen
@@ -33,6 +32,10 @@ import feature.settings.SettingsViewModel
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 import feature.budgets.data.BudgetStyle
+import feature.budgets.feature.add_edit_budget_operation.presentation.AddEditBudgetOperationScreen
+import feature.expenses.feature.add_edit_envelope.presentation.AddEditEnvelopeEvent
+import feature.expenses.feature.add_edit_envelope.presentation.AddEditEnvelopeScreen
+import feature.expenses.feature.add_edit_envelope.presentation.AddEditEnvelopeViewModel
 import feature.savings.data.SavingsType
 import ui.theme.MoinoBudgetTheme
 
@@ -70,27 +73,27 @@ fun MainScreen(
                     onEvent = viewModel::onEvent)
             }
 
-            /** Regular Expenses **/
-            composable<MoinoBudgetScreen.AddEditExpense>(
+            /** Regular Operations **/
+            composable<MoinoBudgetScreen.AddEditBudgetOperation>(
                 enterTransition = { slideInVertically(initialOffsetY = { it }) },
                 exitTransition = { slideOutVertically(targetOffsetY = { it }) }
             ) {
-                val args = it.toRoute<MoinoBudgetScreen.AddEditExpense>()
+                val args = it.toRoute<MoinoBudgetScreen.AddEditBudgetOperation>()
                 val expenseId = args.expenseId
                 val labels = args.labelIds
 
-                val viewModel = koinViewModel<AddEditExpenseViewModel>()
+                val viewModel = koinViewModel<AddEditBudgetOperationViewModel>()
                 val state by viewModel.state.collectAsStateWithLifecycle()
 
                 LaunchedEffect(true) {
                     viewModel.onEvent(
-                        AddEditExpenseEvent.Init(
+                        AddEditBudgetOperationEvent.Init(
                         expenseId = if (expenseId == -1) null else expenseId,
                         labels = labels
                     ))
                 }
 
-                AddEditExpenseScreen(
+                AddEditBudgetOperationScreen(
                     preferences = preferences,
                     state = state,
                     onEvent = viewModel::onEvent,
@@ -144,6 +147,30 @@ fun MainScreen(
                     goToEdit = { id, type -> navController.navigate(
                         MoinoBudgetScreen.AddEditSavings(savingsId = id, defaultSavingsTypeId = type.id)
                     ) },
+                    goBack = { navController.popBackStack() }
+                )
+            }
+
+            /** Envelopes & Expenses **/
+            composable<MoinoBudgetScreen.AddEditEnvelope>(
+                enterTransition = { slideInVertically(initialOffsetY = { it }) },
+                popExitTransition = { slideOutVertically(targetOffsetY = { it }) },
+                popEnterTransition = { EnterTransition.None }
+            ) {
+                val args = it.toRoute<MoinoBudgetScreen.AddEditEnvelope>()
+                val envelopeId = args.envelopeId
+
+                val viewModel = koinViewModel<AddEditEnvelopeViewModel>()
+                val state by viewModel.state.collectAsStateWithLifecycle()
+
+                LaunchedEffect(key1 = true) {
+                    viewModel.onEvent(AddEditEnvelopeEvent.Init(envelopeId))
+                }
+
+                AddEditEnvelopeScreen(
+                    state = state,
+                    preferences = preferences,
+                    onEvent = viewModel::onEvent,
                     goBack = { navController.popBackStack() }
                 )
             }

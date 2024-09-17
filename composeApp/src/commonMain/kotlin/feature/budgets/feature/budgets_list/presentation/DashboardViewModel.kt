@@ -2,8 +2,8 @@ package feature.budgets.feature.budgets_list.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import data.repository.BudgetOperationRepository
 import data.repository.BudgetRepository
-import data.repository.ExpenseRepository
 import data.repository.LabelRepository
 import data.repository.NeedOneBudget
 import kotlinx.coroutines.Dispatchers
@@ -19,7 +19,7 @@ import kotlinx.coroutines.launch
 class DashboardViewModel(
     private val labelRepository: LabelRepository,
     private val budgetRepository: BudgetRepository,
-    private val expenseRepository: ExpenseRepository
+    private val budgetOperationRepository: BudgetOperationRepository
 ): ViewModel() {
 
     private val _state = MutableStateFlow(DashboardState())
@@ -70,7 +70,7 @@ class DashboardViewModel(
     private fun setUpExpenseJob() {
         expenseJob?.cancel()
         expenseJob = viewModelScope.launch(Dispatchers.IO) {
-            expenseRepository.getExpensesFlow().collect { expenses ->
+            budgetOperationRepository.getExpensesFlow().collect { expenses ->
                 _state.update { it.copy(expenses = expenses) }
             }
         }

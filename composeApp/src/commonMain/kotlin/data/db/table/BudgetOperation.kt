@@ -4,10 +4,10 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
-@Entity(tableName = "expenses")
+@Entity(tableName = "budget_operations")
 data class BudgetOperation(
     @PrimaryKey(autoGenerate = true)
-    @ColumnInfo(name = "expense_id") val id: Int = 0,
+    @ColumnInfo(name = "operation_id") val id: Int = 0,
     val title: String,
     val amount: Float,
     val iconId: Int,

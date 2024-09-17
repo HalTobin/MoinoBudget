@@ -1,4 +1,4 @@
-package feature.budgets.feature.add_edit_budgets.presentation.component
+package feature.budgets.feature.add_edit_budget_operation.presentation.component
 
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.core.animateFloatAsState

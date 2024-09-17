@@ -11,6 +11,7 @@ import data.db.dao.BudgetLabelDao
 import data.db.dao.BudgetOperationDao
 import data.db.dao.BudgetOperationLabelDao
 import data.db.dao.EnvelopeDao
+import data.db.dao.ExpenseDao
 import data.db.dao.LabelDao
 import data.db.dao.SavingsDao
 import data.db.table.Budget
@@ -18,6 +19,7 @@ import data.db.table.BudgetLabelCrossRef
 import data.db.table.BudgetOperation
 import data.db.table.BudgetOperationLabelCrossRef
 import data.db.table.Envelope
+import data.db.table.Expense
 import data.db.table.Label
 import data.db.table.Savings
 import kotlinx.coroutines.Dispatchers
@@ -30,26 +32,22 @@ import kotlinx.coroutines.IO
         Budget::class,
         BudgetLabelCrossRef::class,
         Savings::class,
-        Envelope::class
+        Envelope::class,
+        Expense::class
     ],
-    version = 9,
-    autoMigrations = [
-        AutoMigration (
-            from = 8,
-            to = 9,
-        ),
-    ]
+    version = 11
 )
 @ConstructedBy(ExpenseDbCtor::class) // NEW
 abstract class ExpenseDatabase: RoomDatabase() {
 
-    abstract fun expenseDao(): BudgetOperationDao
+    abstract fun budgetOperation(): BudgetOperationDao
     abstract fun labelDao(): LabelDao
-    abstract fun expenseLabelDao(): BudgetOperationLabelDao
+    abstract fun budgetOperationLabelDao(): BudgetOperationLabelDao
     abstract fun budgetDao(): BudgetDao
     abstract fun budgetLabelDao(): BudgetLabelDao
     abstract fun savingsDao(): SavingsDao
     abstract fun envelopeDao(): EnvelopeDao
+    abstract fun expenseDao(): ExpenseDao
 
 }
 

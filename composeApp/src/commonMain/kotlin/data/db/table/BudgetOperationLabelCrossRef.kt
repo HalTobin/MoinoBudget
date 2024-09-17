@@ -4,10 +4,10 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 
 @Entity(
-    tableName = "expense_label_crossref",
-    primaryKeys = ["expense_id", "label_id"]
+    tableName = "operation_label_crossref",
+    primaryKeys = ["operation_id", "label_id"]
 )
 data class BudgetOperationLabelCrossRef(
-    @ColumnInfo(name = "expense_id") val expenseId: Int,
+    @ColumnInfo(name = "operation_id") val operationId: Int,
     @ColumnInfo(name = "label_id")  val labelId: Int
 )

@@ -2,7 +2,7 @@ package data.mapper
 
 import data.db.relation.ExpenseWithLabels
 import data.db.table.BudgetOperation
-import feature.budgets.feature.add_edit_budgets.data.AddEditExpense
+import feature.budgets.feature.add_edit_budget_operation.data.AddEditBudgetOperation
 import kotlinx.datetime.Clock
 import kotlinx.datetime.daysUntil
 import presentation.data.ExpenseFrequency
@@ -13,7 +13,7 @@ import presentation.data.MonthOption
 import util.calculateNextPayment
 import util.toLocalDate
 
-fun AddEditExpense.toExpenseEntity(): BudgetOperation =
+fun AddEditBudgetOperation.toExpenseEntity(): BudgetOperation =
     BudgetOperation(
         id = this.id ?: 0,
         title = this.title,

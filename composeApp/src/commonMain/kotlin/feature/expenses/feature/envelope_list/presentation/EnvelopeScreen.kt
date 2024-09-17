@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Scaffold
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
@@ -45,7 +44,8 @@ import presentation.formatCurrency
 @Composable
 fun EnvelopeScreen(
     state: EnvelopeState,
-    preferences: AppPreferences
+    preferences: AppPreferences,
+    addEnvelope: () -> Unit
 ) = Column {
 
     Spacer(Modifier.height(48.dp))
@@ -58,7 +58,7 @@ fun EnvelopeScreen(
             AddCard(
                 title = stringResource(Res.string.create_envelope),
                 description = stringResource(Res.string.create_envelope_details),
-                onClick = { TODO() }
+                onClick = addEnvelope
             )
         }
     }

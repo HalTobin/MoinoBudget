@@ -1,4 +1,4 @@
-package feature.budgets.feature.add_edit_budgets.presentation
+package feature.budgets.feature.add_edit_budget_operation.presentation
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.Crossfade
@@ -43,8 +43,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import data.repository.AppPreferences
-import feature.budgets.feature.add_edit_budgets.presentation.component.SelectDay
-import feature.budgets.feature.add_edit_budgets.presentation.component.SelectMonthOption
+import feature.budgets.feature.add_edit_budget_operation.presentation.component.SelectDay
+import feature.budgets.feature.add_edit_budget_operation.presentation.component.SelectMonthOption
 import feature.budgets.feature.budgets_list.presentation.component.LabelSelection
 import feature.budgets.feature.budgets_list.presentation.component.TextSwitch
 import moinobudget.composeapp.generated.resources.Res
@@ -60,16 +60,17 @@ import moinobudget.composeapp.generated.resources.save
 import moinobudget.composeapp.generated.resources.title
 import org.jetbrains.compose.resources.stringResource
 import presentation.component.IconSelector
+import presentation.component.YearMonthSwitch
 import presentation.data.ExpenseFrequency
 import presentation.data.ExpenseIcon
 import presentation.data.IncomeOrOutcome
 import presentation.shake
 
 @Composable
-fun AddEditExpenseScreen(
+fun AddEditBudgetOperationScreen(
     preferences: AppPreferences,
-    state: AddEditExpenseState,
-    onEvent: (AddEditExpenseEvent) -> Unit,
+    state: AddEditBudgetOperationState,
+    onEvent: (AddEditBudgetOperationEvent) -> Unit,
     goBack: () -> Unit,
 ) {
     var deleteMode by remember { mutableStateOf(false) }
@@ -80,7 +81,7 @@ fun AddEditExpenseScreen(
     ) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Box(Modifier.fillMaxWidth().padding(start = 8.dp, end = 8.dp, top = 8.dp)) {
-                state.expenseId?.let {
+                state.budgetOperationId?.let {
                     Crossfade(targetState = deleteMode) { deletion ->
                         IconButton(modifier = Modifier
                             .align(Alignment.CenterStart)
@@ -95,7 +96,7 @@ fun AddEditExpenseScreen(
                         }
                     }
                 }
-                Text(stringResource(state.expenseId?.let { Res.string.edit_operation } ?: Res.string.create_operation),
+                Text(stringResource(state.budgetOperationId?.let { Res.string.edit_operation } ?: Res.string.create_operation),
                     modifier = Modifier.align(Alignment.Center),
                     style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.SemiBold)
@@ -114,10 +115,10 @@ fun AddEditExpenseScreen(
                 TextSwitch(
                     items = IncomeOrOutcome.list.map { stringResource(it.textSingular) },
                     modifier = Modifier.shake(deleteMode).width(256.dp).height(48.dp),
-                    selectedIndex = state.expenseIncomeOrOutcome.tabId,
+                    selectedIndex = state.incomeOrOutcome.tabId,
                     onSelectionChange = {
                         onEvent(
-                            AddEditExpenseEvent.UpdateIncomeOrOutcome(
+                            AddEditBudgetOperationEvent.UpdateIncomeOrOutcome(
                                 IncomeOrOutcome.getByTabId(
                                     it
                                 )
@@ -133,10 +134,10 @@ fun AddEditExpenseScreen(
                 Row(Modifier.padding(horizontal = 16.dp)) {
                     TextField(modifier = Modifier.shake(deleteMode).weight(3f).clip(RoundedCornerShape(16.dp)),
                         isError = titleError,
-                        value = state.expenseTitle,
+                        value = state.title,
                         onValueChange = {
                             if (titleError) titleError = false
-                            if (it.length < 19) onEvent(AddEditExpenseEvent.UpdateTitle(it)) },
+                            if (it.length < 19) onEvent(AddEditBudgetOperationEvent.UpdateTitle(it)) },
                         label = { Text(stringResource(Res.string.title)) },
                         colors = TextFieldDefaults.colors(
                             unfocusedIndicatorColor = MaterialTheme.colorScheme.primary
@@ -150,12 +151,12 @@ fun AddEditExpenseScreen(
                     // Element - Amount
                     TextField(modifier = Modifier.shake(deleteMode).weight(2f).clip(RoundedCornerShape(16.dp)),
                         isError = amountError,
-                        value = state.expenseAmount,
+                        value = state.amount,
                         trailingIcon = { Text(preferences.currency.sign,
                             fontWeight = FontWeight.Bold) },
                         onValueChange = {
                             if (amountError) amountError = false
-                            onEvent(AddEditExpenseEvent.UpdateAmount(it))
+                            onEvent(AddEditBudgetOperationEvent.UpdateAmount(it))
                         },
                         label = { Text(stringResource(Res.string.amount)) },
                         colors = TextFieldDefaults.colors(
@@ -171,30 +172,39 @@ fun AddEditExpenseScreen(
                 Spacer(Modifier.height(24.dp))
 
                 // Element - Frequency
-                TextSwitch(
+                /*TextSwitch(
                     items = ExpenseFrequency.list.map { stringResource(it.title) },
                     modifier = Modifier.shake(deleteMode).width(256.dp).height(48.dp),
-                    selectedIndex = state.expenseFrequency.id,
+                    selectedIndex = state.frequency.id,
                     onSelectionChange = { onEvent(
-                        AddEditExpenseEvent.UpdateFrequency(
+                        AddEditBudgetOperationEvent.UpdateFrequency(
                             ExpenseFrequency.findById(it)
                         )
                     ) }
-                )
+                )*/
+                YearMonthSwitch(
+                    modifier = Modifier.shake(deleteMode),
+                    year = state.frequency.id == ExpenseFrequency.Annually.id,
+                    onChange = { onEvent(
+                        AddEditBudgetOperationEvent.UpdateFrequency(
+                            ExpenseFrequency.findById(if (it) ExpenseFrequency.Annually.id else ExpenseFrequency.Monthly.id)
+                        )
+                    ) })
+
                 Spacer(Modifier.height(16.dp))
-                AnimatedContent(state.expenseFrequency.options.isNotEmpty()) { monthSection ->
+                AnimatedContent(state.frequency.options.isNotEmpty()) { monthSection ->
                     Row {
                         SelectDay(
                             modifier = Modifier.shake(deleteMode),
-                            value = state.expenseDay,
-                            onChange = { onEvent(AddEditExpenseEvent.UpdateDay(it)) },
-                            month = state.expenseMonth)
+                            value = state.day,
+                            onChange = { onEvent(AddEditBudgetOperationEvent.UpdateDay(it)) },
+                            month = state.month)
                         if (monthSection) {
                             Spacer(Modifier.width(16.dp))
                             SelectMonthOption(Modifier.shake(deleteMode).fillMaxWidth(0.55f),
-                                options = state.expenseFrequency.options,
-                                value = state.expenseMonth,
-                                onSelect = { onEvent(AddEditExpenseEvent.UpdateMonthOffset(it)) })
+                                options = state.frequency.options,
+                                value = state.month,
+                                onSelect = { onEvent(AddEditBudgetOperationEvent.UpdateMonthOffset(it)) })
                         }
                     }
                 }
@@ -205,20 +215,9 @@ fun AddEditExpenseScreen(
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.primary
                 )
-                /*LazyHorizontalGrid(GridCells.Fixed(2),
-                    contentPadding = PaddingValues(horizontal = 24.dp),
-                    modifier = Modifier.height(128.dp)) {
-                    items(ExpenseIcon.list) { icon ->
-                        IconEntry(icon = icon,
-                            selectedIcon = state.expenseIcon,
-                            onClick = { onEvent(AddEditExpenseEvent.UpdateIcon(icon)) },
-                            deleteMode = deleteMode
-                        )
-                    }
-                }*/
                 IconSelector(Modifier,
-                    selectedIcon = state.expenseIcon.id,
-                    onSelect = { onEvent(AddEditExpenseEvent.UpdateIcon(ExpenseIcon.findById(it))) },
+                    selectedIcon = state.icon.id,
+                    onSelect = { onEvent(AddEditBudgetOperationEvent.UpdateIcon(ExpenseIcon.findById(it))) },
                     deleteMode = deleteMode
                 )
                 Text(stringResource(Res.string.labels),
@@ -230,9 +229,9 @@ fun AddEditExpenseScreen(
                 // Element - Label
                 Row(Modifier.padding(horizontal = 48.dp)) {
                     LabelSelection(
-                        labels = state.labels,
-                        selected = state.expenseLabels,
-                        onSelect = { onEvent(AddEditExpenseEvent.UpdateLabel(it)) },
+                        labels = state.availableLabels,
+                        selected = state.selectedLabels,
+                        onSelect = { onEvent(AddEditBudgetOperationEvent.UpdateLabel(it)) },
                         deleteMode = deleteMode
                     )
                 }
@@ -247,11 +246,11 @@ fun AddEditExpenseScreen(
                         Button(modifier = Modifier.padding(vertical = 4.dp),
                             shape = CircleShape,
                             onClick = {
-                                titleError = state.expenseTitle.isBlank()
-                                state.expenseAmount.toFloatOrNull()
-                                amountError = (state.expenseAmount.toFloatOrNull() == null)
+                                titleError = state.title.isBlank()
+                                state.amount.toFloatOrNull()
+                                amountError = (state.amount.toFloatOrNull() == null)
                                 if (!titleError && !amountError) {
-                                    onEvent(AddEditExpenseEvent.UpsertExpense)
+                                    onEvent(AddEditBudgetOperationEvent.UpsertBudgetOperation)
                                     goBack() }
                             }
                         ) {
@@ -262,9 +261,9 @@ fun AddEditExpenseScreen(
                                 fontWeight = FontWeight.SemiBold)
                         }
                     }
-                    else state.expenseId?.let { expenseId ->
+                    else state.budgetOperationId?.let {
                         TextButton(modifier = Modifier.padding(horizontal = 64.dp),
-                            onClick = { onEvent(AddEditExpenseEvent.DeleteExpense); goBack() }) {
+                            onClick = { onEvent(AddEditBudgetOperationEvent.DeleteBudgetOperation); goBack() }) {
                             Text(stringResource(Res.string.delete_operation),
                                 color = MaterialTheme.colorScheme.error)
                         }
