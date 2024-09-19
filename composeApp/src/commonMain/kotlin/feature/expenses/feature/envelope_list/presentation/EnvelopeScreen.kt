@@ -32,14 +32,18 @@ import androidx.compose.ui.unit.dp
 import data.repository.AppPreferences
 import feature.expenses.data.EnvelopeUI
 import kotlinx.coroutines.delay
+import kotlinx.datetime.format
+import kotlinx.datetime.format.DateTimeFormatBuilder
 import moinobudget.composeapp.generated.resources.Res
 import moinobudget.composeapp.generated.resources.create_envelope
 import moinobudget.composeapp.generated.resources.create_envelope_details
 import moinobudget.composeapp.generated.resources.max_with_value
+import moinobudget.composeapp.generated.resources.remaining_is
 import org.jetbrains.compose.resources.stringResource
 import presentation.component.AddCard
 import presentation.data.IncomeOrOutcome
 import presentation.formatCurrency
+import util.formatDate
 
 @Composable
 fun EnvelopeScreen(
@@ -84,17 +88,6 @@ fun EnvelopeItem(
     .clickable { onClick() }
     .padding(16.dp)) {
 
-    val primaryColor = MaterialTheme.colorScheme.primary
-
-    fun getColorByConsumption(current: Int, max: Int): Color {
-        val percentage = current.toFloat() / max
-
-        val red = IncomeOrOutcome.Outcome.color // Red
-        val primary = primaryColor
-
-        return lerp(primary, red, percentage)
-    }
-
     Column(Modifier.padding(horizontal = 8.dp)) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             envelope.icon?.let { icon ->
@@ -111,7 +104,6 @@ fun EnvelopeItem(
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold)
         }
-
         envelope.max?.let {
             val currentProgress = remember { Animatable(0f) }
             val progress = envelope.current.toFloat() / envelope.max
@@ -137,11 +129,18 @@ fun EnvelopeItem(
                     fontWeight = FontWeight.Bold,
                     color = lerp(MaterialTheme.colorScheme.primary, IncomeOrOutcome.Outcome.color, progress),
                     style = MaterialTheme.typography.titleLarge)
-                Text(
-                    stringResource(Res.string.max_with_value, formatCurrency(envelope.max.toFloat(), preferences)),
+                Text(stringResource(Res.string.max_with_value, formatCurrency(envelope.max.toFloat(), preferences)),
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Light)
             }
+        }
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Text("${formatDate(envelope.startPeriod, preferences)} - ${formatDate(envelope.endPeriod, preferences)}",
+                modifier = Modifier.weight(1f),
+                style = MaterialTheme.typography.titleMedium)
+            Text(
+                stringResource(Res.string.remaining_is, envelope.remaining),
+                style = MaterialTheme.typography.titleMedium)
         }
     }
 

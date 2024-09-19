@@ -109,6 +109,7 @@
     <string name="add">Add</string>
     <string name="subtract">Subtract</string>
     <string name="limit">Limit</string>
+    <string name="remaining_is">Remaining:</string>
 
     <!-- Months -->
     <string name="january">January</string>

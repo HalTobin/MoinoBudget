@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.datetime.Clock
 import kotlinx.datetime.LocalDate
+import kotlinx.datetime.daysUntil
 import presentation.data.ExpenseFrequency
 import presentation.data.ExpenseIcon
 import util.getPeriodFromTimestamp
@@ -43,7 +44,8 @@ class EnvelopeRepositoryImpl(
         envelopeDao.deleteById(envelopeId.toLong())
 
     private suspend fun Envelope.toEnvelopeUI(): EnvelopeUI {
-        val periods = getPeriodFromTimestamp(Clock.System.now().toEpochMilliseconds().toLocalDate(), this.frequency == ExpenseFrequency.Annually.id)
+        val currentDate = Clock.System.now().toEpochMilliseconds().toLocalDate()
+        val periods = getPeriodFromTimestamp(currentDate, this.frequency == ExpenseFrequency.Annually.id)
         val relatedExpenses = expenseDao.getByEnvelopeIdAndPeriod(this.id, periods.first.toEpochMillisecond(), periods.second.toEpochMillisecond())
         return EnvelopeUI(
             id = this.id,
@@ -53,7 +55,8 @@ class EnvelopeRepositoryImpl(
             endPeriod = periods.second,
             frequency = ExpenseFrequency.findById(this.frequency),
             icon = this.iconId?.let { ExpenseIcon.findById(it) },
-            max = this.max
+            max = this.max,
+            remaining = currentDate.daysUntil(periods.second)
         )
     }
 

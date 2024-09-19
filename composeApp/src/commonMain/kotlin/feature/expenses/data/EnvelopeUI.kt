@@ -12,5 +12,6 @@ data class EnvelopeUI(
     val icon: ExpenseIcon?,
     val frequency: ExpenseFrequency,
     val startPeriod: LocalDate,
-    val endPeriod: LocalDate
+    val endPeriod: LocalDate,
+    val remaining: Int
 )
