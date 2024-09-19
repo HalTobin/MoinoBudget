@@ -56,4 +56,7 @@ fun getExpenseDatabase(
     .setQueryCoroutineContext(Dispatchers.IO)
     .build()
 
-expect object ExpenseDbCtor : RoomDatabaseConstructor<ExpenseDatabase>
+@Suppress("NO_ACTUAL_FOR_EXPECT")
+expect object ExpenseDbCtor : RoomDatabaseConstructor<ExpenseDatabase> {
+    override fun initialize(): ExpenseDatabase
+}
