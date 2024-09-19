@@ -7,8 +7,7 @@ import presentation.data.ExpenseIcon
 data class EnvelopeUI(
     val id: Int,
     val title: String,
-    val subtitle: String,
-    val current: Long,
+    val current: Double,
     val max: Int?,
     val icon: ExpenseIcon?,
     val frequency: ExpenseFrequency,

@@ -25,7 +25,10 @@ interface ExpenseDao {
     fun getAll(): Flow<List<Expense>>
 
     @Query("SELECT * FROM expenses WHERE envelope_id = :envelopeId")
-    fun getByEnvelopeId(envelopeId: Int): List<Expense>
+    suspend fun getByEnvelopeId(envelopeId: Int): List<Expense>
+
+    @Query("SELECT * FROM expenses WHERE envelope_id = :envelopeId AND timestamp >= :startPeriod AND timestamp <= :endPeriod")
+    suspend fun getByEnvelopeIdAndPeriod(envelopeId: Int, startPeriod: Long, endPeriod: Long): List<Expense>
 
     @Query("SELECT * FROM expenses WHERE envelope_id = :envelopeId")
     fun getFlowByEnvelopeId(envelopeId: Int): Flow<List<Expense>>

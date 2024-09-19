@@ -7,7 +7,6 @@ fun AddEditEnvelope.toEnvelopeEntity(): Envelope =
     Envelope(
         id = this.id ?: 0,
         title = this.title,
-        subtitle = this.subtitle,
         max = this.max,
         iconId = this.iconId,
         frequency = this.frequency

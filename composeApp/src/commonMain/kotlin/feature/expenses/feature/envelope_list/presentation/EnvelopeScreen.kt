@@ -51,8 +51,13 @@ fun EnvelopeScreen(
     Spacer(Modifier.height(48.dp))
 
     LazyColumn(modifier = Modifier.padding(horizontal = 16.dp)) {
-        items(state.envelopes) {
-
+        items(state.envelopes) { envelope ->
+            EnvelopeItem(
+                modifier = Modifier,
+                preferences = preferences,
+                envelope = envelope,
+                onClick = {}
+            )
         }
         item {
             AddCard(
@@ -97,21 +102,14 @@ fun EnvelopeItem(
                     modifier = Modifier.padding(end = 16.dp).size(32.dp),
                     contentDescription = null)
             }
-            Column {
-                Row {
-                    Text(envelope.title,
-                        style = MaterialTheme.typography.titleLarge,
-                        modifier = Modifier.weight(1f),
-                        fontWeight = FontWeight.SemiBold)
-                    Text(
-                        formatCurrency(envelope.current.toFloat(), preferences),
-                        style = MaterialTheme.typography.titleLarge,
-                        fontWeight = FontWeight.Bold)
-                }
-                Text(envelope.subtitle,
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.SemiBold)
-            }
+            Text(envelope.title,
+                style = MaterialTheme.typography.titleLarge,
+                modifier = Modifier.weight(1f),
+                fontWeight = FontWeight.SemiBold)
+            Text(
+                formatCurrency(envelope.current.toFloat(), preferences),
+                style = MaterialTheme.typography.titleLarge,
+                fontWeight = FontWeight.Bold)
         }
 
         envelope.max?.let {

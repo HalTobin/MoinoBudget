@@ -144,6 +144,7 @@ fun SavingsScreen(
                         }
                         item {
                             AddCard(
+                                modifier = Modifier.padding(horizontal = 16.dp),
                                 title = stringResource(Res.string.register_savings_details),
                                 description = stringResource(Res.string.register_savings_details),
                                 onClick = {

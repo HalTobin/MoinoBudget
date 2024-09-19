@@ -7,7 +7,6 @@ import presentation.data.ExpenseFrequency
 data class AddEditEnvelopeState(
     val envelopeId: Int? = null,
     val title: String = "",
-    val subtitle: String = "",
     val max: String = "",
     val iconId: Int? = null,
     val frequency: Int = ExpenseFrequency.Monthly.id
@@ -18,7 +17,6 @@ data class AddEditEnvelopeState(
         else AddEditEnvelope(
             id = envelopeId,
             title = title,
-            subtitle = subtitle,
             max = max.toIntOrNull(),
             iconId = iconId,
             frequency = frequency
@@ -29,7 +27,6 @@ data class AddEditEnvelopeState(
         fun generateFromEnvelopeUI(envelope: EnvelopeUI) = AddEditEnvelopeState(
             envelopeId = envelope.id,
             title = envelope.title,
-            subtitle = envelope.subtitle,
             max = envelope.max?.toString() ?: "",
             iconId = envelope.icon?.id,
             frequency = envelope.frequency.id

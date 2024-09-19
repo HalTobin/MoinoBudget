@@ -1,6 +1,5 @@
 package data.db
 
-import androidx.room.AutoMigration
 import androidx.room.ConstructedBy
 import androidx.room.Database
 import androidx.room.RoomDatabase
@@ -35,9 +34,9 @@ import kotlinx.coroutines.IO
         Envelope::class,
         Expense::class
     ],
-    version = 11
+    version = 13
 )
-@ConstructedBy(ExpenseDbCtor::class) // NEW
+@ConstructedBy(ExpenseDbCtor::class)
 abstract class ExpenseDatabase: RoomDatabase() {
 
     abstract fun budgetOperation(): BudgetOperationDao

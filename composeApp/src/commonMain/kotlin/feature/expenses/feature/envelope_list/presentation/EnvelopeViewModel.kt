@@ -21,7 +21,7 @@ class EnvelopeViewModel(
     private var envelopeJob: Job? = null
 
     init {
-        //setUpEnvelopeJob()
+        setUpEnvelopeJob()
     }
 
     private fun setUpEnvelopeJob() {

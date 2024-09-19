@@ -24,13 +24,13 @@ import presentation.dashedBorder
 
 @Composable
 fun AddCard(
+    modifier: Modifier = Modifier,
     title: String,
     description: String,
     onClick: () -> Unit
-) = Row(Modifier
+) = Row(modifier
     .fillMaxWidth()
     .padding(top = 12.dp, bottom = 24.dp)
-    .padding(horizontal = 16.dp)
     .dashedBorder(4.dp, MaterialTheme.colorScheme.primary, 16.dp)
     .clip(RoundedCornerShape(16.dp))
     .background(MaterialTheme.colorScheme.surface)

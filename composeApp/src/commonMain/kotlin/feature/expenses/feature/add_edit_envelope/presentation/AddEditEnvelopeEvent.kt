@@ -6,7 +6,6 @@ sealed class AddEditEnvelopeEvent {
     data object DeleteEnvelope: AddEditEnvelopeEvent()
 
     data class UpdateTitle(val title: String): AddEditEnvelopeEvent()
-    data class UpdateSubtitle(val subtitle: String): AddEditEnvelopeEvent()
     data class UpdateMax(val max: String): AddEditEnvelopeEvent()
     data class UpdateIcon(val iconId: Int?): AddEditEnvelopeEvent()
     data class UpdateFrequency(val frequencyId: Int): AddEditEnvelopeEvent()

@@ -11,5 +11,6 @@ data class Expense(
     val title: String,
     @ColumnInfo(name = "envelope_id") val envelopeId: Int,
     val amount: Float,
-    val iconId: Int?
+    val iconId: Int?,
+    val timestamp: Long
 )
