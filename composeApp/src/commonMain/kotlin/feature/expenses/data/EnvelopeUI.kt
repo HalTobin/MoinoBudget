@@ -1,5 +1,6 @@
 package feature.expenses.data
 
+import androidx.compose.ui.graphics.Color
 import kotlinx.datetime.LocalDate
 import presentation.data.ExpenseFrequency
 import presentation.data.ExpenseIcon
@@ -13,5 +14,7 @@ data class EnvelopeUI(
     val frequency: ExpenseFrequency,
     val startPeriod: LocalDate,
     val endPeriod: LocalDate,
-    val remaining: Int
+    val remainingMoney: Int?,
+    val remainingDays: Int,
+    val color: Color?
 )

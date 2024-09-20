@@ -42,6 +42,7 @@ class AddEditEnvelopeViewModel(
             is AddEditEnvelopeEvent.UpdateFrequency -> _state.update { it.copy(frequency = event.frequencyId) }
             is AddEditEnvelopeEvent.UpdateMax -> _state.update { it.copy(max = event.max) }
             is AddEditEnvelopeEvent.UpdateIcon -> _state.update { it.copy(iconId = event.iconId) }
+            is AddEditEnvelopeEvent.UpdateColor -> _state.update { it.copy(color = event.color) }
         }
     }
 

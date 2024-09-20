@@ -34,7 +34,7 @@ import kotlinx.coroutines.IO
         Envelope::class,
         Expense::class
     ],
-    version = 13
+    version = 14
 )
 @ConstructedBy(ExpenseDbCtor::class)
 abstract class ExpenseDatabase: RoomDatabase() {

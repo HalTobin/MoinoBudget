@@ -41,6 +41,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import data.repository.AppPreferences
+import feature.savings.feature.savings_list.presentation.component.ColorSection
 import moinobudget.composeapp.generated.resources.Res
 import moinobudget.composeapp.generated.resources.close_dialog_description
 import moinobudget.composeapp.generated.resources.delete_budget
@@ -166,6 +167,13 @@ fun AddEditEnvelopeScreen(
                     onSelect = { onEvent(AddEditEnvelopeEvent.UpdateIcon(it)) },
                     deleteMode = deleteMode
                 )
+
+                Spacer(Modifier.height(16.dp))
+
+                ColorSection(
+                    modifier = Modifier.shake(deleteMode),
+                    selection = state.color,
+                    colorSelect = { onEvent(AddEditEnvelopeEvent.UpdateColor(if (state.color == it) null else it)) })
 
                 Spacer(Modifier.weight(1f))
                 AnimatedContent(modifier = Modifier.fillMaxWidth(),

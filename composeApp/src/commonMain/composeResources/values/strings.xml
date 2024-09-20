@@ -45,8 +45,8 @@
         <item quantity="other">due in %1$d days</item>
     </plurals>
     <plurals name="available_in">
-        <item quantity="one">Available in %1$d day</item>
-        <item quantity="other">Available in %1$d days</item>
+        <item quantity="one">available in %1$d day</item>
+        <item quantity="other">available in %1$d days</item>
     </plurals>
 
     <!-- Expenses Sorting -->
@@ -125,6 +125,19 @@
     <string name="november">November</string>
     <string name="december">December</string>
 
+    <string name="january_abbreviation">Jan.</string>
+    <string name="february_abbreviation">Feb.</string>
+    <string name="march_abbreviation">March</string>
+    <string name="april_abbreviation">April</string>
+    <string name="may_abbreviation">May</string>
+    <string name="june_abbreviation">June</string>
+    <string name="july_abbreviation">July</string>
+    <string name="august_abbreviation">Aug.</string>
+    <string name="september_abbreviation">Sep.</string>
+    <string name="october_abbreviation">Oct.</string>
+    <string name="november_abbreviation">Nov.</string>
+    <string name="december_abbreviation">Dec.</string>
+
     <!-- Savings -->
     <string name="savings">Savings</string>
     <string name="goal">Goal</string>
@@ -163,7 +176,12 @@
     <!-- Expense List -->
     <string name="create_envelope">Create an envelope</string>
     <string name="create_envelope_details">Define an envelope to help you track your expenses</string>
-    <string name="max_with_value">Max: %1$s</string>
+    <string name="remaining">remaining</string>
+    <string name="available_until">%1$s/day available for %2$s days</string>
+    <plurals name="available_until">
+        <item quantity="one">%1$s/day available for %2$s day</item>
+        <item quantity="other">%1$s/day available for %2$s days</item>
+    </plurals>
 
     <!-- Add Edit Envelope -->
     <string name="edit_envelope">Edit envelope</string>

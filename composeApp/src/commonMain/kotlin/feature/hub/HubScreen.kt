@@ -151,7 +151,7 @@ fun HubScreen(
                         EnvelopeScreen(
                             state = state,
                             preferences = preferences,
-                            addEnvelope = { goToScreen(MoinoBudgetScreen.AddEditEnvelope(-1)) }
+                            addEditEnvelope = { goToScreen(MoinoBudgetScreen.AddEditEnvelope(it ?: -1)) }
                         )
                     }
                 }

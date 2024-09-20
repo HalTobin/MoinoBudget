@@ -1,5 +1,6 @@
 package util
 
+import androidx.compose.runtime.Composable
 import data.repository.AppPreferences
 import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
@@ -7,10 +8,22 @@ import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.LocalTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.format
-import kotlinx.datetime.format.MonthNames
 import kotlinx.datetime.format.char
 import kotlinx.datetime.toInstant
 import kotlinx.datetime.toLocalDateTime
+import moinobudget.composeapp.generated.resources.Res
+import moinobudget.composeapp.generated.resources.april_abbreviation
+import moinobudget.composeapp.generated.resources.august_abbreviation
+import moinobudget.composeapp.generated.resources.december_abbreviation
+import moinobudget.composeapp.generated.resources.february_abbreviation
+import moinobudget.composeapp.generated.resources.january_abbreviation
+import moinobudget.composeapp.generated.resources.july_abbreviation
+import moinobudget.composeapp.generated.resources.june_abbreviation
+import moinobudget.composeapp.generated.resources.march_abbreviation
+import moinobudget.composeapp.generated.resources.november_abbreviation
+import moinobudget.composeapp.generated.resources.october_abbreviation
+import moinobudget.composeapp.generated.resources.september_abbreviation
+import org.jetbrains.compose.resources.stringResource
 
 fun Long.toLocalDate(): LocalDate {
     // Convert the timestamp to an Instant
@@ -77,10 +90,30 @@ fun getValidDayOfMonth(year: Int, month: Int, day: Int): Int {
 fun isLeapYear(year: Int): Boolean =
     (year % 4 == 0 && year % 100 != 0) || (year % 400 == 0)
 
+@Composable
 fun formatDate(date: LocalDate, preferences: AppPreferences): String {
-    val customFormat = LocalDate.Format {
+    //val monthAbbreviation = getMonthAbbreviationByMonthNumber(date.monthNumber)
+    /*val customFormat = LocalDate.Format {
         // TODO - Take into account different date formats
-        dayOfMonth(); char('/'); monthNumber(); char('/'); year()
-    }
-    return date.format(customFormat)
+        //dayOfMonth(); char('/'); monthNumber(); char('/'); year()
+        monthAbbreviation; char(' '); dayOfMonth()
+    }*/
+    return "${getMonthAbbreviationByMonthNumber(date.monthNumber)} ${date.dayOfMonth}"
+}
+
+@Composable
+fun getMonthAbbreviationByMonthNumber(monthNumber: Int) = when (monthNumber) {
+    1 -> stringResource(Res.string.january_abbreviation)
+    2 -> stringResource(Res.string.february_abbreviation)
+    3 -> stringResource(Res.string.march_abbreviation)
+    4 -> stringResource(Res.string.april_abbreviation)
+    5 -> stringResource(Res.string.march_abbreviation)
+    6 -> stringResource(Res.string.june_abbreviation)
+    7 -> stringResource(Res.string.july_abbreviation)
+    8 -> stringResource(Res.string.august_abbreviation)
+    9 -> stringResource(Res.string.september_abbreviation)
+    10 -> stringResource(Res.string.october_abbreviation)
+    11 -> stringResource(Res.string.november_abbreviation)
+    12 -> stringResource(Res.string.december_abbreviation)
+    else -> throw IllegalArgumentException("monthNumber should be in the interval: [1, 12], entered: $monthNumber")
 }

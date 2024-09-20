@@ -1,5 +1,7 @@
 package feature.expenses.feature.add_edit_envelope.presentation
 
+import androidx.compose.ui.graphics.Color
+
 sealed class AddEditEnvelopeEvent {
     data class Init(val envelopeId: Int): AddEditEnvelopeEvent()
     data object UpsertEnvelope: AddEditEnvelopeEvent()
@@ -9,4 +11,5 @@ sealed class AddEditEnvelopeEvent {
     data class UpdateMax(val max: String): AddEditEnvelopeEvent()
     data class UpdateIcon(val iconId: Int?): AddEditEnvelopeEvent()
     data class UpdateFrequency(val frequencyId: Int): AddEditEnvelopeEvent()
+    data class UpdateColor(val color: Color?): AddEditEnvelopeEvent()
 }

@@ -1,5 +1,6 @@
 package data.mapper
 
+import androidx.compose.ui.graphics.toArgb
 import data.db.table.Envelope
 import feature.expenses.feature.add_edit_envelope.data.AddEditEnvelope
 
@@ -9,5 +10,6 @@ fun AddEditEnvelope.toEnvelopeEntity(): Envelope =
         title = this.title,
         max = this.max,
         iconId = this.iconId,
-        frequency = this.frequency
+        frequency = this.frequency,
+        color = color?.toArgb()
     )

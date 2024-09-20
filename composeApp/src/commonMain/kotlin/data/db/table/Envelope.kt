@@ -11,5 +11,6 @@ data class Envelope(
     val title: String,
     val max: Int?,
     val iconId: Int?,
-    val frequency: Int // 0: Monthly, 1: Quarterly, 2: Biannually, 3: Annually
+    val frequency: Int, // 0: Monthly, 1: Quarterly, 2: Biannually, 3: Annually
+    val color: Int?
 )

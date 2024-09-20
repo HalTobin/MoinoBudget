@@ -1,5 +1,6 @@
 package data.repository
 
+import androidx.compose.ui.graphics.Color
 import data.db.dao.EnvelopeDao
 import data.db.dao.ExpenseDao
 import data.db.table.Envelope
@@ -32,10 +33,15 @@ class EnvelopeRepositoryImpl(
         }
 
     override suspend fun getEnvelopeById(envelopeId: Int): EnvelopeUI =
-        envelopeDao.getBydId(envelopeId).let { TODO() }
+        envelopeDao.getBydId(envelopeId).toEnvelopeUI()
 
     override suspend fun getEnvelopeFlowById(envelopeId: Int): Flow<EnvelopeUI> =
-        envelopeDao.getFlowById(envelopeId).map { TODO() }
+        combine(
+            envelopeDao.getFlowById(envelopeId),
+            expenseDao.getFlowByEnvelopeId(envelopeId)
+        ) { envelope, expenses ->
+            envelope.toEnvelopeUI(expenses)
+        }
 
     override suspend fun upsertEnvelope(envelope: AddEditEnvelope): Long =
         envelopeDao.upsert(envelope.toEnvelopeEntity())
@@ -43,20 +49,24 @@ class EnvelopeRepositoryImpl(
     override suspend fun deleteEnvelope(envelopeId: Int) =
         envelopeDao.deleteById(envelopeId.toLong())
 
-    private suspend fun Envelope.toEnvelopeUI(): EnvelopeUI {
+    private suspend fun Envelope.toEnvelopeUI(expenses: List<Expense>? = null): EnvelopeUI {
         val currentDate = Clock.System.now().toEpochMilliseconds().toLocalDate()
         val periods = getPeriodFromTimestamp(currentDate, this.frequency == ExpenseFrequency.Annually.id)
-        val relatedExpenses = expenseDao.getByEnvelopeIdAndPeriod(this.id, periods.first.toEpochMillisecond(), periods.second.toEpochMillisecond())
+        val relatedExpenses = expenses ?: expenseDao.getByEnvelopeIdAndPeriod(this.id, periods.first.toEpochMillisecond(), periods.second.toEpochMillisecond())
+        //val current = relatedExpenses.sumOf { it.amount.toDouble() }
+        val current = 250
         return EnvelopeUI(
             id = this.id,
             title = this.title,
-            current = relatedExpenses.sumOf { it.amount.toDouble() },
+            current = current.toDouble(),
             startPeriod = periods.first,
             endPeriod = periods.second,
             frequency = ExpenseFrequency.findById(this.frequency),
             icon = this.iconId?.let { ExpenseIcon.findById(it) },
             max = this.max,
-            remaining = currentDate.daysUntil(periods.second)
+            remainingMoney = this.max?.let { it - current },
+            remainingDays = currentDate.daysUntil(periods.second),
+            color = this.color?.let { Color(it) }
         )
     }
 

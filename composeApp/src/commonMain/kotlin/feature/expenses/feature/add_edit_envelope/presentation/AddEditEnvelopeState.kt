@@ -1,5 +1,6 @@
 package feature.expenses.feature.add_edit_envelope.presentation
 
+import androidx.compose.ui.graphics.Color
 import feature.expenses.data.EnvelopeUI
 import feature.expenses.feature.add_edit_envelope.data.AddEditEnvelope
 import presentation.data.ExpenseFrequency
@@ -9,7 +10,8 @@ data class AddEditEnvelopeState(
     val title: String = "",
     val max: String = "",
     val iconId: Int? = null,
-    val frequency: Int = ExpenseFrequency.Monthly.id
+    val frequency: Int = ExpenseFrequency.Monthly.id,
+    val color: Color? = null
 ) {
 
     fun getAddEditEnvelope(): AddEditEnvelope? {
@@ -19,7 +21,8 @@ data class AddEditEnvelopeState(
             title = title,
             max = max.toIntOrNull(),
             iconId = iconId,
-            frequency = frequency
+            frequency = frequency,
+            color = color
         )
     }
 
@@ -29,7 +32,8 @@ data class AddEditEnvelopeState(
             title = envelope.title,
             max = envelope.max?.toString() ?: "",
             iconId = envelope.icon?.id,
-            frequency = envelope.frequency.id
+            frequency = envelope.frequency.id,
+            color = envelope.color
         )
     }
 
