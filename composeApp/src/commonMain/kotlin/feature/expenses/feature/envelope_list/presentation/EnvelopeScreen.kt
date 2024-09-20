@@ -19,6 +19,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -97,41 +98,46 @@ fun EnvelopeItem(
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
 
         val envelopeColor = envelope.color ?: MaterialTheme.colorScheme.primary
-        val darkBackground = Color.hsl(hue = envelopeColor.toHue(), lightness = 0.3f, saturation = 1f)
+        val darkBackground = Color.hsl(hue = envelopeColor.toHue(), lightness = 0.12f, saturation = 1f)
 
-        Column(Modifier
-            .background(darkBackground)
-            .padding(horizontal = 24.dp)
+        Surface(
+            contentColor = darkBackground,
+            color = envelopeColor
         ) {
-            Row(Modifier.padding(top = 16.dp),
-                verticalAlignment = Alignment.CenterVertically) {
-                envelope.icon?.let { icon ->
-                    Icon(icon.icon,
-                        modifier = Modifier.padding(end = 16.dp).size(32.dp),
-                        contentDescription = null)
-                }
-                Text(envelope.title,
-                    style = MaterialTheme.typography.titleLarge,
-                    modifier = Modifier.weight(1f),
-                    fontWeight = FontWeight.SemiBold)
-
-                envelope.remainingMoney?.let { remainingMoney ->
-                    Text(stringResource(Res.string.remaining_is))
-                    Text(formatCurrency(remainingMoney.toFloat(), preferences),
-                        modifier = Modifier.padding(start = 4.dp),
+            Column(Modifier
+                //.background(darkBackground)
+                .padding(horizontal = 24.dp)
+            ) {
+                Row(Modifier.padding(top = 16.dp),
+                    verticalAlignment = Alignment.CenterVertically) {
+                    envelope.icon?.let { icon ->
+                        Icon(icon.icon,
+                            modifier = Modifier.padding(end = 16.dp).size(32.dp),
+                            contentDescription = null)
+                    }
+                    Text(envelope.title,
                         style = MaterialTheme.typography.titleLarge,
-                        fontWeight = FontWeight.Bold
-                    )
+                        modifier = Modifier.weight(1f),
+                        fontWeight = FontWeight.SemiBold)
+
+                    envelope.remainingMoney?.let { remainingMoney ->
+                        Text(stringResource(Res.string.remaining_is))
+                        Text(formatCurrency(remainingMoney.toFloat(), preferences),
+                            modifier = Modifier.padding(start = 4.dp),
+                            style = MaterialTheme.typography.titleLarge,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
                 }
-            }
-            Row(Modifier.padding(bottom = 16.dp),
-                verticalAlignment = Alignment.CenterVertically) {
-                Text(formatCurrency(envelope.current.toFloat(), preferences),
-                    modifier = Modifier.weight(1f),
-                    style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.Bold)
-                Text("${formatDate(envelope.startPeriod, preferences)} - ${formatDate(envelope.endPeriod, preferences)}",
-                    style = MaterialTheme.typography.titleMedium)
+                Row(Modifier.padding(bottom = 16.dp),
+                    verticalAlignment = Alignment.CenterVertically) {
+                    Text(formatCurrency(envelope.current.toFloat(), preferences),
+                        modifier = Modifier.weight(1f),
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.Bold)
+                    Text("${formatDate(envelope.startPeriod, preferences)} - ${formatDate(envelope.endPeriod, preferences)}",
+                        style = MaterialTheme.typography.titleMedium)
+                }
             }
         }
 
