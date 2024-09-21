@@ -10,8 +10,10 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import util.nullIfMinus
 
 class SavingsDetailsViewModel(
+    savingsId: Int,
     private val savingsRepository: SavingsRepository
 ): ViewModel() {
     private val _state = MutableStateFlow(SavingsDetailsState())
@@ -19,9 +21,12 @@ class SavingsDetailsViewModel(
 
     private var savingsJob: Job? = null
 
+    init {
+        savingsId.nullIfMinus()?.let { setSavingsJob(it) }
+    }
+
     fun onEvent(event: SavingsDetailsEvent) {
         when (event) {
-            is SavingsDetailsEvent.Init -> setSavingsJob(event.savingsId)
             is SavingsDetailsEvent.UpdateAmount -> viewModelScope.launch(Dispatchers.IO) {
                 _state.value.savings?.let { savings ->
                     val newAmount = when (event.operation) {

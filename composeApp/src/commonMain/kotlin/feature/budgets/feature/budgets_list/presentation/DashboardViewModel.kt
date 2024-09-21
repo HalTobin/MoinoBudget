@@ -70,7 +70,7 @@ class DashboardViewModel(
     private fun setUpExpenseJob() {
         expenseJob?.cancel()
         expenseJob = viewModelScope.launch(Dispatchers.IO) {
-            budgetOperationRepository.getExpensesFlow().collect { expenses ->
+            budgetOperationRepository.getBudgetOperationsFlow().collect { expenses ->
                 _state.update { it.copy(expenses = expenses) }
             }
         }

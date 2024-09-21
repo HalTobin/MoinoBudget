@@ -5,29 +5,31 @@ import androidx.lifecycle.viewModelScope
 import data.repository.EnvelopeRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import util.nullIfMinus
 
 class AddEditEnvelopeViewModel(
+    envelopeId: Int,
     private val envelopeRepository: EnvelopeRepository
 ): ViewModel() {
 
     private val _state = MutableStateFlow(AddEditEnvelopeState())
     val state = _state.asStateFlow()
 
+    init {
+        envelopeId.nullIfMinus()?.let { loadEnvelope(it) }
+    }
+
     private fun loadEnvelope(envelopeId: Int) = viewModelScope.launch(Dispatchers.IO) {
-        if (envelopeId != -1) {
-            val envelope = envelopeRepository.getEnvelopeById(envelopeId)
-            _state.update { AddEditEnvelopeState.generateFromEnvelopeUI(envelope) }
-        }
+        val envelope = envelopeRepository.getEnvelopeById(envelopeId)
+        _state.update { AddEditEnvelopeState.generateFromEnvelopeUI(envelope) }
     }
 
     fun onEvent(event: AddEditEnvelopeEvent) {
         when (event) {
-            is AddEditEnvelopeEvent.Init -> loadEnvelope(event.envelopeId)
             is AddEditEnvelopeEvent.UpsertEnvelope -> viewModelScope.launch(Dispatchers.IO) {
                 _state.value.getAddEditEnvelope()?.let { addEditEnvelope ->
                     envelopeRepository.upsertEnvelope(addEditEnvelope)

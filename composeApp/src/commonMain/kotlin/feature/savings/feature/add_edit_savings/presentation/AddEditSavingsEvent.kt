@@ -4,7 +4,6 @@ import androidx.compose.ui.graphics.Color
 import feature.savings.data.SavingsType
 
 sealed class AddEditSavingsEvent {
-    data class Init(val savingsId: Int?): AddEditSavingsEvent()
     data class UpdateTitle(val title: String): AddEditSavingsEvent()
     data class UpdateSubtitle(val subtitle: String): AddEditSavingsEvent()
     data class UpdateType(val type: SavingsType): AddEditSavingsEvent()

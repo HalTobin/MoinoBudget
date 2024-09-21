@@ -27,9 +27,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontStyle
@@ -48,7 +46,6 @@ import moinobudget.composeapp.generated.resources.remaining_is
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 import presentation.component.AddCard
-import presentation.data.IncomeOrOutcome
 import presentation.formatCurrency
 import util.formatDate
 import util.toHue
@@ -97,17 +94,14 @@ fun EnvelopeItem(
 
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
 
-        val envelopeColor = envelope.color ?: MaterialTheme.colorScheme.primary
-        val darkBackground = Color.hsl(hue = envelopeColor.toHue(), lightness = 0.12f, saturation = 1f)
+        val envelopePrimary = envelope.color ?: MaterialTheme.colorScheme.primary
+        val envelopeOnPrimary = Color.hsl(hue = envelopePrimary.toHue(), lightness = 0.12f, saturation = 1f)
 
         Surface(
-            contentColor = darkBackground,
-            color = envelopeColor
+            contentColor = envelopeOnPrimary,
+            color = envelopePrimary
         ) {
-            Column(Modifier
-                //.background(darkBackground)
-                .padding(horizontal = 24.dp)
-            ) {
+            Column(Modifier.padding(horizontal = 24.dp)) {
                 Row(Modifier.padding(top = 16.dp),
                     verticalAlignment = Alignment.CenterVertically) {
                     envelope.icon?.let { icon ->
@@ -153,8 +147,6 @@ fun EnvelopeItem(
                 )
             }
 
-            val accentColor = lerp(envelopeColor, IncomeOrOutcome.Outcome.color, progress)
-            val darkAccentColor = Color.hsl(hue = accentColor.toHue(), lightness = 0.15f, saturation = 1f)
             Row(Modifier.padding(top = 8.dp).padding(horizontal = 24.dp),
                 verticalAlignment = Alignment.CenterVertically) {
                 Box(Modifier
@@ -168,11 +160,11 @@ fun EnvelopeItem(
                         .fillMaxHeight()
                         .fillMaxWidth(currentProgress.value)
                         .clip(CircleShape)
-                        .background(accentColor)) {
+                        .background(envelopePrimary)) {
                         Text("${(progress * 100).toInt()}%",
                             modifier = Modifier.align(Alignment.Center),
                             fontWeight = FontWeight.SemiBold,
-                            color = darkAccentColor,
+                            color = envelopeOnPrimary,
                             style = MaterialTheme.typography.titleSmall)
                     }
                 }

@@ -15,13 +15,13 @@ class BudgetOperationRepositoryImpl(
     private val budgetOperationLabelDao: BudgetOperationLabelDao
 ): BudgetOperationRepository {
 
-    override suspend fun getExpense(id: Int): BudgetOperationUI =
+    override suspend fun getBudgetOperation(id: Int): BudgetOperationUI =
         budgetOperationLabelDao.getExpenseWithLabels(id).toExpenseUI()
 
-    override suspend fun getExpensesFlow(): Flow<List<BudgetOperationUI>> =
+    override suspend fun getBudgetOperationsFlow(): Flow<List<BudgetOperationUI>> =
         budgetOperationLabelDao.getAllExpensesWithLabelsFlow().map { it.map { expenseWithLabel -> expenseWithLabel.toExpenseUI() } }
 
-    override suspend fun upsertExpense(operation: AddEditBudgetOperation) {
+    override suspend fun upsertBudgetOperation(operation: AddEditBudgetOperation) {
         operation.id?.let { expenseId ->
             budgetOperationLabelDao.getCrossRefsByExpenseId(expenseId)
                 .filterNot { crossRef -> operation.labels.any { it == crossRef.labelId } }
@@ -38,14 +38,14 @@ class BudgetOperationRepositoryImpl(
         )
     }
 
-    override suspend fun deleteExpense(operationId: Int) =
+    override suspend fun deleteBudgetOperation(operationId: Int) =
         budgetOperationDao.deleteById(operationId.toLong())
 
 }
 
 interface BudgetOperationRepository {
-    suspend fun getExpense(id: Int): BudgetOperationUI
-    suspend fun getExpensesFlow(): Flow<List<BudgetOperationUI>>
-    suspend fun upsertExpense(operation: AddEditBudgetOperation)
-    suspend fun deleteExpense(operationId: Int)
+    suspend fun getBudgetOperation(id: Int): BudgetOperationUI
+    suspend fun getBudgetOperationsFlow(): Flow<List<BudgetOperationUI>>
+    suspend fun upsertBudgetOperation(operation: AddEditBudgetOperation)
+    suspend fun deleteBudgetOperation(operationId: Int)
 }

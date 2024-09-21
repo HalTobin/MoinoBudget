@@ -15,6 +15,8 @@ import data.repository.BudgetRepository
 import data.repository.BudgetRepositoryImpl
 import data.repository.EnvelopeRepository
 import data.repository.EnvelopeRepositoryImpl
+import data.repository.ExpenseRepository
+import data.repository.ExpenseRepositoryImpl
 import data.repository.LabelRepository
 import data.repository.LabelRepositoryImpl
 import data.repository.SavingsRepository
@@ -22,6 +24,7 @@ import data.repository.SavingsRepositoryImpl
 import feature.budgets.feature.add_edit_budget_operation.presentation.AddEditBudgetOperationViewModel
 import feature.budgets.feature.budgets_list.presentation.DashboardViewModel
 import feature.expenses.feature.add_edit_envelope.presentation.AddEditEnvelopeViewModel
+import feature.expenses.feature.envelope_details.EnvelopeDetailsViewModel
 import feature.expenses.feature.envelope_list.presentation.EnvelopeViewModel
 import feature.savings.feature.add_edit_savings.presentation.AddEditSavingsViewModel
 import feature.savings.feature.savings_detail.SavingsDetailsViewModel
@@ -48,6 +51,7 @@ object ModuleVM {
         viewModelOf(::SavingsDetailsViewModel)
         viewModelOf(::EnvelopeViewModel)
         viewModelOf(::AddEditEnvelopeViewModel)
+        viewModelOf(::EnvelopeDetailsViewModel)
     }
 }
 
@@ -58,6 +62,7 @@ object ModuleRepositories {
         single { provideBudgetOperationRepository(get(), get()) }.bind<BudgetOperationRepository>()
         single { provideSavingsRepository(get()) }.bind<SavingsRepository>()
         single { provideEnvelopeRepository(get(), get()) }.bind<EnvelopeRepository>()
+        single { provideExpenseRepository(get()) }.bind<ExpenseRepository>()
     }
 
     private fun provideLabelRepository(labelDao: LabelDao) = LabelRepositoryImpl(labelDao)
@@ -79,6 +84,10 @@ object ModuleRepositories {
         envelopeDao: EnvelopeDao,
         expenseDao: ExpenseDao
     ): EnvelopeRepository = EnvelopeRepositoryImpl(envelopeDao, expenseDao)
+
+    private fun provideExpenseRepository(
+        expenseDao: ExpenseDao
+    ): ExpenseRepository = ExpenseRepositoryImpl(expenseDao)
 }
 
 object ModuleDAO {

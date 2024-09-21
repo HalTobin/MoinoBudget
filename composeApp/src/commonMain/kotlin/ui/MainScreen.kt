@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -18,25 +17,24 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import data.repository.AppPreferences
-import feature.budgets.feature.add_edit_budget_operation.presentation.AddEditBudgetOperationEvent
+import feature.budgets.data.BudgetStyle
+import feature.budgets.feature.add_edit_budget_operation.presentation.AddEditBudgetOperationScreen
 import feature.budgets.feature.add_edit_budget_operation.presentation.AddEditBudgetOperationViewModel
+import feature.expenses.feature.add_edit_envelope.presentation.AddEditEnvelopeScreen
+import feature.expenses.feature.add_edit_envelope.presentation.AddEditEnvelopeViewModel
+import feature.expenses.feature.envelope_details.EnvelopeDetailsScreen
+import feature.expenses.feature.envelope_details.EnvelopeDetailsViewModel
 import feature.hub.HubScreen
-import feature.savings.feature.add_edit_savings.presentation.AddEditSavingsEvent
+import feature.savings.data.SavingsType
 import feature.savings.feature.add_edit_savings.presentation.AddEditSavingsScreen
 import feature.savings.feature.add_edit_savings.presentation.AddEditSavingsViewModel
-import feature.savings.feature.savings_detail.SavingsDetailsEvent
 import feature.savings.feature.savings_detail.SavingsDetailsScreen
 import feature.savings.feature.savings_detail.SavingsDetailsViewModel
 import feature.settings.SettingsScreen
 import feature.settings.SettingsViewModel
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
-import feature.budgets.data.BudgetStyle
-import feature.budgets.feature.add_edit_budget_operation.presentation.AddEditBudgetOperationScreen
-import feature.expenses.feature.add_edit_envelope.presentation.AddEditEnvelopeEvent
-import feature.expenses.feature.add_edit_envelope.presentation.AddEditEnvelopeScreen
-import feature.expenses.feature.add_edit_envelope.presentation.AddEditEnvelopeViewModel
-import feature.savings.data.SavingsType
+import org.koin.core.parameter.parametersOf
 import ui.theme.MoinoBudgetTheme
 
 @Composable
@@ -82,16 +80,8 @@ fun MainScreen(
                 val expenseId = args.expenseId
                 val labels = args.labelIds
 
-                val viewModel = koinViewModel<AddEditBudgetOperationViewModel>()
+                val viewModel = koinViewModel<AddEditBudgetOperationViewModel> { parametersOf(expenseId, labels) }
                 val state by viewModel.state.collectAsStateWithLifecycle()
-
-                LaunchedEffect(true) {
-                    viewModel.onEvent(
-                        AddEditBudgetOperationEvent.Init(
-                        expenseId = if (expenseId == -1) null else expenseId,
-                        labels = labels
-                    ))
-                }
 
                 AddEditBudgetOperationScreen(
                     preferences = preferences,
@@ -110,12 +100,8 @@ fun MainScreen(
                 val savingsId = args.savingsId
                 val savingsType = SavingsType.findById(args.defaultSavingsTypeId)
 
-                val viewModel = koinViewModel<AddEditSavingsViewModel>()
+                val viewModel = koinViewModel<AddEditSavingsViewModel> { parametersOf(savingsId) }
                 val state by viewModel.state.collectAsStateWithLifecycle()
-
-                LaunchedEffect(true) {
-                    viewModel.onEvent(AddEditSavingsEvent.Init(if (savingsId == -1) null else savingsId))
-                }
 
                 AddEditSavingsScreen(
                     state = state,
@@ -133,12 +119,8 @@ fun MainScreen(
                 val args = it.toRoute<MoinoBudgetScreen.SavingsDetails>()
                 val savingsId = args.savingsId
 
-                val viewModel = koinViewModel<SavingsDetailsViewModel>()
+                val viewModel = koinViewModel<SavingsDetailsViewModel> { parametersOf(savingsId) }
                 val state by viewModel.state.collectAsStateWithLifecycle()
-
-                LaunchedEffect(true) {
-                    viewModel.onEvent(SavingsDetailsEvent.Init(savingsId))
-                }
 
                 SavingsDetailsScreen(
                     state = state,
@@ -160,17 +142,31 @@ fun MainScreen(
                 val args = it.toRoute<MoinoBudgetScreen.AddEditEnvelope>()
                 val envelopeId = args.envelopeId
 
-                val viewModel = koinViewModel<AddEditEnvelopeViewModel>()
+                val viewModel = koinViewModel<AddEditEnvelopeViewModel> { parametersOf(envelopeId) }
                 val state by viewModel.state.collectAsStateWithLifecycle()
-
-                LaunchedEffect(key1 = true) {
-                    viewModel.onEvent(AddEditEnvelopeEvent.Init(envelopeId))
-                }
 
                 AddEditEnvelopeScreen(
                     state = state,
                     preferences = preferences,
                     onEvent = viewModel::onEvent,
+                    goBack = { navController.popBackStack() }
+                )
+            }
+            composable<MoinoBudgetScreen.EnvelopeDetails>(
+                enterTransition = { slideInVertically(initialOffsetY = { it }) },
+                popExitTransition = { slideOutVertically(targetOffsetY = { it }) },
+                popEnterTransition = { EnterTransition.None }
+            ) {
+                val args = it.toRoute<MoinoBudgetScreen.AddEditEnvelope>()
+                val envelopeId = args.envelopeId
+
+                val viewModel = koinViewModel<EnvelopeDetailsViewModel> { parametersOf(envelopeId) }
+                val state by viewModel.state.collectAsStateWithLifecycle()
+
+                EnvelopeDetailsScreen(
+                    state = state,
+                    preferences = preferences,
+                    addEditExpense = { TODO() },
                     goBack = { navController.popBackStack() }
                 )
             }

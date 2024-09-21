@@ -3,28 +3,28 @@ package feature.savings.feature.add_edit_savings.presentation
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import data.repository.SavingsRepository
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import util.nullIfMinus
 
 class AddEditSavingsViewModel(
+    savingsId: Int,
     private val savingsRepository: SavingsRepository
 ): ViewModel() {
 
     private val _state = MutableStateFlow(AddEditSavingsState())
     val state = _state.asStateFlow()
 
+    init {
+        savingsId.nullIfMinus()?.let { loadSavings(it) }
+    }
+
     fun onEvent(event: AddEditSavingsEvent) {
         when (event) {
-            is AddEditSavingsEvent.Init -> {
-                event.savingsId?.let { savingsId ->
-                    viewModelScope.launch {
-                        val savings = savingsRepository.getSavingsById(savingsId)
-                        _state.update { AddEditSavingsState.generateStateFromSavingsUI(savings) }
-                    }
-                }
-            }
             is AddEditSavingsEvent.UpsertSavings -> _state.value.generateAddEditSavings()?.let { addEditSavings ->
                 viewModelScope.launch { savingsRepository.upsertSavings(addEditSavings) }
             }
@@ -43,6 +43,11 @@ class AddEditSavingsViewModel(
                     if (event.iconId == _state.value.savingsIconId) null
                     else event.iconId) }
         }
+    }
+
+    private fun loadSavings(savingsId: Int) = viewModelScope.launch(Dispatchers.IO) {
+        val savings = savingsRepository.getSavingsById(savingsId)
+        _state.update { AddEditSavingsState.generateStateFromSavingsUI(savings) }
     }
 
 }

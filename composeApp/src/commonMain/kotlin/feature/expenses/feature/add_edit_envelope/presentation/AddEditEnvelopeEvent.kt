@@ -3,7 +3,6 @@ package feature.expenses.feature.add_edit_envelope.presentation
 import androidx.compose.ui.graphics.Color
 
 sealed class AddEditEnvelopeEvent {
-    data class Init(val envelopeId: Int): AddEditEnvelopeEvent()
     data object UpsertEnvelope: AddEditEnvelopeEvent()
     data object DeleteEnvelope: AddEditEnvelopeEvent()
 
