@@ -103,6 +103,7 @@
     <!-- General purpose -->
     <string name="back_home_description">Navigate back to home screen</string>
     <string name="close_dialog_description">Close dialog</string>
+    <string name="go_back">Go back to previous screen</string>
     <string name="dismiss_message">Dismiss message</string>
     <string name="total">Total</string>
     <string name="edit">Edit</string>
@@ -186,4 +187,8 @@
     <!-- Add Edit Envelope -->
     <string name="edit_envelope">Edit envelope</string>
     <string name="save_envelope">Create envelope</string>
+
+    <!-- Envelope Details -->
+    <string name="add_expense">Add an expense</string>
+    <string name="left_of">left of %1$s</string>
 </resources>

@@ -1,6 +1,7 @@
 package ui
 
 import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutHorizontally
@@ -107,14 +108,17 @@ fun MainScreen(
                     state = state,
                     preferences = preferences,
                     onEvent = viewModel::onEvent,
+                    uiEvent = viewModel.eventFlow,
                     defaultSavings = savingsType,
-                    goBack = { navController.popBackStack() }
+                    goBack = { navController.popBackStack() },
+                    deleteEntry = { navController.popBackStack(route = MoinoBudgetScreen.Main, inclusive = false) }
                 )
             }
             composable<MoinoBudgetScreen.SavingsDetails>(
-                enterTransition = { slideInVertically(initialOffsetY = { it }) },
-                popExitTransition = { slideOutVertically(targetOffsetY = { it }) },
-                popEnterTransition = { EnterTransition.None }
+                enterTransition = { slideInHorizontally(initialOffsetX = { it }) },
+                exitTransition = { ExitTransition.None },
+                popEnterTransition = { EnterTransition.None },
+                popExitTransition = { slideOutHorizontally(targetOffsetX = { it }) }
             ) {
                 val args = it.toRoute<MoinoBudgetScreen.SavingsDetails>()
                 val savingsId = args.savingsId
@@ -149,13 +153,16 @@ fun MainScreen(
                     state = state,
                     preferences = preferences,
                     onEvent = viewModel::onEvent,
-                    goBack = { navController.popBackStack() }
+                    uiEvent = viewModel.eventFlow,
+                    goBack = { navController.popBackStack() },
+                    deleteEntry = { navController.popBackStack(route = MoinoBudgetScreen.Main, inclusive = false) }
                 )
             }
             composable<MoinoBudgetScreen.EnvelopeDetails>(
-                enterTransition = { slideInVertically(initialOffsetY = { it }) },
-                popExitTransition = { slideOutVertically(targetOffsetY = { it }) },
-                popEnterTransition = { EnterTransition.None }
+                enterTransition = { slideInHorizontally(initialOffsetX = { it }) },
+                exitTransition = { ExitTransition.None },
+                popEnterTransition = { EnterTransition.None },
+                popExitTransition = { slideOutHorizontally(targetOffsetX = { it }) }
             ) {
                 val args = it.toRoute<MoinoBudgetScreen.AddEditEnvelope>()
                 val envelopeId = args.envelopeId
@@ -166,7 +173,7 @@ fun MainScreen(
                 EnvelopeDetailsScreen(
                     state = state,
                     preferences = preferences,
-                    addEditExpense = { TODO() },
+                    addEditEnvelope = { navController.navigate(MoinoBudgetScreen.AddEditEnvelope(it)) },
                     goBack = { navController.popBackStack() }
                 )
             }

@@ -30,6 +30,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -42,6 +43,8 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import data.repository.AppPreferences
 import feature.savings.feature.savings_list.presentation.component.ColorSection
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.collectLatest
 import moinobudget.composeapp.generated.resources.Res
 import moinobudget.composeapp.generated.resources.close_dialog_description
 import moinobudget.composeapp.generated.resources.delete_budget
@@ -63,12 +66,22 @@ fun AddEditEnvelopeScreen(
     state: AddEditEnvelopeState,
     preferences: AppPreferences,
     onEvent: (AddEditEnvelopeEvent) -> Unit,
-    goBack: () -> Unit
+    uiEvent: SharedFlow<AddEditEnvelopeViewModel.UiEvent>,
+    goBack: () -> Unit,
+    deleteEntry: () -> Unit
 ) {
 
     var deleteMode by remember { mutableStateOf(false) }
 
     var maxError by remember { mutableStateOf(false) }
+
+    LaunchedEffect(key1 = true) {
+        uiEvent.collectLatest { event ->
+            when (event) {
+                is AddEditEnvelopeViewModel.UiEvent.DeleteQuit -> deleteEntry()
+            }
+        }
+    }
 
     Surface(
         color = MaterialTheme.colorScheme.background,
@@ -203,7 +216,7 @@ fun AddEditEnvelopeScreen(
                     }
                     else state.envelopeId?.let {
                         TextButton(modifier = Modifier.padding(horizontal = 64.dp),
-                            onClick = { onEvent(AddEditEnvelopeEvent.DeleteEnvelope); goBack() }) {
+                            onClick = { onEvent(AddEditEnvelopeEvent.DeleteEnvelope) }) {
                             Text(stringResource(Res.string.delete_operation),
                                 color = MaterialTheme.colorScheme.error)
                         }

@@ -22,8 +22,8 @@ interface EnvelopeDao {
     fun getAll(): Flow<List<Envelope>>
 
     @Query("SELECT * FROM envelopes WHERE envelope_id = :envelopeId")
-    suspend fun getBydId(envelopeId: Int): Envelope
+    suspend fun getBydId(envelopeId: Int): Envelope?
 
     @Query("SELECT * FROM envelopes WHERE envelope_id = :envelopeId")
-    fun getFlowById(envelopeId: Int): Flow<Envelope>
+    fun getFlowById(envelopeId: Int): Flow<Envelope?>
 }

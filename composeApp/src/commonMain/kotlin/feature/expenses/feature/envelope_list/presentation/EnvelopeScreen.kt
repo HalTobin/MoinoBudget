@@ -1,49 +1,37 @@
 package feature.expenses.feature.envelope_list.presentation
 
-import androidx.compose.animation.core.Animatable
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import data.repository.AppPreferences
+import feature.expenses.components.CustomProgressBar
+import feature.expenses.components.RemainingMoney
 import feature.expenses.data.EnvelopeUI
-import kotlinx.coroutines.delay
 import moinobudget.composeapp.generated.resources.Res
-import moinobudget.composeapp.generated.resources.available_until
 import moinobudget.composeapp.generated.resources.create_envelope
 import moinobudget.composeapp.generated.resources.create_envelope_details
 import moinobudget.composeapp.generated.resources.remaining_is
-import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 import presentation.component.AddCard
 import presentation.formatCurrency
@@ -54,7 +42,8 @@ import util.toHue
 fun EnvelopeScreen(
     state: EnvelopeState,
     preferences: AppPreferences,
-    addEditEnvelope: (Int?) -> Unit
+    addEditEnvelope:() -> Unit,
+    goToDetails:(Int) -> Unit
 ) = Column {
 
     Spacer(Modifier.height(48.dp))
@@ -65,14 +54,14 @@ fun EnvelopeScreen(
                 modifier = Modifier,
                 preferences = preferences,
                 envelope = envelope,
-                onClick = { addEditEnvelope(envelope.id) }
+                onClick = { goToDetails(envelope.id) }
             )
         }
         item {
             AddCard(
                 title = stringResource(Res.string.create_envelope),
                 description = stringResource(Res.string.create_envelope_details),
-                onClick = { addEditEnvelope(null) }
+                onClick = { addEditEnvelope() }
             )
         }
     }
@@ -136,62 +125,26 @@ fun EnvelopeItem(
         }
 
         envelope.max?.let {
-            val currentProgress = remember { Animatable(0f) }
-            val progress = envelope.current.toFloat() / envelope.max
-
-            LaunchedEffect(key1 = progress) {
-                delay(300)
-                currentProgress.animateTo(
-                    targetValue = progress,
-                    animationSpec = tween(1500)
-                )
-            }
-
-            Row(Modifier.padding(top = 8.dp).padding(horizontal = 24.dp),
+            Row(Modifier.padding(horizontal = 24.dp).padding(top = 12.dp, bottom = 8.dp),
                 verticalAlignment = Alignment.CenterVertically) {
-                Box(Modifier
-                    .padding(vertical = 8.dp)
-                    .padding(end = 12.dp)
-                    .clip(CircleShape)
-                    .height(20.dp)
-                    .background(MaterialTheme.colorScheme.surfaceContainerHigh)
-                    .weight(1f)) {
-                    Box(Modifier
-                        .fillMaxHeight()
-                        .fillMaxWidth(currentProgress.value)
-                        .clip(CircleShape)
-                        .background(envelopePrimary)) {
-                        Text("${(progress * 100).toInt()}%",
-                            modifier = Modifier.align(Alignment.Center),
-                            fontWeight = FontWeight.SemiBold,
-                            color = envelopeOnPrimary,
-                            style = MaterialTheme.typography.titleSmall)
-                    }
-                }
+                CustomProgressBar(
+                    modifier = Modifier.weight(1f),
+                    current = envelope.current,
+                    max = envelope.max,
+                    primaryColor = envelopePrimary,
+                    onPrimaryColor = envelopeOnPrimary
+                )
                 Text(formatCurrency(envelope.max.toFloat(), preferences),
+                    modifier = Modifier.padding(start = 12.dp),
                     style = MaterialTheme.typography.titleMedium)
             }
 
-            envelope.remainingMoney?.let { remainingMoney ->
-                val remainingMoneyFormatted = formatCurrency(remainingMoney.toFloat() / envelope.remainingDays, preferences)
-                val fullText = pluralStringResource(Res.plurals.available_until,envelope.remainingDays, remainingMoneyFormatted, envelope.remainingDays)
-                val styledText = buildAnnotatedString {
-                    val splitText = fullText.split(remainingMoneyFormatted, envelope.remainingDays.toString())
-                    val accentStyle = SpanStyle(
-                        fontSize = 18.sp,
-                        fontStyle = FontStyle.Normal,
-                        fontWeight = FontWeight.SemiBold)
-                    append(splitText[0])
-                    withStyle(style = accentStyle) { append(remainingMoneyFormatted) }
-                    append(splitText[1])
-                    withStyle(style = accentStyle) { append(envelope.remainingDays.toString()) }
-                    append(splitText[2])
-                }
-                Text(styledText,
-                    modifier = Modifier.padding(bottom = 16.dp),
-                    color = MaterialTheme.colorScheme.onBackground,
-                    fontStyle = FontStyle.Italic,
-                    fontSize = 16.sp)
+            envelope.remainingMoney?.let {
+                RemainingMoney(
+                    remainingMoney = it,
+                    remainingDays = envelope.remainingDays,
+                    preferences = preferences
+                )
             }
         }
     }

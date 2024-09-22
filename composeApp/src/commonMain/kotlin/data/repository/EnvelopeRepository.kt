@@ -10,9 +10,7 @@ import feature.expenses.data.EnvelopeUI
 import feature.expenses.feature.add_edit_envelope.data.AddEditEnvelope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.map
 import kotlinx.datetime.Clock
-import kotlinx.datetime.LocalDate
 import kotlinx.datetime.daysUntil
 import presentation.data.ExpenseFrequency
 import presentation.data.ExpenseIcon
@@ -32,15 +30,15 @@ class EnvelopeRepositoryImpl(
             envelopes.mapToEnvelopeUI()
         }
 
-    override suspend fun getEnvelopeById(envelopeId: Int): EnvelopeUI =
-        envelopeDao.getBydId(envelopeId).toEnvelopeUI()
+    override suspend fun getEnvelopeById(envelopeId: Int): EnvelopeUI? =
+        envelopeDao.getBydId(envelopeId)?.toEnvelopeUI()
 
-    override suspend fun getEnvelopeFlowById(envelopeId: Int): Flow<EnvelopeUI> =
+    override suspend fun getEnvelopeFlowById(envelopeId: Int): Flow<EnvelopeUI?> =
         combine(
             envelopeDao.getFlowById(envelopeId),
             expenseDao.getFlowByEnvelopeId(envelopeId)
         ) { envelope, expenses ->
-            envelope.toEnvelopeUI(expenses)
+            envelope?.toEnvelopeUI(expenses)
         }
 
     override suspend fun upsertEnvelope(envelope: AddEditEnvelope): Long =
@@ -76,8 +74,8 @@ class EnvelopeRepositoryImpl(
 
 interface EnvelopeRepository {
     suspend fun getEnvelopesFlow(): Flow<List<EnvelopeUI>>
-    suspend fun getEnvelopeById(envelopeId: Int): EnvelopeUI
-    suspend fun getEnvelopeFlowById(envelopeId: Int): Flow<EnvelopeUI>
+    suspend fun getEnvelopeById(envelopeId: Int): EnvelopeUI?
+    suspend fun getEnvelopeFlowById(envelopeId: Int): Flow<EnvelopeUI?>
     suspend fun upsertEnvelope(envelope: AddEditEnvelope): Long
     suspend fun deleteEnvelope(envelopeId: Int)
 }

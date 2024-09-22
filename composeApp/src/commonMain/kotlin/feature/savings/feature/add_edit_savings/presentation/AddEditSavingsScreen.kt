@@ -71,14 +71,18 @@ import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 import presentation.component.IconSelector
 import feature.savings.data.SavingsType
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.collectLatest
 import presentation.shake
 
 @Composable
 fun AddEditSavingsScreen(
     state: AddEditSavingsState,
     onEvent: (AddEditSavingsEvent) -> Unit,
+    uiEvent: SharedFlow<AddEditSavingsViewModel.UiEvent>,
     preferences: AppPreferences,
     goBack: () -> Unit,
+    deleteEntry: () -> Unit,
     defaultSavings: SavingsType,
 ) {
     var deleteMode by remember { mutableStateOf(false) }
@@ -92,6 +96,11 @@ fun AddEditSavingsScreen(
 
     LaunchedEffect(key1 = true) {
         if (state.savingsId == null) onEvent(AddEditSavingsEvent.UpdateType(defaultSavings))
+        uiEvent.collectLatest { event ->
+            when (event) {
+                is AddEditSavingsViewModel.UiEvent.QuitDelete -> deleteEntry()
+            }
+        }
     }
 
     state.savingsGoal.toIntOrNull()?.let { goal ->
@@ -307,7 +316,7 @@ fun AddEditSavingsScreen(
                     }
                     else state.savingsId?.let {
                         TextButton(modifier = Modifier.padding(horizontal = 64.dp),
-                            onClick = { onEvent(AddEditSavingsEvent.DeleteSavings); goBack() }) {
+                            onClick = { onEvent(AddEditSavingsEvent.DeleteSavings) }) {
                             Text(stringResource(Res.string.delete_savings),
                                 color = MaterialTheme.colorScheme.error)
                         }

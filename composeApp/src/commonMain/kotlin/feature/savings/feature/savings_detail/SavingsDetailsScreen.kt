@@ -19,9 +19,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.Button
-import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
@@ -47,6 +45,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import data.repository.AppPreferences
+import feature.savings.data.SavingsType
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import moinobudget.composeapp.generated.resources.Res
@@ -54,15 +53,14 @@ import moinobudget.composeapp.generated.resources.add
 import moinobudget.composeapp.generated.resources.close_savings_details
 import moinobudget.composeapp.generated.resources.current_balance
 import moinobudget.composeapp.generated.resources.current_goal
-import moinobudget.composeapp.generated.resources.edit
 import moinobudget.composeapp.generated.resources.operation_amount
 import moinobudget.composeapp.generated.resources.subtract
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 import presentation.component.AmountAnimation
 import presentation.component.AmountWithText
+import presentation.component.EditFloatingButton
 import presentation.component.ShimmerAmountWithText
-import feature.savings.data.SavingsType
 import presentation.formatCurrency
 import kotlin.math.roundToInt
 
@@ -75,14 +73,9 @@ fun SavingsDetailsScreen(
     goBack: () -> Unit
 ) = Scaffold(
     floatingActionButton = {
-        ExtendedFloatingActionButton(
-            onClick = {
-                state.savings?.let { savings -> goToEdit(savings.id, savings.type) }
-            },
-            containerColor = MaterialTheme.colorScheme.primary,
-            contentColor = MaterialTheme.colorScheme.onPrimary,
-            text = { Text(stringResource(Res.string.edit)) },
-            icon = { Icon(Icons.Default.Edit, contentDescription = stringResource(Res.string.edit)) })
+        EditFloatingButton(onClick = {
+            state.savings?.let { savings -> goToEdit(savings.id, savings.type) }
+        })
     }
 ) {
     val scope = rememberCoroutineScope()

@@ -26,8 +26,8 @@ interface SavingsDao {
     fun getAll(): Flow<List<Savings>>
 
     @Query("SELECT * FROM savings WHERE savings_id = :savingsId")
-    suspend fun getById(savingsId: Int): Savings
+    suspend fun getById(savingsId: Int): Savings?
 
     @Query("SELECT * FROM savings WHERE savings_id = :savingsId")
-    fun getFlowById(savingsId: Int): Flow<Savings>
+    fun getFlowById(savingsId: Int): Flow<Savings?>
 }

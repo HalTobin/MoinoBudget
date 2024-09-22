@@ -45,7 +45,6 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -75,11 +74,13 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import data.repository.AppPreferences
+import feature.budgets.data.BudgetOperationUI
+import feature.budgets.data.BudgetStyle
+import feature.budgets.data.BudgetUI
 import feature.budgets.feature.budgets_list.data.ExpenseSort
 import feature.budgets.feature.budgets_list.data.annual
 import feature.budgets.feature.budgets_list.data.expenseSort
 import feature.budgets.feature.budgets_list.data.monthly
-import feature.budgets.feature.budgets_list.presentation.component.TextSwitch
 import feature.budgets.feature.budgets_list.presentation.dialog.AddEditBudgetDialog
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.collectLatest
@@ -90,21 +91,17 @@ import moinobudget.composeapp.generated.resources.create_budget_description
 import moinobudget.composeapp.generated.resources.disposable_dd
 import moinobudget.composeapp.generated.resources.due_in
 import moinobudget.composeapp.generated.resources.edit_label_description
-import moinobudget.composeapp.generated.resources.month
 import moinobudget.composeapp.generated.resources.new_operation
 import moinobudget.composeapp.generated.resources.payments_dd
 import moinobudget.composeapp.generated.resources.to_put_aside_dd
-import moinobudget.composeapp.generated.resources.year
 import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
-import presentation.component.BudgetBackground
 import presentation.MoinoSnackBar
-import presentation.dashedBorder
-import feature.budgets.data.BudgetStyle
-import feature.budgets.data.BudgetUI
-import feature.budgets.data.BudgetOperationUI
+import presentation.component.AddFloatingButton
+import presentation.component.BudgetBackground
 import presentation.component.YearMonthSwitch
+import presentation.dashedBorder
 import presentation.data.IncomeOrOutcome
 import presentation.formatCurrency
 import presentation.pagerStateOpacity
@@ -152,18 +149,12 @@ fun DashboardScreen(
     Scaffold(
         snackbarHost = { SnackbarHost(snackBarHostState, snackbar = { MoinoSnackBar(it) }) },
         floatingActionButton = {
-            ExtendedFloatingActionButton(onClick = {
+            AddFloatingButton(onClick = {
                 val budget = state.budgets.getOrNull(budgetState.currentPage-1)
-                val style = budget?.style ?: BudgetStyle.CitrusJuice
                 val labels = budget?.labels?.map { it.id } ?: emptyList()
                 goTo(MoinoBudgetScreen.AddEditBudgetOperation(labelIds = labels))
             },
-                containerColor = MaterialTheme.colorScheme.primary,
-                contentColor = MaterialTheme.colorScheme.onPrimary,
-                content = {
-                    Icon(Icons.Default.Add, contentDescription = stringResource(Res.string.new_operation))
-                    Text(stringResource(Res.string.new_operation), Modifier.padding(start = 8.dp))
-                })
+                text = stringResource(Res.string.new_operation))
         }
     ) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
