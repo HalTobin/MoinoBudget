@@ -1,4 +1,4 @@
-package feature.expenses.feature.envelope_details
+package feature.expenses.feature.envelope_details.presentation
 
 import feature.expenses.data.EnvelopeUI
 import feature.expenses.data.ExpenseUI

@@ -1,4 +1,4 @@
-package feature.expenses.feature.envelope_details
+package feature.expenses.feature.envelope_details.presentation
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
@@ -23,7 +23,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import data.repository.AppPreferences
@@ -34,7 +33,6 @@ import moinobudget.composeapp.generated.resources.add_expense
 import moinobudget.composeapp.generated.resources.edit_envelope
 import moinobudget.composeapp.generated.resources.go_back
 import moinobudget.composeapp.generated.resources.left_of
-import moinobudget.composeapp.generated.resources.remaining_is
 import org.jetbrains.compose.resources.stringResource
 import presentation.component.AddFloatingButton
 import presentation.formatCurrency
@@ -46,11 +44,12 @@ fun EnvelopeDetailsScreen(
     state: EnvelopeDetailsState,
     preferences: AppPreferences,
     addEditEnvelope: (Int) -> Unit,
+    addExpense: () -> Unit,
     goBack: () -> Unit
 ) = Scaffold(
     floatingActionButton = { AddFloatingButton(
         text = stringResource(Res.string.add_expense),
-        onClick = { state.envelope?.let { addEditEnvelope(it.id) } }) }
+        onClick = { state.envelope?.let { addExpense() } }) }
 ) {
 
     Surface(

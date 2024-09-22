@@ -23,8 +23,10 @@ import feature.budgets.feature.add_edit_budget_operation.presentation.AddEditBud
 import feature.budgets.feature.add_edit_budget_operation.presentation.AddEditBudgetOperationViewModel
 import feature.expenses.feature.add_edit_envelope.presentation.AddEditEnvelopeScreen
 import feature.expenses.feature.add_edit_envelope.presentation.AddEditEnvelopeViewModel
-import feature.expenses.feature.envelope_details.EnvelopeDetailsScreen
-import feature.expenses.feature.envelope_details.EnvelopeDetailsViewModel
+import feature.expenses.feature.add_edit_expense.AddEditExpenseScreen
+import feature.expenses.feature.add_edit_expense.AddEditExpenseViewModel
+import feature.expenses.feature.envelope_details.presentation.EnvelopeDetailsScreen
+import feature.expenses.feature.envelope_details.presentation.EnvelopeDetailsViewModel
 import feature.hub.HubScreen
 import feature.savings.data.SavingsType
 import feature.savings.feature.add_edit_savings.presentation.AddEditSavingsScreen
@@ -174,7 +176,25 @@ fun MainScreen(
                     state = state,
                     preferences = preferences,
                     addEditEnvelope = { navController.navigate(MoinoBudgetScreen.AddEditEnvelope(it)) },
-                    goBack = { navController.popBackStack() }
+                    goBack = { navController.popBackStack() },
+                    addExpense = { navController.navigate(MoinoBudgetScreen.AddEditExpense(-1, envelopeId)) }
+                )
+            }
+            composable<MoinoBudgetScreen.AddEditExpense>(
+                enterTransition = { slideInVertically(initialOffsetY = { it }) },
+                exitTransition = { slideOutVertically(targetOffsetY = { it }) }
+            ) {
+                val args = it.toRoute<MoinoBudgetScreen.AddEditExpense>()
+                val expenseId = args.expenseId
+                val envelopeId = args.envelopeId
+
+                val viewModel = koinViewModel<AddEditExpenseViewModel> { parametersOf(expenseId, envelopeId) }
+                val state by viewModel.state.collectAsStateWithLifecycle()
+
+                AddEditExpenseScreen(
+                    state = state,
+                    preferences = preferences,
+                    goBack = { navController.popBackStack() },
                 )
             }
         }

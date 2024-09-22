@@ -24,7 +24,8 @@ import data.repository.SavingsRepositoryImpl
 import feature.budgets.feature.add_edit_budget_operation.presentation.AddEditBudgetOperationViewModel
 import feature.budgets.feature.budgets_list.presentation.DashboardViewModel
 import feature.expenses.feature.add_edit_envelope.presentation.AddEditEnvelopeViewModel
-import feature.expenses.feature.envelope_details.EnvelopeDetailsViewModel
+import feature.expenses.feature.add_edit_expense.AddEditExpenseViewModel
+import feature.expenses.feature.envelope_details.presentation.EnvelopeDetailsViewModel
 import feature.expenses.feature.envelope_list.presentation.EnvelopeViewModel
 import feature.savings.feature.add_edit_savings.presentation.AddEditSavingsViewModel
 import feature.savings.feature.savings_detail.SavingsDetailsViewModel
@@ -52,6 +53,7 @@ object ModuleVM {
         viewModelOf(::EnvelopeViewModel)
         viewModelOf(::AddEditEnvelopeViewModel)
         viewModelOf(::EnvelopeDetailsViewModel)
+        viewModelOf(::AddEditExpenseViewModel)
     }
 }
 

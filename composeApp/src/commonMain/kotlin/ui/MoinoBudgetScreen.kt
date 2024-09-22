@@ -39,6 +39,7 @@ sealed class MoinoBudgetScreen(val route: String) {
     ): MoinoBudgetScreen("add_edit_envelope")
     @Serializable
     data class AddEditExpense(
-        val expenseId: Int = -1
+        val expenseId: Int = -1,
+        val envelopeId: Int
     ): MoinoBudgetScreen("add_edit_expense")
 }

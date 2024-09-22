@@ -1,4 +1,4 @@
-package feature.expenses.feature.envelope_details
+package feature.expenses.feature.envelope_details.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
