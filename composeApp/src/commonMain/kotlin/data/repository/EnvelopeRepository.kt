@@ -51,18 +51,17 @@ class EnvelopeRepositoryImpl(
         val currentDate = Clock.System.now().toEpochMilliseconds().toLocalDate()
         val periods = getPeriodFromTimestamp(currentDate, this.frequency == ExpenseFrequency.Annually.id)
         val relatedExpenses = expenses ?: expenseDao.getByEnvelopeIdAndPeriod(this.id, periods.first.toEpochMillisecond(), periods.second.toEpochMillisecond())
-        //val current = relatedExpenses.sumOf { it.amount.toDouble() }
-        val current = 250
+        val current = relatedExpenses.sumOf { it.amount.toDouble() }
         return EnvelopeUI(
             id = this.id,
             title = this.title,
-            current = current.toDouble(),
+            current = current,
             startPeriod = periods.first,
             endPeriod = periods.second,
             frequency = ExpenseFrequency.findById(this.frequency),
             icon = this.iconId?.let { ExpenseIcon.findById(it) },
             max = this.max,
-            remainingMoney = this.max?.let { it - current },
+            remainingMoney = this.max?.let { it - current.toInt() },
             remainingDays = currentDate.daysUntil(periods.second),
             color = this.color?.let { Color(it) }
         )

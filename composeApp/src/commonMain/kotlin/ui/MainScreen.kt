@@ -175,9 +175,11 @@ fun MainScreen(
                 EnvelopeDetailsScreen(
                     state = state,
                     preferences = preferences,
-                    addEditEnvelope = { navController.navigate(MoinoBudgetScreen.AddEditEnvelope(it)) },
+                    addEditEnvelope = { envlopeId ->
+                        navController.navigate(MoinoBudgetScreen.AddEditEnvelope(envelopeId)) },
                     goBack = { navController.popBackStack() },
-                    addExpense = { navController.navigate(MoinoBudgetScreen.AddEditExpense(-1, envelopeId)) }
+                    addEditExpense = { expenseId ->
+                        navController.navigate(MoinoBudgetScreen.AddEditExpense(expenseId ?: -1, envelopeId)) }
                 )
             }
             composable<MoinoBudgetScreen.AddEditExpense>(
