@@ -35,7 +35,7 @@ import moinobudget.composeapp.generated.resources.remaining_is
 import org.jetbrains.compose.resources.stringResource
 import presentation.component.AddCard
 import presentation.formatCurrency
-import util.formatDate
+import util.simpleFormatDate
 import util.toHue
 
 @Composable
@@ -118,7 +118,7 @@ fun EnvelopeItem(
                         modifier = Modifier.weight(1f),
                         style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.Bold)
-                    Text("${formatDate(envelope.startPeriod, preferences)} - ${formatDate(envelope.endPeriod, preferences)}",
+                    Text("${simpleFormatDate(envelope.startPeriod, preferences)} - ${simpleFormatDate(envelope.endPeriod, preferences)}",
                         style = MaterialTheme.typography.titleMedium)
                 }
             }

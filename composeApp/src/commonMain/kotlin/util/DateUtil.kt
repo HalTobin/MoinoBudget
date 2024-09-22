@@ -8,20 +8,34 @@ import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.LocalTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.format
+import kotlinx.datetime.format.MonthNames
 import kotlinx.datetime.format.char
 import kotlinx.datetime.toInstant
 import kotlinx.datetime.toLocalDateTime
 import moinobudget.composeapp.generated.resources.Res
+import moinobudget.composeapp.generated.resources.april
 import moinobudget.composeapp.generated.resources.april_abbreviation
+import moinobudget.composeapp.generated.resources.august
 import moinobudget.composeapp.generated.resources.august_abbreviation
+import moinobudget.composeapp.generated.resources.december
 import moinobudget.composeapp.generated.resources.december_abbreviation
+import moinobudget.composeapp.generated.resources.february
 import moinobudget.composeapp.generated.resources.february_abbreviation
+import moinobudget.composeapp.generated.resources.january
 import moinobudget.composeapp.generated.resources.january_abbreviation
+import moinobudget.composeapp.generated.resources.july
 import moinobudget.composeapp.generated.resources.july_abbreviation
+import moinobudget.composeapp.generated.resources.june
 import moinobudget.composeapp.generated.resources.june_abbreviation
+import moinobudget.composeapp.generated.resources.march
 import moinobudget.composeapp.generated.resources.march_abbreviation
+import moinobudget.composeapp.generated.resources.may
+import moinobudget.composeapp.generated.resources.may_abbreviation
+import moinobudget.composeapp.generated.resources.november
 import moinobudget.composeapp.generated.resources.november_abbreviation
+import moinobudget.composeapp.generated.resources.october
 import moinobudget.composeapp.generated.resources.october_abbreviation
+import moinobudget.composeapp.generated.resources.september
 import moinobudget.composeapp.generated.resources.september_abbreviation
 import org.jetbrains.compose.resources.stringResource
 
@@ -98,15 +112,56 @@ fun isLeapYear(year: Int): Boolean =
     (year % 4 == 0 && year % 100 != 0) || (year % 400 == 0)
 
 @Composable
-fun formatDate(date: LocalDate, preferences: AppPreferences): String {
-    //val monthAbbreviation = getMonthAbbreviationByMonthNumber(date.monthNumber)
-    /*val customFormat = LocalDate.Format {
+fun simpleFormatDate(date: LocalDate, preferences: AppPreferences): String {
+    val months = monthAbbreviations
+    val customFormat = LocalDate.Format {
         // TODO - Take into account different date formats
-        //dayOfMonth(); char('/'); monthNumber(); char('/'); year()
-        monthAbbreviation; char(' '); dayOfMonth()
-    }*/
-    return "${getMonthAbbreviationByMonthNumber(date.monthNumber)} ${date.dayOfMonth}"
+        monthName(months); char(' '); dayOfMonth()
+    }
+    return customFormat.format(date)
 }
+
+@Composable
+fun fullFormatDate(date: LocalDate, preferences: AppPreferences): String {
+    val months = monthNames
+    val customFormat = LocalDate.Format {
+        // TODO - Take into account different date formats
+        dayOfMonth(); char(' '); monthName(months); char(' '); year()
+    }
+    return customFormat.format(date)
+}
+
+val monthNames @Composable
+get() = MonthNames(listOf(
+    stringResource(Res.string.january),
+    stringResource(Res.string.february),
+    stringResource(Res.string.march),
+    stringResource(Res.string.april),
+    stringResource(Res.string.may),
+    stringResource(Res.string.june),
+    stringResource(Res.string.july),
+    stringResource(Res.string.august),
+    stringResource(Res.string.september),
+    stringResource(Res.string.october),
+    stringResource(Res.string.november),
+    stringResource(Res.string.december),
+))
+
+val monthAbbreviations @Composable
+get() = MonthNames(listOf(
+    stringResource(Res.string.january_abbreviation),
+    stringResource(Res.string.february_abbreviation),
+    stringResource(Res.string.march_abbreviation),
+    stringResource(Res.string.april_abbreviation),
+    stringResource(Res.string.may_abbreviation),
+    stringResource(Res.string.june_abbreviation),
+    stringResource(Res.string.july_abbreviation),
+    stringResource(Res.string.august_abbreviation),
+    stringResource(Res.string.september_abbreviation),
+    stringResource(Res.string.october_abbreviation),
+    stringResource(Res.string.november_abbreviation),
+    stringResource(Res.string.december_abbreviation),
+))
 
 @Composable
 fun getMonthAbbreviationByMonthNumber(monthNumber: Int) = when (monthNumber) {

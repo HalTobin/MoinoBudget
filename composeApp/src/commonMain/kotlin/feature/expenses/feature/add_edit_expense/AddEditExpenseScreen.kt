@@ -5,6 +5,7 @@ import androidx.compose.animation.Crossfade
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.animation.togetherWith
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -18,6 +19,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
@@ -43,29 +45,22 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import data.repository.AppPreferences
-import feature.budgets.feature.add_edit_budget_operation.presentation.AddEditBudgetOperationEvent
-import feature.budgets.feature.add_edit_budget_operation.presentation.component.SelectDay
-import feature.budgets.feature.add_edit_budget_operation.presentation.component.SelectMonthOption
-import feature.budgets.feature.budgets_list.presentation.component.LabelSelection
-import feature.budgets.feature.budgets_list.presentation.component.TextSwitch
+import feature.expenses.feature.add_edit_expense.component.SelectDate
 import moinobudget.composeapp.generated.resources.Res
 import moinobudget.composeapp.generated.resources.amount
 import moinobudget.composeapp.generated.resources.close_dialog_description
 import moinobudget.composeapp.generated.resources.create_operation
+import moinobudget.composeapp.generated.resources.date
 import moinobudget.composeapp.generated.resources.delete_budget
+import moinobudget.composeapp.generated.resources.delete_expense
 import moinobudget.composeapp.generated.resources.delete_operation
+import moinobudget.composeapp.generated.resources.edit_expense
 import moinobudget.composeapp.generated.resources.edit_operation
 import moinobudget.composeapp.generated.resources.icon
-import moinobudget.composeapp.generated.resources.labels
 import moinobudget.composeapp.generated.resources.save
 import moinobudget.composeapp.generated.resources.title
 import org.jetbrains.compose.resources.stringResource
 import presentation.component.IconSelector
-import presentation.component.YearMonthSwitch
-import presentation.data.ExpenseFrequency
-import presentation.data.ExpenseIcon
-import presentation.data.IncomeOrOutcome
-import presentation.data.MonthOption
 import presentation.shake
 
 @Composable
@@ -95,12 +90,12 @@ fun AddEditExpenseScreen(
                             onClick = { deleteMode = !deleteMode }) {
                             Icon(imageVector = if (!deletion) Icons.Default.Delete else Icons.Default.Edit,
                                 tint = if (!deletion) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onBackground,
-                                contentDescription = stringResource(Res.string.delete_budget)
+                                contentDescription = stringResource(Res.string.delete_expense)
                             )
                         }
                     }
                 }
-                Text(stringResource(state.id?.let { Res.string.edit_operation } ?: Res.string.create_operation),
+                Text(stringResource(state.id?.let { Res.string.edit_expense } ?: Res.string.create_operation),
                     modifier = Modifier.align(Alignment.Center),
                     style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.SemiBold)
@@ -162,20 +157,13 @@ fun AddEditExpenseScreen(
                 }
 
                 Spacer(Modifier.height(16.dp))
-                Row {
-                    val month = MonthOption.findByOffsetAndFrequency(ExpenseFrequency.Annually, state.month)
-                    SelectDay(
-                        modifier = Modifier.shake(deleteMode),
-                        value = state.day,
-                        onChange = { onEvent(AddEditExpenseEvent.UpdateDay(it)) },
-                        month = month)
-                    Spacer(Modifier.width(16.dp))
-                    SelectMonthOption(
-                        Modifier.shake(deleteMode).fillMaxWidth(0.55f),
-                        options = MonthOption.annualOptions,
-                        value = month,
-                        onSelect = { onEvent(AddEditExpenseEvent.UpdateMonth(it.offset+1)) })
-                }
+
+                SelectDate(
+                    modifier = Modifier,
+                    preferences = preferences,
+                    date = state.date,
+                    onDateSelect = { onEvent(AddEditExpenseEvent.UpdateDate(it)) }
+                )
                 Spacer(Modifier.height(8.dp))
 
                 Text(

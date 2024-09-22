@@ -36,10 +36,14 @@ class AddEditExpenseViewModel(
             is AddEditExpenseEvent.UpdateIconId -> _state.update {
                 it.copy(iconId = if (_state.value.iconId == event.iconId) null else event.iconId)
             }
-            is AddEditExpenseEvent.UpdateDay -> _state.update { it.copy(day = event.day) }
-            is AddEditExpenseEvent.UpdateMonth -> _state.update { it.copy(month = event.month) }
-            is AddEditExpenseEvent.DeleteExpense -> TODO()
-            is AddEditExpenseEvent.UpsertExpense -> TODO()
+            is AddEditExpenseEvent.UpdateDate -> _state.update { it.copy(date = event.date) }
+            is AddEditExpenseEvent.UpsertExpense -> viewModelScope.launch(Dispatchers.IO) {
+                _state.value.generateAddEditExpense()?.let {
+                    expenseRepository.upsertExpense(it) }
+            }
+            is AddEditExpenseEvent.DeleteExpense -> viewModelScope.launch(Dispatchers.IO) {
+                _state.value.id?.let { expenseRepository.deleteExpense(it) }
+            }
         }
     }
 

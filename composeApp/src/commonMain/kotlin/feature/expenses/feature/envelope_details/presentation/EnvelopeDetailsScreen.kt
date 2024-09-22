@@ -36,7 +36,7 @@ import moinobudget.composeapp.generated.resources.left_of
 import org.jetbrains.compose.resources.stringResource
 import presentation.component.AddFloatingButton
 import presentation.formatCurrency
-import util.formatDate
+import util.simpleFormatDate
 import util.toHue
 
 @Composable
@@ -112,7 +112,7 @@ fun EnvelopeDetailsScreen(
                                 color = contentColor)
                         }
                         Spacer(Modifier.weight(1f))
-                        Text("${formatDate(envelope.startPeriod, preferences)} - ${formatDate(envelope.endPeriod, preferences)}",
+                        Text("${simpleFormatDate(envelope.startPeriod, preferences)} - ${simpleFormatDate(envelope.endPeriod, preferences)}",
                             color = contentColor,
                             style = MaterialTheme.typography.titleMedium)
                     }
