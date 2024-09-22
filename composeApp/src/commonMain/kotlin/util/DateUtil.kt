@@ -75,6 +75,14 @@ fun safeLocalDate(year: Int, month: Int, day: Int): LocalDate {
     }
 }
 
+fun getLastDayOfMonth(year: Int, month: Int): Int =
+    when (month) {
+        1, 3, 5, 7, 8, 10, 12 -> 31
+        4, 6, 9, 11 -> 30
+        2 -> if (isLeapYear(year)) 29 else 28
+        else -> throw IllegalArgumentException("Invalid month: $month")
+    }
+
 fun getValidDayOfMonth(year: Int, month: Int, day: Int): Int {
     // Check the number of days in the month, considering leap years for February
     val lastDayOfMonth = when (month) {
@@ -83,7 +91,6 @@ fun getValidDayOfMonth(year: Int, month: Int, day: Int): Int {
         2 -> if (isLeapYear(year)) 29 else 28
         else -> throw IllegalArgumentException("Invalid month: $month")
     }
-
     return if (day > lastDayOfMonth) lastDayOfMonth else day
 }
 

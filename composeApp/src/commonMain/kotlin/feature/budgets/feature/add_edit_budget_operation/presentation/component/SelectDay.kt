@@ -39,11 +39,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import kotlinx.datetime.LocalDate
 import moinobudget.composeapp.generated.resources.Res
 import moinobudget.composeapp.generated.resources.day
 import moinobudget.composeapp.generated.resources.select_day
 import org.jetbrains.compose.resources.stringResource
 import presentation.data.MonthOption
+import util.getLastDayOfMonth
 import util.getMaxDay
 
 @Composable
@@ -51,7 +53,8 @@ fun SelectDay(
     modifier: Modifier = Modifier,
     value: Int,
     onChange: (Int) -> Unit,
-    month: MonthOption?
+    date: LocalDate? = null,
+    month: MonthOption?,
 ) {
 
     var dialogOpen by remember { mutableStateOf(false) }
@@ -101,7 +104,10 @@ fun SelectDay(
                 LazyVerticalGrid(GridCells.Fixed(7),
                     contentPadding = PaddingValues(start = 16.dp, end = 16.dp, bottom = 16.dp)
                 ) {
-                    val days = (1..month?.offset?.plus(1).getMaxDay()).map { it }
+                    val max = date?.let {
+                        getLastDayOfMonth(year = it.year, month = date.monthNumber)
+                    } ?: month?.offset?.plus(1).getMaxDay()
+                    val days = (1..max).map { it }
                     items(days) { day ->
                         val isSelected = (day == value)
                         Box(Modifier

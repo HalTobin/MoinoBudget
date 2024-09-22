@@ -33,9 +33,13 @@ class AddEditExpenseViewModel(
         when (event) {
             is AddEditExpenseEvent.UpdateTitle -> _state.update { it.copy(title = event.title) }
             is AddEditExpenseEvent.UpdateAmount -> _state.update { it.copy(amount = event.amount) }
-            is AddEditExpenseEvent.UpdateIconId -> _state.update { it.copy(iconId = event.iconId) }
+            is AddEditExpenseEvent.UpdateIconId -> _state.update {
+                it.copy(iconId = if (_state.value.iconId == event.iconId) null else event.iconId)
+            }
             is AddEditExpenseEvent.UpdateDay -> _state.update { it.copy(day = event.day) }
             is AddEditExpenseEvent.UpdateMonth -> _state.update { it.copy(month = event.month) }
+            is AddEditExpenseEvent.DeleteExpense -> TODO()
+            is AddEditExpenseEvent.UpsertExpense -> TODO()
         }
     }
 

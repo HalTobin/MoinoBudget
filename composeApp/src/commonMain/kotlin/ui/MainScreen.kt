@@ -194,6 +194,7 @@ fun MainScreen(
                 AddEditExpenseScreen(
                     state = state,
                     preferences = preferences,
+                    onEvent = viewModel::onEvent,
                     goBack = { navController.popBackStack() },
                 )
             }
