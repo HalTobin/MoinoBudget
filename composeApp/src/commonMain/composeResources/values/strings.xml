@@ -60,13 +60,45 @@
     <!-- Settings Screen -->
     <string name="settings">Settings</string>
     <string name="section_interface">Interface</string>
+
+    <!-- Currencies -->
     <string name="currency">Displayed currency</string>
+    <string name="currency_eur">Euro</string>
+    <string name="currency_dol">Dollar</string>
+    <string name="currency_ruble">Ruble</string>
+    <string name="currency_yen_yuan">Yen / Yuan</string>
+    <string name="currency_pound">Pound</string>
+    <string name="currency_lira">Lira</string>
+    <string name="currency_rupee">Rupee</string>
+    <string name="currency_franc">France</string>
+    <string name="currency_peso">Peso</string>
+    <string name="currency_bitcoin">Bitcoin</string>
+    <string name="currency_hryvnia">Hryvnia</string>
+    <string name="currency_won">Won</string>
+    <string name="currency_lari">Lari</string>
+    <string name="currency_cedi">Cedi</string>
+    <string name="currency_togrog">Tögrög</string>
+    <string name="currency_tenge">Tenge</string>
+    <string name="currency_taka">Taka</string>
+    <string name="currency_som">Som</string>
+    <string name="currency_shekel">Shekel</string>
+    <string name="currency_sri_lanka_rupee">Rupee</string>
+    <string name="currency_rial">Rial</string>
+    <string name="currency_dram">Dram</string>
+    <string name="currency_colon">Colon</string>
+    <string name="currency_afghani">Afghani</string>
+    <string name="currency_manat">Manat</string>
+    <string name="currency_guarani">Guarani</string>
+    <string name="currency_dong">Dong</string>
+
     <string name="decimal_mode">Decimal numbers</string>
     <string name="card_style">Card's style</string>
+    <!--Themes -->
     <string name="theme">Theme</string>
     <string name="theme_dark">Dark</string>
     <string name="theme_dark_oled">Dark (OLED)</string>
     <string name="theme_light">Light</string>
+
     <string name="language">Language</string>
     <string name="about">About the app</string>
     <string name="about_version">Version</string>

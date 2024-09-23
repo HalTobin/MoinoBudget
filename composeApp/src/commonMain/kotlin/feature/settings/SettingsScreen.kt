@@ -65,10 +65,10 @@ fun SettingsScreen(
         ListEntry(title = stringResource(Res.string.currency),
             icon = Icons.Default.Toll,
             currentKey = preferences.currency.key,
-            currentText = preferences.currency.sign,
+            currentText = stringResource(preferences.currency.title).uppercase(),
             items = Currency.entries.map { Triple(
                 it.key,
-                it.key.uppercase()
+                stringResource(it.title).uppercase()
             ) {
                 Coin(modifier = Modifier.size(32.dp),
                     sign = it.sign)
