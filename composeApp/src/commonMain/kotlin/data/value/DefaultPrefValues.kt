@@ -65,7 +65,8 @@ enum class Currency(val key: String, val sign: String, val position: CurrencyPos
     Ruble(key = "rub", sign = "₽", decimalMode = true),
     YenYuan(key = "yen / yuan", sign = "¥", decimalMode = true),
     Pound(key = "pound", sign = "£", decimalMode = true),
-    Lira(key = "lira", sign = "₺", decimalMode = true);
+    Lira(key = "lira", sign = "₺", decimalMode = true),
+    Rupee(key = "rupee", sign = "₹", decimalMode = true);
 }
 
 enum class CurrencyPosition { Start, End }

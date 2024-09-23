@@ -45,7 +45,7 @@ class EnvelopeDetailsViewModel(
         expensesJob?.cancel()
         expensesJob = viewModelScope.launch(Dispatchers.IO) {
             expenseRepository.getExpensesFlowByEnvelopeId(envelopeId).collect { expenses ->
-                _state.update { it.copy(expenses = expenses) }
+                _state.update { it.copy(expenses = expenses.sortedByDescending { expense -> expense.date }) }
             }
         }
     }

@@ -13,6 +13,7 @@
 
     <!-- Navigation -->
     <string name="go_to_settings_help">Go to settings</string>
+    <string name="go_to_charts_help">Go to charts</string>
 
     <!-- Days, Month, Year -->
     <string name="every">Every</string>

@@ -1,15 +1,11 @@
 package presentation.component
 
-import androidx.compose.animation.Animatable
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.Crossfade
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.animateColorAsState
-import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.animation.togetherWith
-import androidx.compose.animation.with
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -23,11 +19,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.nestedscroll.NestedScrollSource.Companion.SideEffect
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import data.repository.AppPreferences
 import presentation.data.IncomeOrOutcome
@@ -36,18 +33,22 @@ import presentation.formatCurrency
 @Composable
 fun AmountWithText(
     modifier: Modifier,
+    horizontalAlignment: Alignment.Horizontal = Alignment.Start,
     amount: Int,
     text: String,
     preferences: AppPreferences,
     animation: AmountAnimation = AmountAnimation.Fading
-) = Column(modifier) {
+) = Column(modifier,
+    horizontalAlignment = horizontalAlignment) {
     when (animation) {
         AmountAnimation.Fading -> Crossfade(modifier = Modifier.fillMaxWidth(),
             targetState = amount
         ) { total ->
             Text(
                 formatCurrency(total.toFloat(), preferences.copy(decimalMode = true)),
+                modifier = if (horizontalAlignment == Alignment.CenterHorizontally) Modifier.fillMaxWidth(1f) else Modifier,
                 fontWeight = FontWeight.Bold,
+                textAlign = if (horizontalAlignment == Alignment.CenterHorizontally) TextAlign.Center else TextAlign.Start,
                 style = MaterialTheme.typography.headlineMedium,
                 color = if (total > 0) IncomeOrOutcome.Income.color else IncomeOrOutcome.Outcome.color)
         }

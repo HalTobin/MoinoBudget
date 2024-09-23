@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CreditCard
+import androidx.compose.material.icons.filled.DataUsage
 import androidx.compose.material.icons.filled.Savings
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Wallet
@@ -38,21 +39,22 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import data.repository.AppPreferences
+import feature.budgets.data.BudgetStyle
 import feature.budgets.feature.budgets_list.presentation.DashboardScreen
 import feature.budgets.feature.budgets_list.presentation.DashboardViewModel
+import feature.expenses.feature.envelope_list.presentation.EnvelopeScreen
+import feature.expenses.feature.envelope_list.presentation.EnvelopeViewModel
 import feature.savings.feature.savings_list.presentation.SavingsScreen
 import feature.savings.feature.savings_list.presentation.SavingsViewModel
 import moinobudget.composeapp.generated.resources.Res
 import moinobudget.composeapp.generated.resources.budgets_tab
 import moinobudget.composeapp.generated.resources.expenses_tab
+import moinobudget.composeapp.generated.resources.go_to_charts_help
 import moinobudget.composeapp.generated.resources.go_to_settings_help
 import moinobudget.composeapp.generated.resources.savings_tab
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
-import feature.budgets.data.BudgetStyle
-import feature.expenses.feature.envelope_list.presentation.EnvelopeScreen
-import feature.expenses.feature.envelope_list.presentation.EnvelopeViewModel
 import ui.MoinoBudgetScreen
 
 @Composable
@@ -116,6 +118,17 @@ fun HubScreen(
                     Icon(modifier = Modifier.size(32.dp),
                         imageVector = Icons.Default.Settings,
                         contentDescription = stringResource(Res.string.go_to_settings_help))
+                }
+                FloatingActionButton(
+                    modifier = Modifier.align(Alignment.TopStart).padding(8.dp).zIndex(2f).size(44.dp),
+                    shape = CircleShape,
+                    containerColor = MaterialTheme.colorScheme.surface,
+                    contentColor = MaterialTheme.colorScheme.onSurface,
+                    onClick = { goToScreen(MoinoBudgetScreen.Settings) }
+                ) {
+                    Icon(modifier = Modifier.size(32.dp),
+                        imageVector = Icons.Default.DataUsage,
+                        contentDescription = stringResource(Res.string.go_to_charts_help))
                 }
                 NavHost(modifier = Modifier.fillMaxSize(),
                     startDestination = HubScreenTab.Budget.route,

@@ -77,12 +77,13 @@ fun SavingsScreen(
 
     val pagerState = rememberPagerState(initialPage = 0, pageCount = { SavingsType.entries.size+1 })
 
-    Column {
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
         AmountWithText(
             modifier = Modifier.padding(start = 24.dp, top = 16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
             preferences = preferences,
             amount = (if (pagerState.currentPage == 0) state.savings
-            else state.savings.filter { it.type.id == pagerState.currentPage-1 })
+            else state.savings.filter { it.type.tabId == pagerState.currentPage-1 })
                 .sumOf { it.amount },
             text = stringResource(Res.string.total)
         )
@@ -104,7 +105,7 @@ fun SavingsScreen(
                 val listState = rememberLazyListState()
                 Box(Modifier.fillMaxSize()) {
                     LazyColumn(state = listState) {
-                        if (page != 0) items(state.savings.filter { it.type.id == page-1 }) { savings ->
+                        if (page != 0) items(state.savings.filter { it.type.tabId == page-1 }) { savings ->
                             SavingsItem(modifier = Modifier.padding(horizontal = 16.dp),
                                 savings = savings,
                                 preferences = preferences,

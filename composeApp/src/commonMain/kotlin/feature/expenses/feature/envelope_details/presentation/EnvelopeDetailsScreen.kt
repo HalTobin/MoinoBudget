@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Surface
@@ -24,7 +23,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import data.repository.AppPreferences
+import feature.expenses.data.ExpenseUI
 import feature.expenses.feature.envelope_details.presentation.component.EnvelopeHeader
 import moinobudget.composeapp.generated.resources.Res
 import moinobudget.composeapp.generated.resources.add_expense
@@ -63,34 +64,15 @@ fun EnvelopeDetailsScreen(
             LazyColumn(Modifier.fillMaxWidth().weight(1f)) {
                 itemsIndexed(state.expenses) { index, expense ->
                     Column {
-                        Row(modifier = Modifier
-                            .clickable { addEditExpense(expense.id) }
-                            .padding(vertical = 8.dp, horizontal = 16.dp),
-                            verticalAlignment = Alignment.CenterVertically) {
-                            expense.icon?.icon?.let { icon ->
-                                Icon(icon,
-                                    modifier = Modifier.size(32.dp),
-                                    contentDescription = null)
-                                Spacer(Modifier.width(16.dp))
-                            }
-                            Column(Modifier.weight(1f)) {
-                                Text(expense.title,
-                                    style = MaterialTheme.typography.titleLarge,
-                                    fontWeight = FontWeight.SemiBold)
-                                Text(fullFormatDate(expense.date, preferences),
-                                    fontWeight = FontWeight.Light
-                                )
-                            }
-                            Text("-${formatCurrency(expense.amount, preferences)}",
-                                style = MaterialTheme.typography.titleLarge,
-                                color = IncomeOrOutcome.Outcome.color,
-                                fontWeight = FontWeight.Bold)
-                            state.envelope?.max?.let { max ->
-                                Text(" / ${((expense.amount / max.toFloat())*100).toInt()}%")
-                            }
-                        }
+                        ExpenseItem(
+                            expense = expense,
+                            max = state.envelope?.max,
+                            preferences = preferences,
+                            edit = { addEditExpense(expense.id) }
+                        )
                         if (index != state.expenses.lastIndex) HorizontalDivider(Modifier.fillMaxWidth())
                     }
+
                 }
                 item { Spacer(Modifier.height(80.dp)) }
             }
@@ -98,4 +80,41 @@ fun EnvelopeDetailsScreen(
 
     }
 
+}
+
+@Composable
+fun ExpenseItem(
+    expense: ExpenseUI,
+    max: Int?,
+    preferences: AppPreferences,
+    edit: () -> Unit,
+) {
+    Row(modifier = Modifier
+        .clickable { edit() }
+        .padding(vertical = 8.dp, horizontal = 16.dp),
+        verticalAlignment = Alignment.CenterVertically) {
+        expense.icon?.icon?.let { icon ->
+            Icon(icon,
+                modifier = Modifier.size(28.dp),
+                contentDescription = null)
+            Spacer(Modifier.width(16.dp))
+        }
+        Column(Modifier.weight(1f)) {
+            Text(expense.title,
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.SemiBold)
+            Text(fullFormatDate(expense.date, preferences),
+                style = MaterialTheme.typography.titleSmall,
+                fontWeight = FontWeight.Light
+            )
+        }
+        Column(horizontalAlignment = Alignment.End) {
+            Text("-${formatCurrency(expense.amount, preferences)}",
+                style = MaterialTheme.typography.titleSmall,
+                fontSize = 20.sp,
+                color = IncomeOrOutcome.Outcome.color,
+                fontWeight = FontWeight.Bold)
+            max?.let { Text("${((expense.amount / it.toFloat())*100).toInt()}%") }
+        }
+    }
 }

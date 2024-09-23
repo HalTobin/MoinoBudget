@@ -9,6 +9,11 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Contrast
+import androidx.compose.material.icons.filled.Numbers
+import androidx.compose.material.icons.filled.Toll
+import androidx.compose.material.icons.filled.Translate
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -58,6 +63,7 @@ fun SettingsScreen(
         SectionTitle(stringResource(Res.string.section_interface))
 
         ListEntry(title = stringResource(Res.string.currency),
+            icon = Icons.Default.Toll,
             currentKey = preferences.currency.key,
             currentText = preferences.currency.sign,
             items = Currency.entries.map { Triple(
@@ -71,11 +77,13 @@ fun SettingsScreen(
 
         BooleanEntry(
             title = stringResource(Res.string.decimal_mode),
+            icon = Icons.Default.Numbers,
             value = preferences.decimalMode,
             onChange = { onEvent(SettingsEvent.ChangeDecimalMode(it)) }
         )
 
         ListEntry(title = stringResource(Res.string.theme),
+            icon = Icons.Default.Contrast,
             currentKey = preferences.theme.key,
             currentText = stringResource(preferences.theme.title),
             items = Theme.entries.map { Triple(
@@ -92,6 +100,7 @@ fun SettingsScreen(
             onChange = { onEvent(SettingsEvent.ChangeTheme(it)) })
 
         ListEntry(title = stringResource(Res.string.language),
+            icon = Icons.Default.Translate,
             currentKey = preferences.language.key,
             currentText = preferences.language.title,
             items = Language.entries.map { Triple(
@@ -108,8 +117,8 @@ fun SettingsScreen(
             onChange = { onEvent(SettingsEvent.ChangeLanguage(it)) })
 
         SectionTitle(stringResource(Res.string.about))
-        InfoEntry(title = stringResource(Res.string.about_version), value = "v0.0.1")
-        InfoEntry(title = stringResource(Res.string.about_credits), value = "MoineauFactory")
+        InfoEntry(title = stringResource(Res.string.about_version), icon = null, value = "v0.0.1")
+        InfoEntry(title = stringResource(Res.string.about_credits), icon = null, value = "MoineauFactory")
     }
 }
 
