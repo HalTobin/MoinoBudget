@@ -1,9 +1,11 @@
 package feature.expenses.feature.add_edit_expense.component
 
 import androidx.compose.animation.Crossfade
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -15,10 +17,14 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CalendarMonth
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material3.Button
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDefaults
+import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDatePickerState
@@ -34,11 +40,13 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.Dialog
 import data.repository.AppPreferences
 import kotlinx.datetime.LocalDate
 import moinobudget.composeapp.generated.resources.Res
+import moinobudget.composeapp.generated.resources.close_dialog_description
 import moinobudget.composeapp.generated.resources.date
+import moinobudget.composeapp.generated.resources.select
+import moinobudget.composeapp.generated.resources.select_day
 import org.jetbrains.compose.resources.stringResource
 import util.fullFormatDate
 import util.toEpochMillisecond
@@ -55,25 +63,44 @@ fun SelectDate(
     var selectDateDialog by remember { mutableStateOf(false) }
     val datePickerState = rememberDatePickerState(initialSelectedDateMillis = date.toEpochMillisecond())
 
-    LaunchedEffect(key1 = datePickerState.selectedDateMillis) {
-        datePickerState.selectedDateMillis?.let { onDateSelect(it.toLocalDate()) }
-    }
-
-    if (selectDateDialog) Dialog(onDismissRequest = { selectDateDialog = false }) {
-        DatePicker(
-            modifier = Modifier
-                .fillMaxWidth()
-                .clip(RoundedCornerShape(32.dp))
-                .border(2.dp, MaterialTheme.colorScheme.surfaceVariant, RoundedCornerShape(32.dp)),
-            state = datePickerState,
-            showModeToggle = false,
-            title = null,
-            headline = null,
-            colors = DatePickerDefaults.colors(
-                containerColor = MaterialTheme.colorScheme.background,
-                selectedYearContainerColor = MaterialTheme.colorScheme.primary,
+    if (selectDateDialog) DatePickerDialog(
+        shape = RoundedCornerShape(32.dp),
+        colors = DatePickerDefaults.colors(
+            containerColor = MaterialTheme.colorScheme.background,
+            selectedYearContainerColor = MaterialTheme.colorScheme.primary,
+        ),
+        onDismissRequest = { selectDateDialog = false },
+        confirmButton = { Button(onClick = {
+            datePickerState.selectedDateMillis?.let { onDateSelect(it.toLocalDate()) }
+            selectDateDialog = false
+        }) {
+            Text(stringResource(Res.string.select))
+        } }
+    ) {
+        Column {
+            Box(Modifier.fillMaxWidth()) {
+                Text(stringResource(Res.string.select_day).uppercase(),
+                    fontWeight = FontWeight.SemiBold,
+                    style = MaterialTheme.typography.titleMedium,
+                    modifier = Modifier.align(Alignment.Center))
+                IconButton(
+                    modifier = Modifier.align(Alignment.TopEnd).padding(8.dp),
+                    onClick = { selectDateDialog = false }
+                ) {
+                    Icon(Icons.Default.Close, contentDescription = stringResource(Res.string.close_dialog_description))
+                }
+            }
+            DatePicker(
+                state = datePickerState,
+                showModeToggle = false,
+                title = null,
+                headline = null,
+                colors = DatePickerDefaults.colors(
+                    containerColor = MaterialTheme.colorScheme.background,
+                    selectedYearContainerColor = MaterialTheme.colorScheme.primary,
+                )
             )
-        )
+        }
     }
 
     Column {
@@ -89,7 +116,8 @@ fun SelectDate(
             .clickable { selectDateDialog = true }
             .padding(8.dp),
             verticalAlignment = Alignment.CenterVertically) {
-            Crossfade(targetState = date) { currentDate ->
+            Crossfade(modifier = Modifier.animateContentSize(),
+                targetState = date) { currentDate ->
                 Text(fullFormatDate(currentDate, preferences),
                     textAlign = TextAlign.Center,
                     style = MaterialTheme.typography.titleMedium,

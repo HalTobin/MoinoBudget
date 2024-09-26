@@ -37,8 +37,8 @@ class EnvelopeRepositoryImpl(
         combine(
             envelopeDao.getFlowById(envelopeId),
             expenseDao.getFlowByEnvelopeId(envelopeId)
-        ) { envelope, expenses ->
-            envelope?.toEnvelopeUI(expenses)
+        ) { envelope, _ ->
+            envelope?.toEnvelopeUI()
         }
 
     override suspend fun upsertEnvelope(envelope: AddEditEnvelope): Long =
@@ -47,10 +47,10 @@ class EnvelopeRepositoryImpl(
     override suspend fun deleteEnvelope(envelopeId: Int) =
         envelopeDao.deleteById(envelopeId.toLong())
 
-    private suspend fun Envelope.toEnvelopeUI(expenses: List<Expense>? = null): EnvelopeUI {
+    private suspend fun Envelope.toEnvelopeUI(): EnvelopeUI {
         val currentDate = Clock.System.now().toEpochMilliseconds().toLocalDate()
         val periods = getPeriodFromTimestamp(currentDate, this.frequency == ExpenseFrequency.Annually.id)
-        val relatedExpenses = expenses ?: expenseDao.getByEnvelopeIdAndPeriod(this.id, periods.first.toEpochMillisecond(), periods.second.toEpochMillisecond())
+        val relatedExpenses = expenseDao.getByEnvelopeIdAndPeriod(this.id, periods.first.toEpochMillisecond(), periods.second.toEpochMillisecond())
         val current = relatedExpenses.sumOf { it.amount.toDouble() }
         return EnvelopeUI(
             id = this.id,

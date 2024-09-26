@@ -164,6 +164,23 @@ get() = MonthNames(listOf(
 ))
 
 @Composable
+fun getMonthByMonthNumber(monthNumber: Int) = when (monthNumber) {
+    1 -> stringResource(Res.string.january)
+    2 -> stringResource(Res.string.february)
+    3 -> stringResource(Res.string.march)
+    4 -> stringResource(Res.string.april)
+    5 -> stringResource(Res.string.march)
+    6 -> stringResource(Res.string.june)
+    7 -> stringResource(Res.string.july)
+    8 -> stringResource(Res.string.august)
+    9 -> stringResource(Res.string.september)
+    10 -> stringResource(Res.string.october)
+    11 -> stringResource(Res.string.november)
+    12 -> stringResource(Res.string.december)
+    else -> throw IllegalArgumentException("monthNumber should be in the interval: [1, 12], entered: $monthNumber")
+}
+
+@Composable
 fun getMonthAbbreviationByMonthNumber(monthNumber: Int) = when (monthNumber) {
     1 -> stringResource(Res.string.january_abbreviation)
     2 -> stringResource(Res.string.february_abbreviation)
