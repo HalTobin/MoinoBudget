@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -46,9 +47,9 @@ fun EnvelopeScreen(
     goToDetails:(Int) -> Unit
 ) = Column {
 
-    Spacer(Modifier.height(48.dp))
-
-    LazyColumn(modifier = Modifier.padding(horizontal = 16.dp)) {
+    LazyColumn(modifier = Modifier.padding(horizontal = 16.dp),
+        contentPadding = PaddingValues(top = 64.dp)
+    ) {
         items(state.envelopes) { envelope ->
             EnvelopeItem(
                 modifier = Modifier,
