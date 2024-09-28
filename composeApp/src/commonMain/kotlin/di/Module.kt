@@ -26,6 +26,7 @@ import feature.budgets.feature.budgets_list.presentation.DashboardViewModel
 import feature.expenses.feature.add_edit_envelope.presentation.AddEditEnvelopeViewModel
 import feature.expenses.feature.add_edit_expense.AddEditExpenseViewModel
 import feature.expenses.feature.envelope_details.presentation.EnvelopeDetailsViewModel
+import feature.expenses.feature.envelope_history.EnvelopeHistoryViewModel
 import feature.expenses.feature.envelope_list.presentation.EnvelopeViewModel
 import feature.savings.feature.add_edit_savings.presentation.AddEditSavingsViewModel
 import feature.savings.feature.savings_detail.SavingsDetailsViewModel
@@ -54,6 +55,7 @@ object ModuleVM {
         viewModelOf(::AddEditEnvelopeViewModel)
         viewModelOf(::EnvelopeDetailsViewModel)
         viewModelOf(::AddEditExpenseViewModel)
+        viewModelOf(::EnvelopeHistoryViewModel)
     }
 }
 

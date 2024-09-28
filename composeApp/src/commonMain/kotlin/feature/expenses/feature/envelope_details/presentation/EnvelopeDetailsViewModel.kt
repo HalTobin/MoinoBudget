@@ -24,11 +24,13 @@ class EnvelopeDetailsViewModel(
 
     private var envelopeJob: Job? = null
     private var expensesJob: Job? = null
+    private var periodsJob: Job? = null
 
     init {
         envelopeId.nullIfMinus()?.let {
             listenToEnvelope(it)
             listenToExpenses(it)
+            listenToPeriods(it)
         }
     }
 
@@ -46,6 +48,15 @@ class EnvelopeDetailsViewModel(
         expensesJob = viewModelScope.launch(Dispatchers.IO) {
             expenseRepository.getExpensesFlowByEnvelopeId(envelopeId).collect { expenses ->
                 _state.update { it.copy(expenses = expenses.sortedByDescending { expense -> expense.date }) }
+            }
+        }
+    }
+
+    private fun listenToPeriods(envelopeId: Int) {
+        periodsJob?.cancel()
+        periodsJob = viewModelScope.launch(Dispatchers.IO) {
+            envelopeRepository.getPeriodsFlowByEnvelopeId(envelopeId).collect { periods ->
+                _state.update { it.copy(periods = periods) }
             }
         }
     }

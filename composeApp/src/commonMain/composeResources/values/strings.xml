@@ -227,6 +227,7 @@
     <!-- Envelope Details -->
     <string name="add_expense">Add an expense</string>
     <string name="left_of">left of %1$s</string>
+    <string name="open_history_description">Open history</string>
 
     <!-- Add Edit Expense -->
     <string name="new_expense">New expense</string>

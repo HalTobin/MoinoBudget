@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.History
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -30,6 +31,7 @@ import moinobudget.composeapp.generated.resources.Res
 import moinobudget.composeapp.generated.resources.edit_envelope
 import moinobudget.composeapp.generated.resources.go_back
 import moinobudget.composeapp.generated.resources.left_of
+import moinobudget.composeapp.generated.resources.open_history_description
 import org.jetbrains.compose.resources.stringResource
 import presentation.formatCurrency
 import util.simpleFormatDate
@@ -40,7 +42,8 @@ fun EnvelopeHeader(
     envelope: EnvelopeUI?,
     preferences: AppPreferences,
     goBack: () -> Unit,
-    edit: () -> Unit
+    edit: () -> Unit,
+    goToHistory: () -> Unit
 ) {
     val color = envelope?.color?.let {
         Color.hsl(hue = it.toHue(), lightness = 0.14f, saturation = 1f)
@@ -58,6 +61,13 @@ fun EnvelopeHeader(
                 )
             }
             Spacer(Modifier.weight(1f))
+            IconButton(onClick = { envelope?.let { goToHistory() } }) {
+                Icon(
+                    Icons.Default.History,
+                    tint = contentColor,
+                    contentDescription = stringResource(Res.string.open_history_description)
+                )
+            }
             IconButton(onClick = { envelope?.let { edit() } }) {
                 Icon(
                     Icons.Default.Edit,

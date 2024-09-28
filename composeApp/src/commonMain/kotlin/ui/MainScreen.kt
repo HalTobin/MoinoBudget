@@ -27,6 +27,8 @@ import feature.expenses.feature.add_edit_expense.AddEditExpenseScreen
 import feature.expenses.feature.add_edit_expense.AddEditExpenseViewModel
 import feature.expenses.feature.envelope_details.presentation.EnvelopeDetailsScreen
 import feature.expenses.feature.envelope_details.presentation.EnvelopeDetailsViewModel
+import feature.expenses.feature.envelope_history.EnvelopeHistoryScreen
+import feature.expenses.feature.envelope_history.EnvelopeHistoryViewModel
 import feature.hub.HubScreen
 import feature.savings.data.SavingsType
 import feature.savings.feature.add_edit_savings.presentation.AddEditSavingsScreen
@@ -166,7 +168,7 @@ fun MainScreen(
                 popEnterTransition = { EnterTransition.None },
                 popExitTransition = { slideOutHorizontally(targetOffsetX = { it }) }
             ) {
-                val args = it.toRoute<MoinoBudgetScreen.AddEditEnvelope>()
+                val args = it.toRoute<MoinoBudgetScreen.EnvelopeDetails>()
                 val envelopeId = args.envelopeId
 
                 val viewModel = koinViewModel<EnvelopeDetailsViewModel> { parametersOf(envelopeId) }
@@ -175,11 +177,31 @@ fun MainScreen(
                 EnvelopeDetailsScreen(
                     state = state,
                     preferences = preferences,
-                    addEditEnvelope = { envlopeId ->
-                        navController.navigate(MoinoBudgetScreen.AddEditEnvelope(envelopeId)) },
+                    addEditEnvelope = { id ->
+                        navController.navigate(MoinoBudgetScreen.AddEditEnvelope(id)) },
                     goBack = { navController.popBackStack() },
+                    openHistory = { navController.navigate(MoinoBudgetScreen.EnvelopeHistory(envelopeId)) },
                     addEditExpense = { expenseId ->
                         navController.navigate(MoinoBudgetScreen.AddEditExpense(expenseId ?: -1, envelopeId)) }
+                )
+            }
+            composable<MoinoBudgetScreen.EnvelopeHistory>(
+                enterTransition = { slideInHorizontally(initialOffsetX = { it }) },
+                exitTransition = { ExitTransition.None },
+                popEnterTransition = { EnterTransition.None },
+                popExitTransition = { slideOutHorizontally(targetOffsetX = { it }) }
+            ) {
+                val args = it.toRoute<MoinoBudgetScreen.EnvelopeHistory>()
+                val envelopeId = args.envelopeId
+
+                val viewModel = koinViewModel<EnvelopeHistoryViewModel> { parametersOf(envelopeId) }
+                val state by viewModel.state.collectAsStateWithLifecycle()
+
+                EnvelopeHistoryScreen(
+                    state = state,
+                    preferences = preferences,
+                    goBack = { navController.popBackStack() },
+                    openDetails = { navController.navigate(MoinoBudgetScreen.EnvelopeDetails(envelopeId)) }
                 )
             }
             composable<MoinoBudgetScreen.AddEditExpense>(

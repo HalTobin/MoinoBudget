@@ -12,11 +12,11 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.material.Scaffold
-import androidx.compose.material.Surface
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -41,13 +41,13 @@ fun EnvelopeDetailsScreen(
     preferences: AppPreferences,
     addEditEnvelope: (Int) -> Unit,
     addEditExpense: (Int?) -> Unit,
+    openHistory: () -> Unit,
     goBack: () -> Unit
 ) = Scaffold(
     floatingActionButton = { AddFloatingButton(
         text = stringResource(Res.string.add_expense),
         onClick = { state.envelope?.let { addEditExpense(null) } }) }
 ) {
-
     Surface(
         modifier = Modifier.fillMaxSize(),
         color = MaterialTheme.colorScheme.background,
@@ -59,7 +59,8 @@ fun EnvelopeDetailsScreen(
                 envelope = state.envelope,
                 preferences = preferences,
                 goBack = goBack,
-                edit = { state.envelope?.id?.let { addEditEnvelope(it) } }
+                edit = { state.envelope?.id?.let { addEditEnvelope(it) } },
+                goToHistory = { openHistory() }
             )
             LazyColumn(Modifier.fillMaxWidth().weight(1f)) {
                 itemsIndexed(state.expenses) { index, expense ->

@@ -24,6 +24,12 @@ interface ExpenseDao {
     @Query("SELECT * FROM expenses")
     fun getAll(): Flow<List<Expense>>
 
+    @Query("SELECT MIN(timestamp) AS oldest_timestamp FROM expenses WHERE envelope_id = :envelopeId")
+    suspend fun getOldestTimeByEnvelopeId(envelopeId: Int): Long?
+
+    @Query("SELECT MIN(timestamp) AS oldest_timestamp FROM expenses WHERE envelope_id = :envelopeId")
+    fun getOldestTimeFlowByEnvelopeId(envelopeId: Int): Flow<Long?>
+
     @Query("SELECT * FROM expenses WHERE envelope_id = :envelopeId")
     suspend fun getByEnvelopeId(envelopeId: Int): List<Expense>
 
