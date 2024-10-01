@@ -22,10 +22,10 @@ class EnvelopeHistoryViewModel(
     val state = _state.asStateFlow()
 
     init {
-        listenEnvelopes(envelopeId)
+        listenEnvelopeHistory(envelopeId)
     }
 
-    private fun listenEnvelopes(envelopeId: Int) {
+    private fun listenEnvelopeHistory(envelopeId: Int) {
         envelopeJob?.cancel()
         envelopeJob = viewModelScope.launch(Dispatchers.IO) {
             envelopeRepository.getEnvelopeHistoryFlowByEnvelopeId(envelopeId).collect { history ->
