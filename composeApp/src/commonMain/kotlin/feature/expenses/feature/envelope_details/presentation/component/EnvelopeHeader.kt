@@ -8,6 +8,8 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeContentPadding
+import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.width
@@ -53,37 +55,11 @@ fun EnvelopeHeader(
     } ?: MaterialTheme.colorScheme.onPrimary
     val contentColor = envelope?.color ?: MaterialTheme.colorScheme.primary
 
-    Column(modifier = Modifier.background(color)
-        .padding(8.dp)
-        .padding(top = WindowInsets.systemBars.asPaddingValues().calculateTopPadding()),
+    Column(modifier = Modifier.background(color).padding(horizontal = 8.dp),
         horizontalAlignment = Alignment.CenterHorizontally) {
-        Row {
-            IconButton(onClick = goBack) {
-                Icon(
-                    Icons.AutoMirrored.Filled.ArrowBack,
-                    tint = contentColor,
-                    contentDescription = stringResource(Res.string.go_back)
-                )
-            }
-            Spacer(Modifier.weight(1f))
-            IconButton(onClick = { envelope?.let { goToHistory() } }) {
-                Icon(
-                    Icons.Default.History,
-                    tint = contentColor,
-                    contentDescription = stringResource(Res.string.open_history_description)
-                )
-            }
-            IconButton(onClick = { envelope?.let { edit() } }) {
-                Icon(
-                    Icons.Default.Edit,
-                    tint = contentColor,
-                    contentDescription = stringResource(Res.string.edit_envelope)
-                )
-            }
-        }
         envelope?.let { envelope ->
             Row(
-                Modifier.padding(top = 16.dp, start = 8.dp),
+                Modifier.padding(horizontal = 8.dp),
                 verticalAlignment = Alignment.CenterVertically) {
                 envelope.icon?.let { icon ->
                     Icon(icon.icon,
@@ -140,6 +116,7 @@ fun EnvelopeHeader(
                     color = contentColor,
                     preferences = preferences
                 )
+                Spacer(Modifier.height(4.dp))
             }
         }
     }

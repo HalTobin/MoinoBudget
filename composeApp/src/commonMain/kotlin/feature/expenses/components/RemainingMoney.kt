@@ -41,7 +41,7 @@ fun RemainingMoney(
         append(splitText[2])
     }
     Text(styledText,
-        modifier = Modifier.padding(bottom = 16.dp),
+        modifier = Modifier.padding(bottom = 6.dp),
         color = color,
         fontStyle = FontStyle.Italic,
         fontSize = 16.sp)

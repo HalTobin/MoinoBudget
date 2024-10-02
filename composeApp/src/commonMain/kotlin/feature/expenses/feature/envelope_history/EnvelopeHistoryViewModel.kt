@@ -23,6 +23,9 @@ class EnvelopeHistoryViewModel(
 
     init {
         listenEnvelopeHistory(envelopeId)
+        viewModelScope.launch(Dispatchers.IO) {
+            envelopeRepository.getEnvelopeById(envelopeId)?.color?.let { color ->
+                _state.update { it.copy(color = color) } } }
     }
 
     private fun listenEnvelopeHistory(envelopeId: Int) {
