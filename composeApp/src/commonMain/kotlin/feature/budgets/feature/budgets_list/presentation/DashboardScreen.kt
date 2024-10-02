@@ -149,13 +149,15 @@ fun DashboardScreen(
     Scaffold(
         snackbarHost = { SnackbarHost(snackBarHostState, snackbar = { MoinoSnackBar(it) }) },
         floatingActionButton = {
-            AddFloatingButton(onClick = {
-                val budget = state.budgets.getOrNull(budgetState.currentPage-1)
-                val labels = budget?.labels?.map { it.id } ?: emptyList()
-                goTo(MoinoBudgetScreen.AddEditBudgetOperation(labelIds = labels))
-            },
-                text = stringResource(Res.string.new_operation))
-        }
+            AddFloatingButton(
+                text = stringResource(Res.string.new_operation),
+                onClick = {
+                    val budget = state.budgets.getOrNull(budgetState.currentPage-1)
+                    val labels = budget?.labels?.map { it.id } ?: emptyList()
+                    goTo(MoinoBudgetScreen.AddEditBudgetOperation(labelIds = labels))
+                }
+            )
+        },
     ) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Spacer(Modifier.height(10.dp))

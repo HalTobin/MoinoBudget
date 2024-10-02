@@ -4,18 +4,21 @@ import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CreditCard
-import androidx.compose.material.icons.filled.DataUsage
 import androidx.compose.material.icons.filled.Savings
-import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Wallet
 import androidx.compose.material.icons.outlined.CreditCard
+import androidx.compose.material.icons.outlined.DataUsage
 import androidx.compose.material.icons.outlined.Savings
+import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.outlined.Wallet
 import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.FloatingActionButtonDefaults
+import androidx.compose.material3.FloatingActionButtonElevation
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
@@ -66,6 +69,7 @@ fun HubScreen(
     val navController = rememberNavController()
 
     Scaffold(
+        Modifier.safeDrawingPadding(),
         bottomBar = {
             val navBackStackEntry by navController.currentBackStackEntryAsState()
             val currentDestination = navBackStackEntry?.destination
@@ -103,32 +107,34 @@ fun HubScreen(
         }
     ) { innerPadding ->
         Surface(
-            modifier = Modifier.fillMaxSize().padding(innerPadding),
+            modifier = Modifier.padding(innerPadding),
             color = MaterialTheme.colorScheme.background,
             contentColor = MaterialTheme.colorScheme.onBackground
         ) {
             Box {
                 FloatingActionButton(
-                    modifier = Modifier.align(Alignment.TopEnd).padding(8.dp).zIndex(2f).size(44.dp),
-                    shape = CircleShape,
-                    containerColor = MaterialTheme.colorScheme.surface,
-                    contentColor = MaterialTheme.colorScheme.onSurface,
-                    onClick = { goToScreen(MoinoBudgetScreen.Settings) }
-                ) {
-                    Icon(modifier = Modifier.size(32.dp),
-                        imageVector = Icons.Default.Settings,
-                        contentDescription = stringResource(Res.string.go_to_settings_help))
-                }
-                FloatingActionButton(
                     modifier = Modifier.align(Alignment.TopStart).padding(8.dp).zIndex(2f).size(44.dp),
                     shape = CircleShape,
                     containerColor = MaterialTheme.colorScheme.surface,
                     contentColor = MaterialTheme.colorScheme.onSurface,
+                    elevation = FloatingActionButtonDefaults.elevation(0.dp, 0.dp, 0.dp, 0.dp),
                     onClick = { goToScreen(MoinoBudgetScreen.Settings) }
                 ) {
                     Icon(modifier = Modifier.size(32.dp),
-                        imageVector = Icons.Default.DataUsage,
+                        imageVector = Icons.Outlined.DataUsage,
                         contentDescription = stringResource(Res.string.go_to_charts_help))
+                }
+                FloatingActionButton(
+                    modifier = Modifier.align(Alignment.TopEnd).padding(8.dp).zIndex(2f).size(44.dp),
+                    shape = CircleShape,
+                    containerColor = MaterialTheme.colorScheme.surface,
+                    contentColor = MaterialTheme.colorScheme.onSurface,
+                    elevation = FloatingActionButtonDefaults.elevation(0.dp, 0.dp, 0.dp, 0.dp),
+                    onClick = { goToScreen(MoinoBudgetScreen.Settings) }
+                ) {
+                    Icon(modifier = Modifier.size(32.dp),
+                        imageVector = Icons.Outlined.Settings,
+                        contentDescription = stringResource(Res.string.go_to_settings_help))
                 }
                 NavHost(modifier = Modifier.fillMaxSize(),
                     startDestination = HubScreenTab.Budget.route,

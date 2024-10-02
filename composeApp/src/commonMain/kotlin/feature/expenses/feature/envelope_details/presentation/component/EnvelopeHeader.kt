@@ -5,12 +5,12 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Edit
@@ -55,7 +55,7 @@ fun EnvelopeHeader(
 
     Column(modifier = Modifier.background(color)
         .padding(8.dp)
-        .windowInsetsPadding(WindowInsets.systemBars),
+        .padding(top = WindowInsets.systemBars.asPaddingValues().calculateTopPadding()),
         horizontalAlignment = Alignment.CenterHorizontally) {
         Row {
             IconButton(onClick = goBack) {

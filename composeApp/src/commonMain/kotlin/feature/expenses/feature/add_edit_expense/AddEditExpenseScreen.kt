@@ -5,24 +5,20 @@ import androidx.compose.animation.Crossfade
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.animation.togetherWith
-import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.systemBars
+import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
@@ -53,12 +49,9 @@ import moinobudget.composeapp.generated.resources.Res
 import moinobudget.composeapp.generated.resources.amount
 import moinobudget.composeapp.generated.resources.close_dialog_description
 import moinobudget.composeapp.generated.resources.create_operation
-import moinobudget.composeapp.generated.resources.date
-import moinobudget.composeapp.generated.resources.delete_budget
 import moinobudget.composeapp.generated.resources.delete_expense
 import moinobudget.composeapp.generated.resources.delete_operation
 import moinobudget.composeapp.generated.resources.edit_expense
-import moinobudget.composeapp.generated.resources.edit_operation
 import moinobudget.composeapp.generated.resources.icon
 import moinobudget.composeapp.generated.resources.save
 import moinobudget.composeapp.generated.resources.title
@@ -79,7 +72,7 @@ fun AddEditExpenseScreen(
         color = MaterialTheme.colorScheme.background,
         contentColor = MaterialTheme.colorScheme.onBackground,
     ) {
-        Column(Modifier.windowInsetsPadding(WindowInsets.systemBars),
+        Column(Modifier.safeDrawingPadding(),
             horizontalAlignment = Alignment.CenterHorizontally) {
             Box(Modifier.fillMaxWidth().padding(start = 8.dp, end = 8.dp, top = 8.dp)) {
                 state.id?.let {

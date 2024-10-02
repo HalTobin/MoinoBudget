@@ -5,12 +5,10 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.systemBars
-import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Contrast
@@ -59,7 +57,7 @@ fun SettingsScreen(
     contentColor = MaterialTheme.colorScheme.onBackground,
     color = MaterialTheme.colorScheme.background
 ) {
-    Column(Modifier.windowInsetsPadding(WindowInsets.systemBars)) {
+    Column(Modifier.safeDrawingPadding()) {
         TopBackAndTitle(title = stringResource(Res.string.settings),
             goBack = goBack)
 
